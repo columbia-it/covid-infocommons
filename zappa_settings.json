@@ -1,0 +1,11 @@
+{
+  "dev": {
+    "aws_region": "us-east-1",
+    "django_settings": "cic.settings",
+    "profile_name": "default",
+    "project_name": "cice",
+    "role_arn": "arn:aws:iam::305803678806:role/cice-dev-ZappaLambdaExecutionRole",
+    "role_name": "cice-dev-ZappaLambdaExecutionRole",
+    "runtime": "python3.9"
+  }
+}
