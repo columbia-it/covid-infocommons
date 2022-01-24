@@ -1,0 +1,743 @@
+openapi: 3.0.2
+info:
+  version: 1.0.0
+  title: COVID Info Commons (CIC) API
+  description: '![alt-text](https://cuit.columbia.edu/sites/default/files/logo/CUIT_Logo_286_web.jpg
+    "CUIT logo")
+
+
+
+    COVID Information Commons (CIC) API
+
+
+    (c) 2018-2022 The Trustees of Columbia University in the City of New York
+
+    '
+  contact:
+    name: Sunaina Gupta
+paths:
+  /people:
+    get:
+      operationId: List /people
+      description: Represents Person table in the DB
+      parameters:
+      - $ref: '#/components/parameters/include'
+      - $ref: '#/components/parameters/fields'
+      - $ref: '#/components/parameters/sort'
+      - name: page[number]
+        required: false
+        in: query
+        description: A page number within the paginated result set.
+        schema:
+          type: integer
+      - name: page[size]
+        required: false
+        in: query
+        description: Number of results to return per page.
+        schema:
+          type: integer
+      - name: sort
+        required: false
+        in: query
+        description: Which field to use when ordering the results.
+        schema:
+          type: string
+      - name: filter[search]
+        required: false
+        in: query
+        description: A search term.
+        schema:
+          type: string
+      tags:
+      - v1
+      responses:
+        '200':
+          description: List/v1/people
+          content:
+            application/vnd.api+json:
+              schema:
+                type: object
+                required:
+                - data
+                properties:
+                  data:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/Person'
+                  included:
+                    type: array
+                    uniqueItems: true
+                    items:
+                      $ref: '#/components/schemas/resource'
+                  links:
+                    description: Link members related to primary data
+                    allOf:
+                    - $ref: '#/components/schemas/links'
+                    - $ref: '#/components/schemas/pagination'
+                  jsonapi:
+                    $ref: '#/components/schemas/jsonapi'
+        '401':
+          description: not authorized
+          content:
+            application/vnd.api+json:
+              schema:
+                $ref: '#/components/schemas/failure'
+        '404':
+          description: not found
+          content:
+            application/vnd.api+json:
+              schema:
+                $ref: '#/components/schemas/failure'
+    post:
+      operationId: create/v1/people
+      description: Represents Person table in the DB
+      parameters: []
+      tags:
+      - v1
+      requestBody:
+        content:
+          application/vnd.api+json:
+            schema:
+              required:
+              - data
+              properties:
+                data:
+                  type: object
+                  required:
+                  - type
+                  additionalProperties: false
+                  properties:
+                    type:
+                      $ref: '#/components/schemas/type'
+                    id:
+                      $ref: '#/components/schemas/id'
+                    links:
+                      type: object
+                      properties:
+                        self:
+                          $ref: '#/components/schemas/link'
+                    attributes:
+                      type: object
+                      properties:
+                        id:
+                          type: integer
+                          maximum: 2147483647
+                          minimum: -2147483648
+                        first_name:
+                          type: string
+                          nullable: true
+                          maxLength: 1000
+                        last_name:
+                          type: string
+                          nullable: true
+                          maxLength: 1000
+                        orcid:
+                          type: string
+                          nullable: true
+                          maxLength: 1000
+                        private_emails:
+                          type: string
+                          nullable: true
+                          maxLength: 1000
+                        keywords:
+                          type: string
+                          nullable: true
+                          maxLength: 100
+                      required:
+                      - id
+      responses:
+        '201':
+          description: '[Created](https://jsonapi.org/format/#crud-creating-responses-201).
+            Assigned `id` and/or any other changes are in this response.'
+          content:
+            application/vnd.api+json:
+              schema:
+                type: object
+                required:
+                - data
+                properties:
+                  data:
+                    $ref: '#/components/schemas/Person'
+                  included:
+                    type: array
+                    uniqueItems: true
+                    items:
+                      $ref: '#/components/schemas/resource'
+                  links:
+                    description: Link members related to primary data
+                    allOf:
+                    - $ref: '#/components/schemas/links'
+                    - $ref: '#/components/schemas/pagination'
+                  jsonapi:
+                    $ref: '#/components/schemas/jsonapi'
+        '202':
+          description: Accepted for [asynchronous processing](https://jsonapi.org/recommendations/#asynchronous-processing)
+          content:
+            application/vnd.api+json:
+              schema:
+                $ref: '#/components/schemas/datum'
+        '204':
+          description: '[Created](https://jsonapi.org/format/#crud-creating-responses-204)
+            with the supplied `id`. No other changes from what was POSTed.'
+        '401':
+          description: not authorized
+          content:
+            application/vnd.api+json:
+              schema:
+                $ref: '#/components/schemas/failure'
+        '403':
+          description: '[Forbidden](https://jsonapi.org/format/#crud-creating-responses-403)'
+          content:
+            application/vnd.api+json:
+              schema:
+                $ref: '#/components/schemas/failure'
+        '404':
+          description: '[Related resource does not exist](https://jsonapi.org/format/#crud-creating-responses-404)'
+          content:
+            application/vnd.api+json:
+              schema:
+                $ref: '#/components/schemas/failure'
+        '409':
+          description: '[Conflict](https://jsonapi.org/format/#crud-creating-responses-409)'
+          content:
+            application/vnd.api+json:
+              schema:
+                $ref: '#/components/schemas/failure'
+  /people/{id}:
+    get:
+      operationId: retrieve/v1/people/{id}
+      description: Represents Person table in the DB
+      parameters:
+      - name: id
+        in: path
+        required: true
+        description: A unique value identifying this person.
+        schema:
+          type: string
+      - $ref: '#/components/parameters/include'
+      - $ref: '#/components/parameters/fields'
+      - $ref: '#/components/parameters/sort'
+      - name: sort
+        required: false
+        in: query
+        description: Which field to use when ordering the results.
+        schema:
+          type: string
+      - name: filter[search]
+        required: false
+        in: query
+        description: A search term.
+        schema:
+          type: string
+      tags:
+      - v1
+      responses:
+        '200':
+          description: retrieve/v1/people/{id}
+          content:
+            application/vnd.api+json:
+              schema:
+                type: object
+                required:
+                - data
+                properties:
+                  data:
+                    $ref: '#/components/schemas/Person'
+                  included:
+                    type: array
+                    uniqueItems: true
+                    items:
+                      $ref: '#/components/schemas/resource'
+                  links:
+                    description: Link members related to primary data
+                    allOf:
+                    - $ref: '#/components/schemas/links'
+                    - $ref: '#/components/schemas/pagination'
+                  jsonapi:
+                    $ref: '#/components/schemas/jsonapi'
+        '401':
+          description: not authorized
+          content:
+            application/vnd.api+json:
+              schema:
+                $ref: '#/components/schemas/failure'
+        '404':
+          description: not found
+          content:
+            application/vnd.api+json:
+              schema:
+                $ref: '#/components/schemas/failure'
+    patch:
+      operationId: partial_update/v1/people/{id}
+      description: Represents Person table in the DB
+      parameters:
+      - name: id
+        in: path
+        required: true
+        description: A unique value identifying this person.
+        schema:
+          type: string
+      tags:
+      - v1
+      requestBody:
+        content:
+          application/vnd.api+json:
+            schema:
+              required:
+              - data
+              properties:
+                data:
+                  type: object
+                  required:
+                  - type
+                  - id
+                  additionalProperties: false
+                  properties:
+                    type:
+                      $ref: '#/components/schemas/type'
+                    id:
+                      $ref: '#/components/schemas/id'
+                    links:
+                      type: object
+                      properties:
+                        self:
+                          $ref: '#/components/schemas/link'
+                    attributes:
+                      type: object
+                      properties:
+                        id:
+                          type: integer
+                          maximum: 2147483647
+                          minimum: -2147483648
+                        first_name:
+                          type: string
+                          nullable: true
+                          maxLength: 1000
+                        last_name:
+                          type: string
+                          nullable: true
+                          maxLength: 1000
+                        orcid:
+                          type: string
+                          nullable: true
+                          maxLength: 1000
+                        private_emails:
+                          type: string
+                          nullable: true
+                          maxLength: 1000
+                        keywords:
+                          type: string
+                          nullable: true
+                          maxLength: 100
+      responses:
+        '200':
+          description: partial_update/v1/people/{id}
+          content:
+            application/vnd.api+json:
+              schema:
+                type: object
+                required:
+                - data
+                properties:
+                  data:
+                    $ref: '#/components/schemas/Person'
+                  included:
+                    type: array
+                    uniqueItems: true
+                    items:
+                      $ref: '#/components/schemas/resource'
+                  links:
+                    description: Link members related to primary data
+                    allOf:
+                    - $ref: '#/components/schemas/links'
+                    - $ref: '#/components/schemas/pagination'
+                  jsonapi:
+                    $ref: '#/components/schemas/jsonapi'
+        '401':
+          description: not authorized
+          content:
+            application/vnd.api+json:
+              schema:
+                $ref: '#/components/schemas/failure'
+        '403':
+          description: '[Forbidden](https://jsonapi.org/format/#crud-updating-responses-403)'
+          content:
+            application/vnd.api+json:
+              schema:
+                $ref: '#/components/schemas/failure'
+        '404':
+          description: '[Related resource does not exist](https://jsonapi.org/format/#crud-updating-responses-404)'
+          content:
+            application/vnd.api+json:
+              schema:
+                $ref: '#/components/schemas/failure'
+        '409':
+          description: '[Conflict]([Conflict](https://jsonapi.org/format/#crud-updating-responses-409)'
+          content:
+            application/vnd.api+json:
+              schema:
+                $ref: '#/components/schemas/failure'
+    delete:
+      operationId: destroy/v1/people/{id}
+      description: Represents Person table in the DB
+      parameters:
+      - name: id
+        in: path
+        required: true
+        description: A unique value identifying this person.
+        schema:
+          type: string
+      tags:
+      - v1
+      responses:
+        '200':
+          description: '[OK](https://jsonapi.org/format/#crud-deleting-responses-200)'
+          content:
+            application/vnd.api+json:
+              schema:
+                $ref: '#/components/schemas/onlymeta'
+        '202':
+          description: Accepted for [asynchronous processing](https://jsonapi.org/recommendations/#asynchronous-processing)
+          content:
+            application/vnd.api+json:
+              schema:
+                $ref: '#/components/schemas/datum'
+        '204':
+          description: '[no content](https://jsonapi.org/format/#crud-deleting-responses-204)'
+        '401':
+          description: not authorized
+          content:
+            application/vnd.api+json:
+              schema:
+                $ref: '#/components/schemas/failure'
+        '404':
+          description: '[Resource does not exist](https://jsonapi.org/format/#crud-deleting-responses-404)'
+          content:
+            application/vnd.api+json:
+              schema:
+                $ref: '#/components/schemas/failure'
+components:
+  schemas:
+    jsonapi:
+      type: object
+      description: The server's implementation
+      properties:
+        version:
+          type: string
+        meta:
+          $ref: '#/components/schemas/meta'
+      additionalProperties: false
+    resource:
+      type: object
+      required:
+      - type
+      - id
+      additionalProperties: false
+      properties:
+        type:
+          $ref: '#/components/schemas/type'
+        id:
+          $ref: '#/components/schemas/id'
+        attributes:
+          type: object
+        relationships:
+          type: object
+        links:
+          $ref: '#/components/schemas/links'
+        meta:
+          $ref: '#/components/schemas/meta'
+    link:
+      oneOf:
+      - description: a string containing the link's URL
+        type: string
+        format: uri-reference
+      - type: object
+        required:
+        - href
+        properties:
+          href:
+            description: a string containing the link's URL
+            type: string
+            format: uri-reference
+          meta:
+            $ref: '#/components/schemas/meta'
+    links:
+      type: object
+      additionalProperties:
+        $ref: '#/components/schemas/link'
+    reltoone:
+      description: a singular 'to-one' relationship
+      type: object
+      properties:
+        links:
+          $ref: '#/components/schemas/relationshipLinks'
+        data:
+          $ref: '#/components/schemas/relationshipToOne'
+        meta:
+          $ref: '#/components/schemas/meta'
+    relationshipToOne:
+      description: reference to other resource in a to-one relationship
+      anyOf:
+      - $ref: '#/components/schemas/nulltype'
+      - $ref: '#/components/schemas/linkage'
+    reltomany:
+      description: a multiple 'to-many' relationship
+      type: object
+      properties:
+        links:
+          $ref: '#/components/schemas/relationshipLinks'
+        data:
+          $ref: '#/components/schemas/relationshipToMany'
+        meta:
+          $ref: '#/components/schemas/meta'
+    relationshipLinks:
+      description: optional references to other resource objects
+      type: object
+      additionalProperties: true
+      properties:
+        self:
+          $ref: '#/components/schemas/link'
+        related:
+          $ref: '#/components/schemas/link'
+    relationshipToMany:
+      description: An array of objects each containing the 'type' and 'id' for to-many
+        relationships
+      type: array
+      items:
+        $ref: '#/components/schemas/linkage'
+      uniqueItems: true
+    ResourceIdentifierObject:
+      oneOf:
+      - $ref: '#/components/schemas/relationshipToOne'
+      - $ref: '#/components/schemas/relationshipToMany'
+    linkage:
+      type: object
+      description: the 'type' and 'id'
+      required:
+      - type
+      - id
+      properties:
+        type:
+          $ref: '#/components/schemas/type'
+        id:
+          $ref: '#/components/schemas/id'
+        meta:
+          $ref: '#/components/schemas/meta'
+    pagination:
+      type: object
+      properties:
+        first:
+          $ref: '#/components/schemas/pageref'
+        last:
+          $ref: '#/components/schemas/pageref'
+        prev:
+          $ref: '#/components/schemas/pageref'
+        next:
+          $ref: '#/components/schemas/pageref'
+    pageref:
+      oneOf:
+      - type: string
+        format: uri-reference
+      - $ref: '#/components/schemas/nulltype'
+    failure:
+      type: object
+      required:
+      - errors
+      properties:
+        errors:
+          $ref: '#/components/schemas/errors'
+        meta:
+          $ref: '#/components/schemas/meta'
+        jsonapi:
+          $ref: '#/components/schemas/jsonapi'
+        links:
+          $ref: '#/components/schemas/links'
+    errors:
+      type: array
+      items:
+        $ref: '#/components/schemas/error'
+      uniqueItems: true
+    error:
+      type: object
+      additionalProperties: false
+      properties:
+        id:
+          type: string
+        status:
+          type: string
+        links:
+          $ref: '#/components/schemas/links'
+        code:
+          type: string
+        title:
+          type: string
+        detail:
+          type: string
+        source:
+          type: object
+          properties:
+            pointer:
+              type: string
+              description: A [JSON Pointer](https://tools.ietf.org/html/rfc6901) to
+                the associated entity in the request document [e.g. `/data` for a
+                primary data object, or `/data/attributes/title` for a specific attribute.
+            parameter:
+              type: string
+              description: A string indicating which query parameter caused the error.
+            meta:
+              $ref: '#/components/schemas/meta'
+    onlymeta:
+      additionalProperties: false
+      properties:
+        meta:
+          $ref: '#/components/schemas/meta'
+    meta:
+      type: object
+      additionalProperties: true
+    datum:
+      description: singular item
+      properties:
+        data:
+          $ref: '#/components/schemas/resource'
+    nulltype:
+      type: object
+      nullable: true
+      default: null
+    type:
+      type: string
+      description: The [type](https://jsonapi.org/format/#document-resource-object-identification)
+        member is used to describe resource objects that share common attributes and
+        relationships.
+    id:
+      type: string
+      description: "Each resource object\u2019s type and id pair MUST [identify](https://jsonapi.org/format/#document-resource-object-identification)\
+        \ a single, unique resource."
+    Person:
+      type: object
+      required:
+      - type
+      - id
+      additionalProperties: false
+      properties:
+        type:
+          $ref: '#/components/schemas/type'
+        id:
+          $ref: '#/components/schemas/id'
+        links:
+          type: object
+          properties:
+            self:
+              $ref: '#/components/schemas/link'
+        attributes:
+          type: object
+          properties:
+            id:
+              type: integer
+              maximum: 2147483647
+              minimum: -2147483648
+            affiliations:
+              type: array
+              items:
+                type: object
+                required:
+                - type
+                - id
+                additionalProperties: false
+                properties:
+                  type:
+                    $ref: '#/components/schemas/type'
+                  id:
+                    $ref: '#/components/schemas/id'
+                  links:
+                    type: object
+                    properties:
+                      self:
+                        $ref: '#/components/schemas/link'
+                  attributes:
+                    type: object
+                    properties:
+                      id:
+                        type: integer
+                        maximum: 2147483647
+                        minimum: -2147483648
+                      ror:
+                        type: string
+                        maxLength: 1000
+                      name:
+                        type: string
+                        maxLength: 1000
+                      address:
+                        type: string
+                      city:
+                        type: string
+                        maxLength: 1000
+                      state:
+                        type: string
+                        maxLength: 1000
+                      zip:
+                        type: string
+                        maxLength: 1000
+                      country:
+                        type: string
+                        maxLength: 1000
+                    required:
+                    - id
+              readOnly: true
+            emails:
+              type: string
+              readOnly: true
+            first_name:
+              type: string
+              nullable: true
+              maxLength: 1000
+            last_name:
+              type: string
+              nullable: true
+              maxLength: 1000
+            orcid:
+              type: string
+              nullable: true
+              maxLength: 1000
+            private_emails:
+              type: string
+              nullable: true
+              maxLength: 1000
+            keywords:
+              type: string
+              nullable: true
+              maxLength: 100
+          required:
+          - id
+  parameters:
+    include:
+      name: include
+      in: query
+      description: '[list of included related resources](https://jsonapi.org/format/#fetching-includes)'
+      required: false
+      style: form
+      schema:
+        type: string
+    fields:
+      name: fields
+      in: query
+      description: '[sparse fieldsets](https://jsonapi.org/format/#fetching-sparse-fieldsets).
+
+        Use fields[\<typename\>]=field1,field2,...,fieldN'
+      required: false
+      style: deepObject
+      schema:
+        type: object
+      explode: true
+    sort:
+      name: sort
+      in: query
+      description: '[list of fields to sort by](https://jsonapi.org/format/#fetching-sorting)'
+      required: false
+      style: form
+      schema:
+        type: string
+servers:
+- url: http://127.0.0.1:8000/v1
+  description: local dev
+- url: https://cice-dev.paas.cc.columbia.edu/v1
+  description: dev server on AWS

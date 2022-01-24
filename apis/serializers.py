@@ -1,25 +1,32 @@
-from rest_framework import serializers
-from .models import Organization, Person, Grant, Funder
+from rest_framework_json_api import serializers
+from .models import Organization, Person, Grant, Funder, Publication, Dataset, Asset
+from rest_framework_json_api.relations import ResourceRelatedField
+from rest_framework_json_api.serializers import HyperlinkedModelSerializer
 
 
-class OrganizationSerializer(serializers.ModelSerializer):
+class OrganizationSerializer(HyperlinkedModelSerializer):
     """Serializer for Organization model"""
     class Meta:
         model = Organization
         fields = '__all__'
 
 
-class FunderSerializer(serializers.ModelSerializer):
+class FunderSerializer(HyperlinkedModelSerializer):
     """Serializer for Funder model"""
     class Meta:
         model = Funder
         fields = '__all__'
 
 
-class PersonSerializer(serializers.ModelSerializer):
+class AssetSerializer(HyperlinkedModelSerializer):
+    """Serializer for Asset model"""
+    class Meta:
+        model = Asset
+        fields = '__all__'
+
+
+class PersonSerializer(HyperlinkedModelSerializer):
     """Serializer for Person model"""
-    affiliations = OrganizationSerializer(many=True, required=False, read_only=True)
-    emails = serializers.SerializerMethodField()
 
     def get_emails(self, obj):
         return ""
@@ -29,62 +36,150 @@ class PersonSerializer(serializers.ModelSerializer):
         fields = '__all__'
         depth = 1
 
-
-class CreatePersonSerializer(serializers.ModelSerializer):
-    """Serializer for Person model - Used with Person creation"""
-    class Meta:
-        model = Person
-        fields = '__all__'
-
-    def to_representation(self, instance):
-        data = super().to_representation(instance)
-        affiliations = []
-        for affiliation in data['affiliations']:
-            affiliations.append(OrganizationSerializer(Organization.objects.get(pk=affiliation)).data)
-        data['affiliations'] = affiliations
-        return data
+    affiliations = ResourceRelatedField(
+        model=Organization,
+        many=True,
+        allow_null=True,
+        required=False,
+        queryset=Organization.objects.all(),
+        self_link_view_name='person-relationships',
+        related_link_view_name='person-related',
+    )    
+    included_serializers = {
+        'affiliations': 'apis.serializers.OrganizationSerializer',
+    }
 
 
-class GrantSerializer(serializers.ModelSerializer):
+class GrantSerializer(HyperlinkedModelSerializer):
     """Serializer for Grant model"""
+    funder_divisions = serializers.ListField(child=serializers.CharField())
+    program_reference_codes = serializers.ListField(child=serializers.CharField())
+    keywords = serializers.ListField(child=serializers.CharField())
 
-    funder = FunderSerializer(read_only=True)
-    principal_investigator = PersonSerializer(read_only=True)
-    program_officials = PersonSerializer(many=True, read_only=True)
-    other_investigators = PersonSerializer(many=True, read_only=True)
-    awardee_organization = OrganizationSerializer(read_only=True)
+    program_officials = ResourceRelatedField(
+        model=Person,
+        many=True,
+        allow_null=True,
+        required=False,
+        queryset=Person.objects.all(),
+        self_link_view_name='grant-relationships',
+        related_link_view_name='grant-related',
+    ) 
 
+    other_investigators = ResourceRelatedField(
+        model=Person,
+        many=True,
+        allow_null=True,
+        required=False,
+        queryset=Person.objects.all(),
+        self_link_view_name='grant-relationships',
+        related_link_view_name='grant-related',
+    ) 
+
+    principal_investigator = ResourceRelatedField(
+        model=Person,
+        many=False,
+        read_only=False,
+        allow_null=True,
+        required=False,
+        queryset=Person.objects.all(),
+        self_link_view_name='grant-relationships',
+        related_link_view_name='grant-related',
+    )
+
+    awardee_organization = ResourceRelatedField(
+        model=Organization,
+        many=False,
+        read_only=False,
+        allow_null=True,
+        required=False,
+        queryset=Organization.objects.all(),
+        self_link_view_name='grant-relationships',
+        related_link_view_name='grant-related',
+    )
+
+    included_serializers = {
+        'program_officials': 'apis.serializers.PersonSerializer',
+        'other_investigators': 'apis.serializers.PersonSerializer',
+        'principal_investigator': 'apis.serializers.PersonSerializer',
+        'awardee_organization': 'apis.serializers.OrganizationSerializer'
+    }
+    
     class Meta:
         model = Grant
         fields = '__all__'
 
+    
+class PublicationSerializer(HyperlinkedModelSerializer):
+    """Serializer for Publication model"""
+        
+    authors = ResourceRelatedField(
+        model=Person,
+        many=True,
+        allow_null=True,
+        required=False,
+        queryset=Person.objects.all(),
+        self_link_view_name='publication-relationships',
+        related_link_view_name='publication-related',
+    )  
 
-class CreateGrantSerializer(serializers.ModelSerializer):
-    """Serializer for Grant model - Used with Grant creation"""
+    grants = ResourceRelatedField(
+        model=Grant,
+        many=True,
+        allow_null=True,
+        required=False,
+        queryset=Grant.objects.all(),
+        self_link_view_name='publication-relationships',
+        related_link_view_name='publication-related',
+    )  
+
+    included_serializers = {
+        'authors': 'apis.serializers.PersonSerializer',
+        'grants': 'apis.serializers.GrantSerializer'
+    }
+
     class Meta:
-        model = Grant
+        model = Publication
         fields = '__all__'
 
-    def to_representation(self, instance):
-        data = super().to_representation(instance)
 
-        data['funder'] = FunderSerializer(
-            Funder.objects.get(pk=data['funder'])).data
+class DatasetSerializer(HyperlinkedModelSerializer):
+    authors = ResourceRelatedField(
+        model=Person,
+        many=True,
+        allow_null=True,
+        required=False,
+        queryset=Person.objects.all(),
+        self_link_view_name='dataset-relationships',
+        related_link_view_name='dataset-related',
+    )
 
-        program_officials = []
-        for person_id in data['program_officials']:
-            program_officials.append(PersonSerializer(Person.objects.get(pk=person_id)).data)
-        data['program_officials'] = program_officials
+    grants = ResourceRelatedField(
+        model=Grant,
+        many=True,
+        allow_null=True,
+        required=False,
+        queryset=Grant.objects.all(),
+        self_link_view_name='dataset-relationships',
+        related_link_view_name='dataset-related',
+    )  
 
-        data['principal_investigator'] = PersonSerializer(Person.objects.get(
-            pk=data['principal_investigator'])).data
+    publications = ResourceRelatedField(
+        model=Publication,
+        many=True,
+        allow_null=True,
+        required=False,
+        queryset=Publication.objects.all(),
+        self_link_view_name='dataset-relationships',
+        related_link_view_name='dataset-related',
+    )  
 
-        other_investigators = []
-        for other_investigator_id in data['other_investigators']:
-            other_investigators.append(PersonSerializer(Person.objects.get(pk=other_investigator_id)).data)
-        data['other_investigators'] = other_investigators
+    included_serializers = {
+        'authors': 'apis.serializers.PersonSerializer',
+        'grants': 'apis.serializers.GrantSerializer',
+        'publications': 'apis.serializers.PublicationSerializer'
+    }
 
-        data['awardee_organization'] = OrganizationSerializer(
-            Organization.objects.get(pk=data['awardee_organization'])).data
-
-        return data
+    class Meta:
+        model = Dataset
+        fields = '__all__'

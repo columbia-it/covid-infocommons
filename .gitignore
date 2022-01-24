@@ -32,3 +32,5 @@ coverage.xml
 
 #IDE
 .idea/
+.vscode/
+cice-dev-template-1641915723.json
