@@ -1,11 +1,11 @@
 #!/usr/bin/env python3
 
 """
-AWS helper script writtin in Python script to connect to CAS/Shibboleth
+AWS helper script writtin in Python script to connect to CAS/Shibboleth 
 via Selenium/webdriver and retrieve a SAML manifest. SAML manifest is
-saved locally to disk
+saved locally to disk 
 
-By default, script then connects to AWS and retrieves STS credentials
+By default, script then connects to AWS and retrieves STS credentials 
 for each account/role, and writes the output to a json file and ~/.aws/credentials
 
 Based on work by Quint Van Deman, see https://aws.amazon.com/blogs/security/how-to-implement-federated-api-and-cli-access-using-saml-2-0-and-ad-fs/
@@ -14,7 +14,7 @@ Based on work by Quint Van Deman, see https://aws.amazon.com/blogs/security/how-
 
 usage: ./saml.py [aws role] [aws account id1 ...]
 
-e.g.
+e.g. 
 
     ./saml.py cuit-dev-role
 
@@ -49,6 +49,7 @@ link: https://gitlab.cc.columbia.edu/snippets/64
 
 """
 
+
 from selenium import webdriver
 from selenium.webdriver.support.ui import WebDriverWait
 from selenium.webdriver.support import expected_conditions as EC
@@ -77,15 +78,15 @@ def get_homedir():
 def write_credentials(creds, role=None):
     """ writes the credentials to the aws credentials file.
         If role is given, it only writes the credentials matching the role"""
-
+        
     homedir = get_homedir()
     aws_credentials_path = os.path.join(homedir, '.aws/credentials')
-
+    
     aws_credentials = configparser.ConfigParser()
     aws_credentials.read(aws_credentials_path)
-
+    
     roles_written = 0
-
+    
     for cred in creds:
         if role is not None and cred['role'] != role:
             continue
@@ -97,10 +98,10 @@ def write_credentials(creds, role=None):
         aws_credentials[alias]['region'] = DEFAULT_REGION
         roles_written += 1
         print("writing profile", alias)
-
+    
     with open(aws_credentials_path, 'w') as configfile:
         aws_credentials.write(configfile)
-
+    
     return roles_written
 
 
@@ -115,23 +116,22 @@ def get_cached_assertion(assertionfname):
     # if so, read that
     if ageok:
         print("using cached assertion from", assertionfname)
-        with open(assertionfname, "r") as f:
+        with open(assertionfname,"r") as f:
             assertion = f.read()
-
+    
     return assertion
 
 
 if __name__ == "__main__":
-
+    
     parser = argparse.ArgumentParser()
     parser.add_argument('role', nargs='?', help="the role to filter on")
     parser.add_argument('accountids', nargs='*', help="the accountid to filter on")
-    parser.add_argument('--headless', action='store_true',
-                        help="enable headless mode. Requires automatic DUO push to work")
+    parser.add_argument('--headless', action='store_true', help="enable headless mode. Requires automatic DUO push to work")
     parser.add_argument('--hours', default=1, type=int, help="session duration in hours")
     parser.add_argument('-v', '--verbose', action='store_true', help="verbose mode")
     parser.add_argument('--cache-assertion', action='store_true', help="set to cache the saml assertion")
-
+    
     args = parser.parse_args()
 
     filter_by_role = args.role
@@ -152,36 +152,38 @@ if __name__ == "__main__":
             username = getpass.getuser()
             print("using user", username)
             password = getpass.getpass("Enter uni password: ")
-
+        
             username_field = driver.find_element_by_name("username")
             username_field.clear()
             username_field.send_keys(username)
-
+            
             password_field = driver.find_element_by_name("password")
             password_field.clear()
             password_field.send_keys(password)
-
+        
             submit_button = driver.find_element_by_name("submit")
             submit_button.click()
-
+            
             print("Sending a DUO Push")
 
         else:
             driver = webdriver.Chrome()
             driver.get(uri)
 
+
         element = WebDriverWait(driver, 90).until(
-            EC.presence_of_element_located((webdriver.common.by.By.NAME, "SAMLResponse"))
-        )
-
+                EC.presence_of_element_located((webdriver.common.by.By.NAME, "SAMLResponse"))
+            )
+        
         assertion = element.get_attribute('value')
-
+        
         driver.quit()
-
+        
         if args.cache_assertion:
-            with open(assertionfname, "w") as f:
+            with open(assertionfname,"w") as f:
                 print("caching saml assertion in", assertionfname)
                 f.write(assertion)
+
 
     # Parse the returned assertion and extract the authorized roles
     awsroles = []
@@ -191,50 +193,52 @@ if __name__ == "__main__":
             for saml2attributevalue in saml2attribute.iter('{urn:oasis:names:tc:SAML:2.0:assertion}AttributeValue'):
                 awsroles.append(saml2attributevalue.text)
                 if args.verbose:
-                    print("role: %s" % saml2attributevalue.text)
+                    print("role: %s"%saml2attributevalue.text)
 
     # Note the format of the attribute value should be role_arn,principal_arn
     # but lots of blogs list it as principal_arn,role_arn so let's reverse
     # them if needed
     for awsrole in awsroles:
         chunks = awsrole.split(',')
-        if 'saml-provider' in chunks[0]:
+        if'saml-provider' in chunks[0]:
             newawsrole = chunks[1] + ',' + chunks[0]
             index = awsroles.index(awsrole)
             awsroles.insert(index, newawsrole)
             awsroles.remove(awsrole)
 
+
     awsroles.sort()
 
     credlist = list()
-    # if False:
+    #if False:
     for awsrole in awsroles:
-
-        role_arn, principal_arn = awsrole.split(',')
+        
+        role_arn,principal_arn = awsrole.split(',')
         accid = role_arn.split(':')[4]
         rolename = role_arn.split(':')[5].split('/')[1]
-        if len(accid) < 12:
+        if len(accid)<12:
             continue
-
+            
         if filter_by_role is not None and rolename != filter_by_role:
             continue
-        if len(args.accountids) > 0 and accid not in args.accountids:
+        if len (args.accountids) > 0 and accid not in args.accountids:
             continue
-
-        print(f"AccountID: {accid}, role: {rolename}", end='')
+            
+        print(f"AccountID: {accid}, role: {rolename}",end='')
+        
 
         client = boto3.client('sts')
         token = client.assume_role_with_saml(
-            RoleArn=role_arn,
-            PrincipalArn=principal_arn,
-            SAMLAssertion=assertion,
-            DurationSeconds=args.hours * 3600
+                RoleArn = role_arn,
+                PrincipalArn = principal_arn,
+                SAMLAssertion = assertion,
+                DurationSeconds = args.hours*3600
         )
 
         sess = boto3.Session(
-            aws_access_key_id=token['Credentials']['AccessKeyId'],
-            aws_secret_access_key=token['Credentials']['SecretAccessKey'],
-            aws_session_token=token['Credentials']['SessionToken'])
+                aws_access_key_id = token['Credentials']['AccessKeyId'],
+                aws_secret_access_key = token['Credentials']['SecretAccessKey'],
+                aws_session_token = token['Credentials']['SessionToken'])
 
         iam = sess.client('iam')
 
@@ -255,19 +259,21 @@ if __name__ == "__main__":
             print("no alias?")
 
         credlist.append(
-            {"accid": accid,
-             "role": rolename,
-             "alias": alias,
-             "aws_access_key_id": str(token['Credentials']['AccessKeyId']),
-             "aws_secret_access_key": str(token['Credentials']['SecretAccessKey']),
-             "aws_session_token": str(token['Credentials']['SessionToken'])
-             })
+            { "accid": accid,
+              "role": rolename,
+              "alias": alias,
+              "aws_access_key_id": str(token['Credentials']['AccessKeyId']),
+              "aws_secret_access_key": str(token['Credentials']['SecretAccessKey']),
+              "aws_session_token": str(token['Credentials']['SessionToken'])
+            } )
+
 
     """
     with open("stscreds.json","w") as f:
         json.dump(credlist,f)
     print('wrote creds to stscreds.json')
     """
+
 
     num_creds = write_credentials(credlist, filter_by_role)
 

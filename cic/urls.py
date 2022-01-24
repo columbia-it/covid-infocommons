@@ -15,10 +15,13 @@ Including another URLconf
 """
 from django.contrib import admin
 from django.urls import path, include
-
+from django.conf import settings
+from django.conf.urls.static import static
+from cic.views import index
 
 urlpatterns = [
     path('admin/', admin.site.urls),
-    path('api/v1/', include('apis.urls')),
-    path('survey/', include('pi_survey.urls'))
-]
+    # path('', index, name='index'),
+    path('v1/', include('apis.urls')),
+    path('survey/', include('pi_survey.urls')),
+]+ static(settings.STATIC_URL, document_root=settings.STATIC_ROOT)

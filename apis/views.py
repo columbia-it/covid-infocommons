@@ -1,29 +1,49 @@
-from rest_framework import viewsets
-from .models import Person, Organization, Grant
-from .serializers import PersonSerializer, OrganizationSerializer, CreatePersonSerializer, \
-    GrantSerializer, CreateGrantSerializer
+from rest_framework_json_api.views import ModelViewSet, RelationshipView
+from .models import Person, Organization, Grant, Publication, Dataset, Asset
+from .serializers import PersonSerializer, OrganizationSerializer, \
+    GrantSerializer, PublicationSerializer, DatasetSerializer, AssetSerializer
 from django.utils.decorators import method_decorator
-from drf_yasg.utils import swagger_auto_schema
-from rest_framework.permissions import IsAuthenticated
-from rest_framework.authentication import TokenAuthentication
 
 
-@method_decorator(name='list', decorator=swagger_auto_schema(
-    operation_description='All people available in CIC',
-    operation_summary='Get list of all people'))
-@method_decorator(name='create', decorator=swagger_auto_schema(
-    operation_description='You must be logged in. Use the JSON structure and schema as shown below.',
-    operation_summary='Create a new person'))
-@method_decorator(name='retrieve', decorator=swagger_auto_schema(
-    operation_description='Get a person',
-    operation_summary='Get a person'))
-@method_decorator(name='update', decorator=swagger_auto_schema(
-    operation_description='Update person metadata for a given id',
-    operation_summary='Update person metadata for a given id'))
-@method_decorator(name='destroy', decorator=swagger_auto_schema(
-    operation_description='Remove a person',
-    operation_summary='Remove a person'))
-class PersonViewSet(viewsets.ModelViewSet):
+class OrganizationViewSet(ModelViewSet):
+    """ View for Organization APIs
+    retrieve:
+    Return the given Organization.
+
+    list:
+    Return a list of all the Organizations.
+
+    create:
+    Create a new Organization instance.
+
+    destroy:
+    Delete a given Organization instance
+    """
+    __doc__ = Organization.__doc__
+    queryset = Organization.objects.all()
+    serializer_class = OrganizationSerializer
+
+
+class AssetViewSet(ModelViewSet):
+    """ View for Asset APIs
+    retrieve:
+    Return the given Asset.
+
+    list:
+    Return a list of all the Assets.
+
+    create:
+    Create a new Asset instance.
+
+    destroy:
+    Delete a given Asset instance
+    """
+    __doc__ = Asset.__doc__
+    queryset = Asset.objects.all()
+    serializer_class = AssetSerializer
+
+
+class PersonViewSet(ModelViewSet):
     """ View for Person APIs
     retrieve:
     Return the given Person.
@@ -32,93 +52,100 @@ class PersonViewSet(viewsets.ModelViewSet):
     Return a list of all the people.
 
     create:
-    Create a new person instance.
+    Create a new Person instance.
 
     destroy:
-    Delete a given person instance
+    Delete a given Person instance
     """
+    __doc__ = Person.__doc__
     queryset = Person.objects.all()
-
-    def get_serializer_class(self):
-        if self.action == 'list' or self.action == 'retrieve':
-            return PersonSerializer
-        if self.action == 'create':
-            return CreatePersonSerializer
-
-    http_method_names = ['get', 'post', 'delete', 'put']
+    serializer_class = PersonSerializer
 
 
-@method_decorator(name='list', decorator=swagger_auto_schema(operation_description='All organizations available in CIC'))
-@method_decorator(name='create', decorator=swagger_auto_schema(
-    operation_description='You must be logged in. Use the JSON structure and schema as shown below.'))
-class OrganizationViewSet(viewsets.ModelViewSet):
-    """ View for Organization APIs
-    retrieve:
-    Return the given Person.
-
-    list:
-    Return a list of all the people.
-
-    create:
-    Create a new person instance.
-
-    destroy:
-    Delete a given person instance
+class PersonRelationshipView(RelationshipView):
     """
-    queryset = Organization.objects.all()
-    serializer_class = OrganizationSerializer
-    http_method_names = ['get', 'post', 'delete', 'put']
+    View for person.relationships
+    """
+    queryset = Person.objects
+    self_link_view_name = 'person-relationships'
 
 
-REQUIRED_SCOPES_ALTS = {
-    'GET': [['auth-columbia', 'read'], ['auth-none', 'read']],
-    'HEAD': [['read']],
-    'OPTIONS': [['read']],
-    'POST': [
-        ['auth-columbia', 'demo-netphone-admin', 'create'],
-        ['auth-none', 'demo-netphone-admin', 'create'],
-    ]
-}
-
-
-@method_decorator(name='list', decorator=swagger_auto_schema(
-    operation_description='All grants available in CIC',
-    operation_summary='Get list of all grants',
-    responses={200: GrantSerializer(many=True)}))
-@method_decorator(name='create', decorator=swagger_auto_schema(
-    operation_description='You must be logged in. Use the JSON structure and schema as shown below.',
-    operation_summary='Create a new grant'))
-@method_decorator(name='retrieve', decorator=swagger_auto_schema(
-    operation_description='Get a grant',
-    operation_summary='Get a grant'))
-@method_decorator(name='update', decorator=swagger_auto_schema(
-    operation_description='Update grant metadata for a given id',
-    operation_summary='Update grant metadata for a given id'))
-@method_decorator(name='destroy', decorator=swagger_auto_schema(
-    operation_description='Remove a grant',
-    operation_summary='Remove a grant'))
-class GrantViewSet(viewsets.ModelViewSet):
+class GrantViewSet(ModelViewSet):
     """ View for Grant APIs
     retrieve:
-    Return the given Person.
+    Return the given Grant.
 
     list:
-    Return a list of all the people.
+    Return a list of all the grants.
 
     create:
-    Create a new person instance.
+    Create a new Grant instance.
 
     destroy:
-    Delete a given person instance
+    Delete a given Grant instance
     """
-    permission_classes = (IsAuthenticated, )
-    authentication_classes = (TokenAuthentication,)
+    __doc__ = Grant.__doc__
     queryset = Grant.objects.all()
+    serializer_class = GrantSerializer
 
-    def get_serializer_class(self):
-        if self.action == 'list' or self.action == 'retrieve':
-            return GrantSerializer
-        if self.action == 'create':
-            return CreateGrantSerializer
 
-    http_method_names = ['get', 'post', 'delete', 'put']
+class GrantRelationshipView(RelationshipView):
+    """
+    View for grant.relationships
+    """
+    queryset = Grant.objects
+    self_link_view_name = 'grant-relationships'
+
+
+class PublicationViewSet(ModelViewSet):
+    """ View for Publication APIs
+    retrieve:
+    Return the given Publication.
+
+    list:
+    Return a list of all the Publications.
+
+    create:
+    Create a new Publication instance.
+
+    destroy:
+    Delete a given Publication instance
+    """
+    __doc__ = Publication.__doc__
+    queryset = Publication.objects.all()
+    serializer_class = PublicationSerializer
+
+
+class PublicationRelationshipView(RelationshipView):
+    """
+    View for publication.relationships
+    """
+    queryset = Publication.objects
+    self_link_view_name = 'publication-relationships'
+
+
+class DatasetViewSet(ModelViewSet):
+    """ View for Dataset APIs
+    retrieve:
+    Return the given Dataset.
+
+    list:
+    Return a list of all the Datasets.
+
+    create:
+    Create a new Dataset instance.
+
+    destroy:
+    Delete a given Dataset instance
+    """
+    __doc__ = Dataset.__doc__
+    queryset = Dataset.objects.all()
+    serializer_class = DatasetSerializer
+
+
+class DatasetRelationshipView(RelationshipView):
+    """
+    View for dataset.relationships
+    """
+    queryset = Dataset.objects
+    self_link_view_name = 'dataset-relationships'
