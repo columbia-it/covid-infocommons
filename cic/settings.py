@@ -12,6 +12,7 @@ https://docs.djangoproject.com/en/3.2/ref/settings/
 
 from pathlib import Path
 import os
+import sys
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
@@ -26,7 +27,7 @@ SECRET_KEY = 'django-insecure-q%r*j=lz*tpk1!$vhtc*hg5)q_33r65=p7zg2(6ht-ac@h4k3^
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = ['127.0.0.1']
+ALLOWED_HOSTS = ['127.0.0.1', 'cice-dev.paas.cc.columbia.edu']
 
 
 # Application definition
@@ -41,7 +42,6 @@ INSTALLED_APPS = [
     'django.contrib.staticfiles',
     'django_mysql',
     'django_filters',
-    'drf_spectacular',
     # Third party apps
     'rest_framework',
     'rest_framework_json_api',
@@ -83,21 +83,29 @@ WSGI_APPLICATION = 'cic.wsgi.application'
 # Database
 # https://docs.djangoproject.com/en/3.2/ref/settings/#databases
 
-DATABASES = {
-    'default': {
-            'ENGINE': 'django.db.backends.mysql',
-            'NAME': 'sample',
-            'USER': 'admin',
-            'PASSWORD': 'adminpassword',
-            'HOST': 'database-1-instance-1.caqcytsfulsp.us-east-1.rds.amazonaws.com',
-            'PORT': '3306',
+if 'test' in sys.argv or 'test_coverage' in sys.argv:
+    DATABASES = {
+        'default': {
+            'ENGINE': 'django.db.backends.sqlite3',
+            'NAME': os.path.join(os.path.dirname(__file__), 'test.db'),
+        }
+    }
+else:
+    DATABASES = {
+        'default': {
+            'ENGINE': os.getenv('DB_ENGINE'),
+            'NAME': os.getenv('DB_NAME'),
+            'USER': os.getenv('DB_USER'),
+            'PASSWORD': os.getenv('DB_PASSWORD'),
+            'HOST': os.getenv('DB_HOST'),
+            'PORT': os.getenv('DB_PORT'),
             'OPTIONS': {
                 # Tell MySQLdb to connect with 'utf8mb4' character set
                 'charset': 'utf8mb4',
                 'sql_mode': 'STRICT_TRANS_TABLES'
             }
+        }
     }
-}
 
 
 # Password validation
