@@ -27,7 +27,7 @@ SECRET_KEY = 'django-insecure-q%r*j=lz*tpk1!$vhtc*hg5)q_33r65=p7zg2(6ht-ac@h4k3^
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = ['127.0.0.1', 'cice-dev.paas.cc.columbia.edu']
+ALLOWED_HOSTS = ['127.0.0.1', 'cice-dev.paas.cc.columbia.edu', 'cice-prod.paas.cc.columbia.edu']
 
 
 # Application definition

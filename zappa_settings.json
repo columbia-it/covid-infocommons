@@ -9,5 +9,16 @@
         "role_arn": "arn:aws:iam::305803678806:role/cice-dev-ZappaLambdaExecutionRole",
         "role_name": "cice-dev-ZappaLambdaExecutionRole",
         "manage_roles": false
+    },
+    "prod": {
+        "aws_region": "us-east-1",
+        "django_settings": "cic.settings",
+        "profile_name": "cuit-infra-cice-prod",
+        "project_name": "cice",
+        "runtime": "python3.9",
+        "s3_bucket": "cuit-infra-cice-prod-s3",
+        "role_arn": "arn:aws:iam::031752658700:role/cice-prod-ZappaLambdaExecutionRole",
+        "role_name": "cice-prod-ZappaLambdaExecutionRole",
+        "manage_roles": false
     }
 }
