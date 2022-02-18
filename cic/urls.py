@@ -18,10 +18,13 @@ from django.urls import path, include
 from django.conf import settings
 from django.conf.urls.static import static
 from cic.views import index
+from django_cas_ng import views as cas_views
+from django.contrib.auth.views import LoginView
 
 urlpatterns = [
     path('admin/', admin.site.urls),
     # path('', index, name='index'),
     path('v1/', include('apis.urls')),
     path('survey/', include('pi_survey.urls')),
+    path('o/', include('oauth2_provider.urls', namespace='oauth2_provider')),
 ]+ static(settings.STATIC_URL, document_root=settings.STATIC_ROOT)

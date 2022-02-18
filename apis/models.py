@@ -6,7 +6,7 @@ class Organization(models.Model):
     """
     Represents Organization table in the DB
     """
-    id = models.AutoField(primary_key=True, editable=False)
+    id = models.BigAutoField(primary_key=True)
     ror = models.CharField(max_length=1000, blank=True)
     name = models.CharField(max_length=1000, blank=True)
     address = models.TextField(blank=True)
@@ -26,7 +26,7 @@ class Funder(models.Model):
     """
     Represents Funder table in the DB
     """
-    id = models.AutoField(primary_key=True, editable=False)
+    id = models.BigAutoField(primary_key=True)
     ror = models.CharField(max_length=255, null=True, blank=True)
     name = models.CharField(max_length=255, null=True, blank=True)
 
@@ -41,7 +41,7 @@ class Person(models.Model):
     """
     Represents Person table in the DB
     """
-    id = models.AutoField(primary_key=True, editable=False)
+    id = models.BigAutoField(primary_key=True)
     first_name = models.CharField(max_length=1000, null=True, blank=True)
     last_name = models.CharField(max_length=1000, null=True, blank=True)
     orcid = models.CharField(max_length=1000, null=True, blank=True)
@@ -61,7 +61,7 @@ class Grant(models.Model):
     """
     Represents Grant table in the DB
     """
-    id = models.AutoField(primary_key=True, editable=False)
+    id = models.BigAutoField(primary_key=True)
     award_id = models.CharField(max_length=255, blank=True, null=True)
     title = models.TextField(blank=True, null=True)
     funder = models.ForeignKey(Funder, on_delete=models.CASCADE, db_column='funder', null=True, blank=True)
@@ -89,7 +89,7 @@ class Publication(models.Model):
     """
     Represents Publication table in the DB
     """
-    id = models.AutoField(primary_key=True, editable=False)
+    id = models.BigAutoField(primary_key=True)
     doi = models.CharField(max_length=255, blank=True, null=True)
     title = models.TextField(null=True, blank=True)
     authors = models.ManyToManyField(Person, blank=True)
@@ -108,7 +108,7 @@ class Dataset(models.Model):
     """
     Represents Dataset table in the DB
     """
-    id = models.AutoField(primary_key=True, editable=False)
+    id = models.BigAutoField(primary_key=True)
     doi = models.CharField(max_length=255, blank=True, null=True)
     title = models.TextField(null=True, blank=True)
     download_path = models.CharField(max_length=255, blank=True, null=True)
@@ -126,7 +126,7 @@ class Asset(models.Model):
     """
     Represents Asset table in the DB
     """
-    id = models.AutoField(primary_key=True, editable=False)
+    id = models.BigAutoField(primary_key=True)
     doi = models.CharField(max_length=1000, blank=True, null=True)
     filename = models.CharField(max_length=1000, blank=True, null=True)
     download_path = models.CharField(max_length=1000, blank=True, null=True)

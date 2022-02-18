@@ -1,8 +1,7 @@
 from rest_framework import routers, permissions
 from .views import PersonViewSet, OrganizationViewSet, GrantViewSet, GrantRelationshipView, PublicationViewSet, PersonRelationshipView, DatasetViewSet, DatasetRelationshipView, AssetViewSet
 from django.urls import path, include, re_path
-from drf_yasg.views import get_schema_view
-from drf_yasg import openapi
+from rest_framework.schemas import get_schema_view
 from rest_framework.documentation import include_docs_urls
 from rest_framework.schemas import get_schema_view
 from apis.schemas import SchemaGenerator

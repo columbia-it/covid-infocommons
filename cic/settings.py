@@ -43,11 +43,13 @@ INSTALLED_APPS = [
     'django_mysql',
     'django_filters',
     # Third party apps
+    'oauth2_provider',
     'rest_framework',
     'rest_framework_json_api',
+    'corsheaders',
     # Local apps
-    'apis.apps.ApisConfig',
-    'pi_survey.apps.PiSurveyConfig'
+    'apis',
+    'pi_survey'
 ]
 
 MIDDLEWARE = [
@@ -58,6 +60,7 @@ MIDDLEWARE = [
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
+    'corsheaders.middleware.CorsMiddleware',
 ]
 
 ROOT_URLCONF = 'cic.urls'
@@ -168,8 +171,8 @@ REST_FRAMEWORK = {
         # without forms, as the forms can generate their own queries.
         # If performance testing, enable:
         # 'example.utils.BrowsableAPIRendererWithoutForms',
-        # Otherwise, to play around with the browseable API, enable:
-        'rest_framework_json_api.renderers.BrowsableAPIRenderer'
+        # Otherwise, to play around with the browseable API, enable custom one without forms to post:
+        'apis.browsable_api_renderer.BrowsableAPIRendererWithoutForms'
     ),
     'DEFAULT_METADATA_CLASS': 'rest_framework_json_api.metadata.JSONAPIMetadata',
     'DEFAULT_SCHEMA_CLASS': 'rest_framework_json_api.schemas.openapi.AutoSchema',
@@ -185,4 +188,29 @@ REST_FRAMEWORK = {
         'rest_framework_json_api.renderers.JSONRenderer',
     ),
     'TEST_REQUEST_DEFAULT_FORMAT': 'vnd.api+json'
+}
+
+CORS_ORIGIN_ALLOW_ALL = True
+
+OAUTH2_SERVER = os.getenv('OAUTH2_SERVER','https://oauth-test.cc.columbia.edu')
+
+AUTHENTICATION_BACKENDS = (
+    'django.contrib.auth.backends.ModelBackend',  # this is default
+    'oauth2_provider.backends.OAuth2Backend',
+
+)
+
+OAUTH2_PROVIDER = {
+    'RESOURCE_SERVER_INTROSPECTION_URL': None if OAUTH2_SERVER == 'self' else OAUTH2_SERVER + '/as/introspect.oauth2',
+    'RESOURCE_SERVER_INTROSPECTION_CREDENTIALS': (
+        os.getenv('RESOURCE_SERVER_ID'), os.getenv('RESOURCE_SERVER_SECRET')),
+    'SCOPES': {
+        'create': 'Create my resource(s)',
+        'update': 'Update my resource(s)',
+        'delete': 'Delete my resources(s)',
+        'introspection': 'Introspect token scope',
+    },
+    'PKCE_REQUIRED': True,
+    'OIDC_USERINFO_ENDPOINT': None if OAUTH2_SERVER == 'self' else OAUTH2_SERVER + '/idp/userinfo.openid',
+    'OAUTH2_VALIDATOR_CLASS': 'apis.oauth2_validator.CustomOAuth2Validator',
 }

@@ -1,8 +1,34 @@
+import imp
+import django
 from rest_framework_json_api.views import ModelViewSet, RelationshipView
 from .models import Person, Organization, Grant, Publication, Dataset, Asset
 from .serializers import PersonSerializer, OrganizationSerializer, \
     GrantSerializer, PublicationSerializer, DatasetSerializer, AssetSerializer
 from django.utils.decorators import method_decorator
+from oauth2_provider.contrib.rest_framework import OAuth2Authentication
+from rest_framework import permissions
+from oauth2_provider.contrib.rest_framework import TokenHasScope
+from rest_framework.permissions import IsAuthenticatedOrReadOnly
+from apis.oauth2_introspection import HasClaim
+import re
+from rest_framework.permissions import BasePermission
+
+
+class ColumbiaSubClaimPermission(HasClaim):
+    """
+    Use OIDC 'sub' claim to determine if the subject is from the Columbia University OIDC service.
+    Combine this with the preceding ColumbiaGroupClaimPermission.
+    """
+    claim = 'sub'
+    CU_CLAIM = re.compile('.+@columbia.edu$')  # sub ends in @columbia.edu
+    claims_map = {
+        'GET': CU_CLAIM,
+        'HEAD': CU_CLAIM,
+        'OPTIONS': CU_CLAIM,
+        'POST': CU_CLAIM,
+        'PATCH': CU_CLAIM,
+        'DELETE': CU_CLAIM,
+    }
 
 
 class OrganizationViewSet(ModelViewSet):
@@ -22,7 +48,8 @@ class OrganizationViewSet(ModelViewSet):
     __doc__ = Organization.__doc__
     queryset = Organization.objects.all()
     serializer_class = OrganizationSerializer
-
+    permission_classes = (ColumbiaSubClaimPermission,) # specify the permission class in your view
+    
 
 class AssetViewSet(ModelViewSet):
     """ View for Asset APIs
