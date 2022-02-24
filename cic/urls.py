@@ -18,7 +18,6 @@ from django.urls import path, include
 from django.conf import settings
 from django.conf.urls.static import static
 from cic.views import index
-from django_cas_ng import views as cas_views
 from django.contrib.auth.views import LoginView
 
 urlpatterns = [

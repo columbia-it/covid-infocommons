@@ -1,5 +1,3 @@
-import imp
-import django
 from rest_framework_json_api.views import ModelViewSet, RelationshipView
 from .models import Person, Organization, Grant, Publication, Dataset, Asset
 from .serializers import PersonSerializer, OrganizationSerializer, \
@@ -12,6 +10,7 @@ from rest_framework.permissions import IsAuthenticatedOrReadOnly
 from apis.oauth2_introspection import HasClaim
 import re
 from rest_framework.permissions import BasePermission
+from rest_framework.schemas.openapi import AutoSchema
 
 
 class ColumbiaSubClaimPermission(HasClaim):
@@ -50,6 +49,9 @@ class OrganizationViewSet(ModelViewSet):
     serializer_class = OrganizationSerializer
     permission_classes = (ColumbiaSubClaimPermission,) # specify the permission class in your view
     
+    schema = AutoSchema(
+        tags=['organizations'],
+    )
 
 class AssetViewSet(ModelViewSet):
     """ View for Asset APIs
@@ -68,6 +70,10 @@ class AssetViewSet(ModelViewSet):
     __doc__ = Asset.__doc__
     queryset = Asset.objects.all()
     serializer_class = AssetSerializer
+
+    schema = AutoSchema(
+        tags=['assets'],
+    )
 
 
 class PersonViewSet(ModelViewSet):
@@ -88,6 +94,10 @@ class PersonViewSet(ModelViewSet):
     queryset = Person.objects.all()
     serializer_class = PersonSerializer
 
+    schema = AutoSchema(
+        tags=['people'],
+    )
+
 
 class PersonRelationshipView(RelationshipView):
     """
@@ -95,6 +105,10 @@ class PersonRelationshipView(RelationshipView):
     """
     queryset = Person.objects
     self_link_view_name = 'person-relationships'
+
+    schema = AutoSchema(
+        tags=['people'],
+    )
 
 
 class GrantViewSet(ModelViewSet):
@@ -115,6 +129,10 @@ class GrantViewSet(ModelViewSet):
     queryset = Grant.objects.all()
     serializer_class = GrantSerializer
 
+    schema = AutoSchema(
+        tags=['grants'],
+    )
+
 
 class GrantRelationshipView(RelationshipView):
     """
@@ -123,6 +141,9 @@ class GrantRelationshipView(RelationshipView):
     queryset = Grant.objects
     self_link_view_name = 'grant-relationships'
 
+    schema = AutoSchema(
+        tags=['grants'],
+    )
 
 class PublicationViewSet(ModelViewSet):
     """ View for Publication APIs
@@ -142,6 +163,10 @@ class PublicationViewSet(ModelViewSet):
     queryset = Publication.objects.all()
     serializer_class = PublicationSerializer
 
+    schema = AutoSchema(
+        tags=['publications'],
+    )
+
 
 class PublicationRelationshipView(RelationshipView):
     """
@@ -149,6 +174,10 @@ class PublicationRelationshipView(RelationshipView):
     """
     queryset = Publication.objects
     self_link_view_name = 'publication-relationships'
+
+    schema = AutoSchema(
+        tags=['publications'],
+    )
 
 
 class DatasetViewSet(ModelViewSet):
@@ -169,6 +198,10 @@ class DatasetViewSet(ModelViewSet):
     queryset = Dataset.objects.all()
     serializer_class = DatasetSerializer
 
+    schema = AutoSchema(
+        tags=['datasets'],
+    )
+
 
 class DatasetRelationshipView(RelationshipView):
     """
@@ -176,3 +209,7 @@ class DatasetRelationshipView(RelationshipView):
     """
     queryset = Dataset.objects
     self_link_view_name = 'dataset-relationships'
+
+    schema = AutoSchema(
+        tags=['datasets'],
+    )
