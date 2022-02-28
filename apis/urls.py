@@ -1,5 +1,5 @@
 from rest_framework import routers, permissions
-from .views import PersonViewSet, OrganizationViewSet, GrantViewSet, GrantRelationshipView, PublicationViewSet, PersonRelationshipView, DatasetViewSet, DatasetRelationshipView, AssetViewSet
+from .views import PersonViewSet, OrganizationViewSet, GrantViewSet, GrantRelationshipView, PublicationViewSet, PersonRelationshipView, DatasetViewSet, DatasetRelationshipView, AssetViewSet, AssetRelationshipView
 from django.urls import path, include, re_path
 from rest_framework.schemas import get_schema_view
 from rest_framework.documentation import include_docs_urls
@@ -53,4 +53,11 @@ urlpatterns = [
     path('datasets/<pk>/<related_field>',
         DatasetViewSet.as_view({'get': 'retrieve_related'}),
         name='dataset-related'),
+    # asset relationships:
+    path('assets/<pk>/relationships/<related_field>',
+        AssetRelationshipView.as_view(),
+        name='asset-relationships'),
+    path('assets/<pk>/<related_field>',
+        AssetViewSet.as_view({'get': 'retrieve_related'}),
+        name='asset-related'),
 ]

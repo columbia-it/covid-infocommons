@@ -48,6 +48,7 @@ class Person(models.Model):
     emails = models.TextField(null=True, blank=True)
     private_emails = models.CharField(max_length=1000, null=True, blank=True)
     keywords = ListCharField(base_field=models.CharField(max_length=1000, null=True, blank=True), max_length=100, null=True, blank=True)
+
     affiliations = models.ManyToManyField(Organization, blank=True)
 
     def __str__(self):
@@ -100,6 +101,9 @@ class Publication(models.Model):
     publication_date = models.DateField(null=True, blank=True)
     publication_type = models.CharField(max_length=255, blank=True, null=True)
 
+    def __str__(self):
+        return self.title
+
     class Meta:
         db_table = 'publication'
 
@@ -117,6 +121,9 @@ class Dataset(models.Model):
     grants = models.ManyToManyField(Grant, blank=True)
     publications = models.ManyToManyField(Publication, blank=True)
     mime_type = models.CharField(max_length=255, blank=True, null=True)
+
+    def __str__(self):
+        return self.title
 
     class Meta:
         db_table = 'dataset'
@@ -139,6 +146,9 @@ class Asset(models.Model):
     keywords = ListCharField(base_field=models.CharField(max_length=1000, null=True, blank=True), max_length=100, null=True, blank=True)
     mime_type = models.CharField(max_length=1000, blank=True, null=True)
     checksum = models.CharField(max_length=1000, blank=True, null=True)
+
+    def __str__(self):
+        return str(self.id)
 
     class Meta:
         db_table = 'asset'

@@ -76,6 +76,18 @@ class AssetViewSet(ModelViewSet):
     )
 
 
+class AssetRelationshipView(RelationshipView):
+    """
+    View for asset.relationships
+    """
+    queryset = Asset.objects
+    self_link_view_name = 'asset-relationships'
+
+    schema = AutoSchema(
+        tags=['assets'],
+    )
+
+
 class PersonViewSet(ModelViewSet):
     """ View for Person APIs
     retrieve:
@@ -144,6 +156,7 @@ class GrantRelationshipView(RelationshipView):
     schema = AutoSchema(
         tags=['grants'],
     )
+
 
 class PublicationViewSet(ModelViewSet):
     """ View for Publication APIs

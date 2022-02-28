@@ -20,6 +20,63 @@ class FunderSerializer(HyperlinkedModelSerializer):
 
 class AssetSerializer(HyperlinkedModelSerializer):
     """Serializer for Asset model"""
+    keywords = serializers.ListField(child=serializers.CharField())
+
+    author = ResourceRelatedField(
+        model=Person,
+        many=False,
+        read_only=False,
+        allow_null=True,
+        required=False,
+        queryset=Person.objects.all(),
+        self_link_view_name='asset-relationships',
+        related_link_view_name='asset-related',
+    )
+
+    grant = ResourceRelatedField(
+        model=Grant,
+        many=False,
+        read_only=False,
+        allow_null=True,
+        required=False,
+        queryset=Grant.objects.all(),
+        self_link_view_name='asset-relationships',
+        related_link_view_name='asset-related',
+    )
+
+    publication = ResourceRelatedField(
+        model=Publication,
+        many=False,
+        read_only=False,
+        allow_null=True,
+        required=False,
+        queryset=Publication.objects.all(),
+        self_link_view_name='asset-relationships',
+        related_link_view_name='asset-related',
+    )
+
+    dataset = ResourceRelatedField(
+        model=Dataset,
+        many=False,
+        read_only=False,
+        allow_null=True,
+        required=False,
+        queryset=Dataset.objects.all(),
+        self_link_view_name='asset-relationships',
+        related_link_view_name='asset-related',
+    )
+
+    organization = ResourceRelatedField(
+        model=Organization,
+        many=False,
+        read_only=False,
+        allow_null=True,
+        required=False,
+        queryset=Organization.objects.all(),
+        self_link_view_name='asset-relationships',
+        related_link_view_name='asset-related',
+    )
+
     class Meta:
         model = Asset
         fields = '__all__'
@@ -27,6 +84,7 @@ class AssetSerializer(HyperlinkedModelSerializer):
 
 class PersonSerializer(HyperlinkedModelSerializer):
     """Serializer for Person model"""
+    keywords = serializers.ListField(child=serializers.CharField())
 
     def get_emails(self, obj):
         return ""
@@ -38,7 +96,7 @@ class PersonSerializer(HyperlinkedModelSerializer):
 
     affiliations = ResourceRelatedField(
         model=Organization,
-        many=True,
+        many=True,  
         allow_null=True,
         required=False,
         queryset=Organization.objects.all(),
@@ -87,6 +145,17 @@ class GrantSerializer(HyperlinkedModelSerializer):
         related_link_view_name='grant-related',
     )
 
+    funder = ResourceRelatedField(
+        model=Funder,
+        many=False,
+        read_only=False,
+        allow_null=True,
+        required=False,
+        queryset=Funder.objects.all(),
+        self_link_view_name='grant-relationships',
+        related_link_view_name='grant-related',
+    )
+
     awardee_organization = ResourceRelatedField(
         model=Organization,
         many=False,
@@ -112,7 +181,8 @@ class GrantSerializer(HyperlinkedModelSerializer):
     
 class PublicationSerializer(HyperlinkedModelSerializer):
     """Serializer for Publication model"""
-        
+    keywords = serializers.ListField(child=serializers.CharField())
+    
     authors = ResourceRelatedField(
         model=Person,
         many=True,
