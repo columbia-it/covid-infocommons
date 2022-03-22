@@ -35,3 +35,6 @@ coverage.xml
 .vscode/
 .history/
 cice-dev-*.json
+
+# node modules
+frontend/node_modules/
