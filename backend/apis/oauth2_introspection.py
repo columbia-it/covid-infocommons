@@ -11,6 +11,7 @@ from django.contrib.auth.models import User
 AccessToken = get_access_token_model()
 SAFE_METHODS = ('GET', 'HEAD', 'OPTIONS')
 
+
 class HasClaim(BasePermission, OAuthLibMixin):
 
     claim = None
@@ -115,3 +116,19 @@ class HasClaim(BasePermission, OAuthLibMixin):
                     return False
             else:
                 return False
+
+class ColumbiaSubClaimPermission(HasClaim):
+    """
+    Use OIDC 'sub' claim to determine if the subject is from the Columbia University OIDC service.
+    Combine this with the preceding ColumbiaGroupClaimPermission.
+    """
+    claim = 'sub'
+    CU_CLAIM = re.compile('.+@columbia.edu$')  # sub ends in @columbia.edu
+    claims_map = {
+        'GET': CU_CLAIM,
+        'HEAD': CU_CLAIM,
+        'OPTIONS': CU_CLAIM,
+        'POST': CU_CLAIM,
+        'PATCH': CU_CLAIM,
+        'DELETE': CU_CLAIM,
+    }

@@ -13,23 +13,6 @@ from rest_framework.permissions import BasePermission
 from rest_framework.schemas.openapi import AutoSchema
 
 
-class ColumbiaSubClaimPermission(HasClaim):
-    """
-    Use OIDC 'sub' claim to determine if the subject is from the Columbia University OIDC service.
-    Combine this with the preceding ColumbiaGroupClaimPermission.
-    """
-    claim = 'sub'
-    CU_CLAIM = re.compile('.+@columbia.edu$')  # sub ends in @columbia.edu
-    claims_map = {
-        'GET': CU_CLAIM,
-        'HEAD': CU_CLAIM,
-        'OPTIONS': CU_CLAIM,
-        'POST': CU_CLAIM,
-        'PATCH': CU_CLAIM,
-        'DELETE': CU_CLAIM,
-    }
-
-
 class OrganizationViewSet(ModelViewSet):
     """ View for Organization APIs
     retrieve:
@@ -47,7 +30,6 @@ class OrganizationViewSet(ModelViewSet):
     __doc__ = Organization.__doc__
     queryset = Organization.objects.all()
     serializer_class = OrganizationSerializer
-    permission_classes = (ColumbiaSubClaimPermission,) # specify the permission class in your view
     
     schema = AutoSchema(
         tags=['organizations'],

@@ -199,7 +199,10 @@ REST_FRAMEWORK = {
     'TEST_REQUEST_RENDERER_CLASSES': (
         'rest_framework_json_api.renderers.JSONRenderer',
     ),
-    'TEST_REQUEST_DEFAULT_FORMAT': 'vnd.api+json'
+    'TEST_REQUEST_DEFAULT_FORMAT': 'vnd.api+json',
+    'DEFAULT_PERMISSION_CLASSES': [
+        'apis.oauth2_introspection.ColumbiaSubClaimPermission',
+    ]
 }
 
 CORS_ALLOW_ALL_ORIGINS = True
@@ -211,7 +214,6 @@ OAUTH2_SERVER = os.getenv('OAUTH2_SERVER','https://oauth-test.cc.columbia.edu')
 AUTHENTICATION_BACKENDS = (
     'django.contrib.auth.backends.ModelBackend',  # this is default
     'oauth2_provider.backends.OAuth2Backend',
-
 )
 
 OAUTH2_PROVIDER = {
