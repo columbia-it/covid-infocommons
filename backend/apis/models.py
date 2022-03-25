@@ -23,7 +23,6 @@ class Organization(models.Model):
         ordering = ['id']
 
 
-
 class Funder(models.Model):
     """
     Represents Funder table in the DB
@@ -150,7 +149,7 @@ class Asset(models.Model):
     publication = models.ForeignKey(Publication, on_delete=models.CASCADE, null=True, blank=True)
     dataset = models.ForeignKey(Dataset, on_delete=models.CASCADE, null=True, blank=True)
     organization = models.ForeignKey(Organization, on_delete=models.CASCADE, null=True, blank=True)
-    keywords = ListCharField(base_field=models.CharField(max_length=1000, null=True, blank=True), max_length=100, null=True, blank=True)
+    keywords = ListCharField(base_field=models.CharField(max_length=255, null=True, blank=True), max_length=100, null=True, blank=True)
     mime_type = models.CharField(max_length=1000, blank=True, null=True)
     checksum = models.CharField(max_length=1000, blank=True, null=True)
 

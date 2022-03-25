@@ -1,15 +1,10 @@
 from rest_framework_json_api.views import ModelViewSet, RelationshipView
 from .models import Person, Organization, Grant, Publication, Dataset, Asset
 from .serializers import PersonSerializer, OrganizationSerializer, \
-    GrantSerializer, PublicationSerializer, DatasetSerializer, AssetSerializer
+    GrantSerializer, PublicationSerializer, DatasetSerializer, AssetSerializer, CreatePersonSerializer, CreateGrantSerializer, CreatePublicationSerializer, CreateDatasetSerializer, CreateAssetSerializer
 from django.utils.decorators import method_decorator
-from oauth2_provider.contrib.rest_framework import OAuth2Authentication
-from rest_framework import permissions
-from oauth2_provider.contrib.rest_framework import TokenHasScope
-from rest_framework.permissions import IsAuthenticatedOrReadOnly
 from apis.oauth2_introspection import HasClaim
 import re
-from rest_framework.permissions import BasePermission
 from rest_framework.schemas.openapi import AutoSchema
 
 
@@ -35,6 +30,7 @@ class OrganizationViewSet(ModelViewSet):
         tags=['organizations'],
     )
 
+
 class AssetViewSet(ModelViewSet):
     """ View for Asset APIs
     retrieve:
@@ -51,19 +47,11 @@ class AssetViewSet(ModelViewSet):
     """
     __doc__ = Asset.__doc__
     queryset = Asset.objects.all()
-    serializer_class = AssetSerializer
-
-    schema = AutoSchema(
-        tags=['assets'],
-    )
-
-
-class AssetRelationshipView(RelationshipView):
-    """
-    View for asset.relationships
-    """
-    queryset = Asset.objects
-    self_link_view_name = 'asset-relationships'
+    
+    def get_serializer_class(self):
+        if self.action == 'create':
+            return CreateAssetSerializer
+        return AssetSerializer
 
     schema = AutoSchema(
         tags=['assets'],
@@ -86,20 +74,12 @@ class PersonViewSet(ModelViewSet):
     """
     __doc__ = Person.__doc__
     queryset = Person.objects.all()
-    serializer_class = PersonSerializer
 
-    schema = AutoSchema(
-        tags=['people'],
-    )
-
-
-class PersonRelationshipView(RelationshipView):
-    """
-    View for person.relationships
-    """
-    queryset = Person.objects
-    self_link_view_name = 'person-relationships'
-
+    def get_serializer_class(self):
+        if self.action == 'create':
+            return CreatePersonSerializer
+        return PersonSerializer
+    
     schema = AutoSchema(
         tags=['people'],
     )
@@ -121,7 +101,11 @@ class GrantViewSet(ModelViewSet):
     """
     __doc__ = Grant.__doc__
     queryset = Grant.objects.all()
-    serializer_class = GrantSerializer
+    
+    def get_serializer_class(self):
+        if self.action == 'create':
+            return CreateGrantSerializer
+        return GrantSerializer
 
     schema = AutoSchema(
         tags=['grants'],
@@ -144,7 +128,11 @@ class PublicationViewSet(ModelViewSet):
     """
     __doc__ = Publication.__doc__
     queryset = Publication.objects.all()
-    serializer_class = PublicationSerializer
+    
+    def get_serializer_class(self):
+        if self.action == 'create':
+            return CreatePublicationSerializer
+        return PublicationSerializer
 
     schema = AutoSchema(
         tags=['publications'],
@@ -167,7 +155,11 @@ class DatasetViewSet(ModelViewSet):
     """
     __doc__ = Dataset.__doc__
     queryset = Dataset.objects.all()
-    serializer_class = DatasetSerializer
+    
+    def get_serializer_class(self):
+        if self.action == 'create':
+            return CreateDatasetSerializer
+        return DatasetSerializer
 
     schema = AutoSchema(
         tags=['datasets'],

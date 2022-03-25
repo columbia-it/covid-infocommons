@@ -1,4 +1,4 @@
-from rest_framework import routers, permissions
+from rest_framework import routers
 from .views import PersonViewSet, OrganizationViewSet, GrantViewSet, PublicationViewSet, DatasetViewSet, AssetViewSet
 from django.urls import path, include, re_path
 from rest_framework.schemas import get_schema_view
@@ -25,39 +25,4 @@ urlpatterns = [
     path('swagger-ui/', TemplateView.as_view(
         template_name='swagger-ui.html',
         extra_context={'schema_url': 'openapi-schema', 'title': __title__}), name='swagger-ui'),
-    # person relationships:
-    # path('people/<pk>/relationships/<related_field>',
-    #     PersonRelationshipView.as_view(),
-    #     name='person-relationships'),
-    # path('people/<pk>/<related_field>',
-    #     PersonViewSet.as_view({'get': 'retrieve_related'}),
-    #     name='person-related'),
-    # # publication relationships:
-    # path('publications/<pk>/relationships/<related_field>',
-    #     PersonRelationshipView.as_view(),
-    #     name='publication-relationships'),
-    # path('publications/<pk>/<related_field>',
-    #     PublicationViewSet.as_view({'get': 'retrieve_related'}),
-    #     name='publication-related'),
-    # grant relationships:
-    # path('grants/<pk>/relationships/<related_field>',
-    #     GrantRelationshipView.as_view(),
-    #     name='grant-relationships'),
-    # path('grants/<pk>/<related_field>',
-    #     GrantViewSet.as_view({'get': 'retrieve_related'}),
-    #     name='grant-related'),
-    # dataset relationships:
-    # path('datasets/<pk>/relationships/<related_field>',
-    #     DatasetRelationshipView.as_view(),
-    #     name='dataset-relationships'),
-    # path('datasets/<pk>/<related_field>',
-    #     DatasetViewSet.as_view({'get': 'retrieve_related'}),
-    #     name='dataset-related'),
-    # # asset relationships:
-    # path('assets/<pk>/relationships/<related_field>',
-    #     AssetRelationshipView.as_view(),
-    #     name='asset-relationships'),
-    # path('assets/<pk>/<related_field>',
-    #     AssetViewSet.as_view({'get': 'retrieve_related'}),
-    #     name='asset-related'),
 ]
