@@ -35,12 +35,9 @@ class HasClaim(BasePermission, OAuthLibMixin):
  
     def _get_claims_from_authentication_server(self, request):
         user_info = {}
-        print('*** 3 ***')
         bearer_token = request.headers.get('Authorization').split(' ')[1]
-        print('*** 4 ***')
         try:
             response = requests.get(self.userinfo_url, headers={'Authorization': 'Bearer {}'.format(bearer_token)})
-            print('***  ***')
         except requests.exceptions.RequestException:
             return None
         
@@ -57,7 +54,6 @@ class HasClaim(BasePermission, OAuthLibMixin):
         If the mapping is None then return False.
         If the mapping is the empty string then return True.
         """
-        print('*** oauth2_introspection.has_permission() ***')
         if request.method in SAFE_METHODS:
             return True
 
