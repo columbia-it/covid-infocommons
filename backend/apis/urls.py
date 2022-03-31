@@ -19,7 +19,6 @@ router.register(r'assets', AssetViewSet)
 
 urlpatterns = [
     path('', include(router.urls)),
-    # path('organizations/<pk>', OrganizationViewSet.as_view({'put':'update'}), name='organization-detail'),
     path('openapi', get_schema_view(generator_class=SchemaGenerator, public=True),
          name='openapi-schema'),
     path('swagger-ui/', TemplateView.as_view(

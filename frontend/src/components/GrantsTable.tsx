@@ -49,26 +49,26 @@ export default class GrantsTable extends React.Component<any, {grantsArray: [], 
     }
 
     componentDidMount() {
-        const url = "https://cice-dev.paas.cc.columbia.edu/v1/grants"
-        //const url = "http://127.0.0.1:8000/v1/grants"
+        const url = "https://cice-dev.paas.cc.columbia.edu/search/grants"
 
-        console.log('*******')
-        console.log(url)
         axios.get(url).then(results => {
+            //console.log(results.data.hits.hits)
             this.setState(
-                { data: results.data}
-            )
-
-            var newArray = results.data.data.map(function(val:any) {
+                { data: results.data.hits.hits}
+            )     
+            var newArray = results.data.hits.hits.map(function(val:any) {
+                var pi_name = ''
+                if (val['_source']['principal_investigator'] != null) {
+                    pi_name = val['_source']['principal_investigator']['first_name'] + ' ' + val['_source']['principal_investigator']['last_name']
+                }
                 return {
-                    id: val.id,
-                    title: val.attributes.title,
-                    award_id: val.attributes.award_id,
-                    pi: val.attributes.principal_investigator.first_name + ' ' + val.attributes.principal_investigator.last_name,
-                    abstract: val.attributes.abstract
+                    id: val['_source']['id'],
+                    title: val['_source']['title'],
+                    award_id: val['_source']['award_id'],
+                    pi: pi_name,
+                    abstract: val['_source']['abstract']
                 }
             })
-            console.log(newArray)
             this.setState({
                 grantsArray: newArray
             })    
@@ -91,7 +91,7 @@ export default class GrantsTable extends React.Component<any, {grantsArray: [], 
                     title: "Abstract", field: "abstract"
                 }
             ]}
-            options={{ search: true, paging: false, filtering: true, exportButton: true }}
+            options={{ paging: false }}
         />
       );
     }

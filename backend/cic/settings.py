@@ -13,8 +13,8 @@ https://docs.djangoproject.com/en/3.2/ref/settings/
 from pathlib import Path
 import os
 import sys
-from elasticsearch.connection import RequestsHttpConnection
-
+from opensearchpy.connection import RequestsHttpConnection
+from opensearchpy import OpenSearch
 import mimetypes
 
 mimetypes.add_type("text/css", ".css", True)
@@ -50,6 +50,8 @@ INSTALLED_APPS = [
     'django.contrib.staticfiles',
     'django_mysql',
     'django_filters',
+    # ES
+    'django_opensearch_dsl',
     # Third party apps
     'oauth2_provider',
     'rest_framework',
@@ -231,17 +233,20 @@ OAUTH2_PROVIDER = {
     'OAUTH2_VALIDATOR_CLASS': 'apis.oauth2_validator.CustomOAuth2Validator',
 }
 
-ELASTICSEARCH_URL = 'vpc-cicecluster-hk6ksspjhvgpkedai3sp5m6a2a.us-east-1.es.amazonaws.com'
-ELASTICSEARCH_DSL = {
+OPENSEARCH_URL = 'vpc-cicecluster-hk6ksspjhvgpkedai3sp5m6a2a.us-east-1.es.amazonaws.com'
+OPENSEARCH = OpenSearch([OPENSEARCH_URL])
+
+OPENSEARCH_DSL = {
     'default': {
-        'hosts': ELASTICSEARCH_URL,
+        'hosts': OPENSEARCH_URL,
         'port': 443,
         'use_ssl': True,
         'verify_certs': True,
         'connection_class': RequestsHttpConnection,
+        'headers': {'Content-Type': 'application/json'}
     },
 }
 
-ELASTICSEARCH_INDEX_NAMES = {
+OPENSEARCH_INDEX_NAMES = {
     'apis.documents.grant': 'grant_index',
 }

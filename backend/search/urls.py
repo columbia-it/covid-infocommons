@@ -2,4 +2,4 @@ from django.urls import path, include
 from . import views
 
 urlpatterns = [
-    path('', views.search_grants, name='search_grants')]
+    path('grants', views.GrantSearch.as_view(), name='search_grants')]

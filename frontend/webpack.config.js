@@ -1,7 +1,7 @@
 const path = require("path");
 const HtmlWebpackPlugin = require("html-webpack-plugin");
 console.log(__dirname)
-const static_dir = '/Users/sg3847/PycharmProjects/covid-infocommons/backend/static/'
+const static_dir = '/Users/sg3847/PycharmProjects/covid-infocommons/backend/search/static/search'
 const MiniCssExtractPlugin = require("mini-css-extract-plugin");
 
 module.exports = {

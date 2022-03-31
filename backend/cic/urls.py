@@ -26,5 +26,5 @@ urlpatterns = [
     path('v1/', include('apis.urls')),
     path('survey/', include('pi_survey.urls')),
     path('o/', include('oauth2_provider.urls', namespace='oauth2_provider')),
-    path('search', include('search.urls'))
+    path('search/', include('search.urls'))
 ]+ static(settings.STATIC_URL, document_root=settings.STATIC_ROOT)

@@ -1,9 +1,6 @@
 import React from 'react';
 import ReactDOM from 'react-dom';
-import DataTable from "react-data-table-component";
 import Card from "@material-ui/core/Card";
-import SortIcon from "@material-ui/icons/ArrowDownward";
-import grants from "./grants";
 import "./main.css"
 import GrantsTable from './components/GrantsTable';
 
