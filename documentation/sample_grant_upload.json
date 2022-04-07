@@ -1,0 +1,36 @@
+{
+    "data": {
+        "type": "Grant", 
+        "attributes": {
+            "funder_divisions": ["research", "department"],
+            "program_reference_codes": ["CK090", "RND123"],
+            "keywords": ["covid", "research"],
+            "program_officials": [
+                {
+                    "type": "Person",
+                    "id": "1"
+                }
+                ],
+            "other_investigators": [
+                ],
+            "principal_investigator": {
+                    "type": "Person",
+                    "id": "1"
+                },
+            "funder": {
+                "type": "Funder",
+                "id": 1
+            },
+            "awardee_organization": {
+                "type": "Organization",
+                "id": 2
+            },
+            "award_id": "2030139",
+            "title": "Compounding Crises: Facing Hurricane Season in the Era of COVID-19",
+            "start_date": "2020-05-15",
+            "end_date": "2022-04-30",
+            "award_amount": 199890.00,
+            "abstract": "This Rapid Response Research (RAPID) grant provides funding to assess participants’ crisis exposure, their threat perceptions, their self- and response-efficacy, their emotional responses and their engagement in health protective behaviors as relevant to COVID-19 and to hurricanes. As the 2020 hurricane season commences, millions of Americans residing in the Atlantic and Gulf of Mexico coasts will face the likely possibility of dual crises – COVID-19 and hurricane exposure – with competing mitigation strategies. Experts project that there will be four hurricanes that will develop into major hurricanes (Categories 3, 4, or 5) in the Atlantic during the 2020 hurricane season (June 1st – November 30th). Concurrently, many in the Atlantic and Gulf Coast states are seeing alarming increases in confirmed case of COVID-19. The confluence of crises in communities at risk for hurricane exposure may create an untenable and tragic situation where millions of people may be suddenly asked to flee from an approaching major hurricane to shelters, potentially imperiling themselves and others to COVID-19. Hurricane-force winds further compound the risk given the high potential for Coronavirus to spread via respiratory droplets, potentially creating super-spreading environments and fueling fears about going to shelters. Repeated exposure to such crises can tax individuals’ emotional states, leading to difficulties in functioning and decision making over time. The important theoretical and practical question is: “How do people make proactive decisions regarding the threat of a hurricane in the time of the COVID-19 pandemic?”"
+        }
+    }
+}
