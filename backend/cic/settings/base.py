@@ -1,3 +1,11 @@
+import os
+import sys
+from pathlib import Path
+import mimetypes
+
+from opensearchpy.connection import RequestsHttpConnection
+from opensearchpy import OpenSearch
+
 """
 Django settings for cic project.
 
@@ -10,35 +18,17 @@ For the full list of settings and their values, see
 https://docs.djangoproject.com/en/3.2/ref/settings/
 """
 
-from pathlib import Path
-import os
-import sys
-from opensearchpy.connection import RequestsHttpConnection
-from opensearchpy import OpenSearch
-import mimetypes
+# Build paths inside the project like this: BASE_DIR / 'subdir'.
+BASE_DIR = Path(__file__).resolve().parent.parent
 
 mimetypes.add_type("text/css", ".css", True)
 
-# Build paths inside the project like this: BASE_DIR / 'subdir'.
-BASE_DIR = Path(__file__).resolve().parent.parent
-# Quick-start development settings - unsuitable for production
-# See https://docs.djangoproject.com/en/3.2/howto/deployment/checklist/
-
-# SECURITY WARNING: keep the secret key used in production secret!
 SECRET_KEY = 'django-insecure-q%r*j=lz*tpk1!$vhtc*hg5)q_33r65=p7zg2(6ht-ac@h4k3^'
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = True
+DEBUG = False
 
-ALLOWED_HOSTS = [
-    '127.0.0.1', 
-    'cice-dev.paas.cc.columbia.edu', 
-    'cice-prod.paas.cc.columbia.edu',
-    'cic-apps.datascience.columbia.edu'
-]
-
-
-# Application definition
+ALLOWED_HOSTS = ['*']
 
 INSTALLED_APPS = [
     # Django apps
@@ -50,6 +40,7 @@ INSTALLED_APPS = [
     'django.contrib.staticfiles',
     'django_mysql',
     'django_filters',
+    'django_s3_storage',
     # ES
     'django_opensearch_dsl',
     # Third party apps
@@ -79,7 +70,7 @@ ROOT_URLCONF = 'cic.urls'
 TEMPLATES = [
     {
         'BACKEND': 'django.template.backends.django.DjangoTemplates',
-        'DIRS': [os.path.join(BASE_DIR, 'templates')],
+        'DIRS': [os.path.join(os.path.dirname(BASE_DIR), 'templates')],
         'APP_DIRS': True,
         'OPTIONS': {
             'context_processors': [
@@ -94,33 +85,21 @@ TEMPLATES = [
 
 WSGI_APPLICATION = 'cic.wsgi.application'
 
-# Database
-# https://docs.djangoproject.com/en/3.2/ref/settings/#databases
-
-if 'test' in sys.argv or 'test_coverage' in sys.argv:
-    DATABASES = {
-        'default': {
-            'ENGINE': 'django.db.backends.sqlite3',
-            'NAME': os.path.join(os.path.dirname(__file__), 'test.db'),
+DATABASES = {
+    'default': {
+        'ENGINE': os.getenv('DB_ENGINE'),
+        'NAME': os.getenv('DB_NAME'),
+        'USER': os.getenv('DB_USER'),
+        'PASSWORD': os.getenv('DB_PASSWORD'),
+        'HOST': os.getenv('DB_HOST'),
+        'PORT': os.getenv('DB_PORT'),
+        'OPTIONS': {
+            # Tell MySQLdb to connect with 'utf8mb4' character set
+            'charset': 'utf8mb4',
+            'sql_mode': 'STRICT_TRANS_TABLES'
         }
     }
-else:
-    DATABASES = {
-        'default': {
-            'ENGINE': os.getenv('DB_ENGINE'),
-            'NAME': os.getenv('DB_NAME'),
-            'USER': os.getenv('DB_USER'),
-            'PASSWORD': os.getenv('DB_PASSWORD'),
-            'HOST': os.getenv('DB_HOST'),
-            'PORT': os.getenv('DB_PORT'),
-            'OPTIONS': {
-                # Tell MySQLdb to connect with 'utf8mb4' character set
-                'charset': 'utf8mb4',
-                'sql_mode': 'STRICT_TRANS_TABLES'
-            }
-        }
-    }
-
+}
 
 # Password validation
 # https://docs.djangoproject.com/en/3.2/ref/settings/#auth-password-validators
@@ -140,7 +119,6 @@ AUTH_PASSWORD_VALIDATORS = [
     },
 ]
 
-
 # Internationalization
 # https://docs.djangoproject.com/en/3.2/topics/i18n/
 
@@ -154,15 +132,12 @@ USE_L10N = True
 
 USE_TZ = True
 
+AUTHENTICATION_BACKENDS = (
+    'django.contrib.auth.backends.ModelBackend',  # this is default
+    'oauth2_provider.backends.OAuth2Backend',
+)
 
-# Static files (CSS, JavaScript, Images)
-# https://docs.djangoproject.com/en/3.2/howto/static-files/
-
-STATIC_URL = '/static/'
-STATIC_ROOT = BASE_DIR / "static"
-# STATICFILES_DIRS = (
-#      os.path.join(BASE_DIR, "static"),
-# )
+CORS_ALLOW_ALL_ORIGINS = True
 
 # Default primary key field type
 # https://docs.djangoproject.com/en/3.2/ref/settings/#default-auto-field
@@ -202,21 +177,12 @@ REST_FRAMEWORK = {
         'rest_framework_json_api.renderers.JSONRenderer',
     ),
     'TEST_REQUEST_DEFAULT_FORMAT': 'vnd.api+json',
-    'DEFAULT_PERMISSION_CLASSES': [
-        'apis.oauth2_introspection.ColumbiaSubClaimPermission',
-    ]
+    # 'DEFAULT_PERMISSION_CLASSES': [
+    #     'apis.oauth2_introspection.ColumbiaSubClaimPermission',
+    # ]
 }
 
-CORS_ALLOW_ALL_ORIGINS = True
-
-CORS_ORIGIN_ALLOW_ALL = True   
-
 OAUTH2_SERVER = os.getenv('OAUTH2_SERVER','https://oauth-test.cc.columbia.edu')
-
-AUTHENTICATION_BACKENDS = (
-    'django.contrib.auth.backends.ModelBackend',  # this is default
-    'oauth2_provider.backends.OAuth2Backend',
-)
 
 OAUTH2_PROVIDER = {
     'RESOURCE_SERVER_INTROSPECTION_URL': None if OAUTH2_SERVER == 'self' else OAUTH2_SERVER + '/as/introspect.oauth2',
@@ -230,23 +196,6 @@ OAUTH2_PROVIDER = {
     },
     'PKCE_REQUIRED': True,
     'OIDC_USERINFO_ENDPOINT': None if OAUTH2_SERVER == 'self' else OAUTH2_SERVER + '/idp/userinfo.openid',
-    'OAUTH2_VALIDATOR_CLASS': 'apis.oauth2_validator.CustomOAuth2Validator',
+    #'OAUTH2_VALIDATOR_CLASS': 'apis.oauth2_validator.CustomOAuth2Validator',
 }
 
-OPENSEARCH_URL = 'vpc-cicecluster-hk6ksspjhvgpkedai3sp5m6a2a.us-east-1.es.amazonaws.com'
-OPENSEARCH = OpenSearch([OPENSEARCH_URL])
-
-OPENSEARCH_DSL = {
-    'default': {
-        'hosts': OPENSEARCH_URL,
-        'port': 443,
-        'use_ssl': True,
-        'verify_certs': True,
-        'connection_class': RequestsHttpConnection,
-        'headers': {'Content-Type': 'application/json'}
-    },
-}
-
-OPENSEARCH_INDEX_NAMES = {
-    'apis.documents.grant': 'grant_index',
-}

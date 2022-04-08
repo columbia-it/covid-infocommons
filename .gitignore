@@ -38,3 +38,6 @@ cice-dev-*.json
 
 # node modules
 frontend/node_modules/
+
+#static assets
+static/
