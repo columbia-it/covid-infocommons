@@ -1,7 +1,7 @@
 {
     "dev": {
         "aws_region": "us-east-1",
-        "django_settings": "cic.settings",
+        "django_settings": "cic.settings.settings",
         "profile_name": "cuit-infra-cice-dev",
         "project_name": "cice",
         "runtime": "python3.9",

@@ -5,8 +5,11 @@ import sys
 
 
 def main():
-    """Run administrative tasks."""
-    os.environ.setdefault('DJANGO_SETTINGS_MODULE', 'cic.settings')
+    try:
+        os.stat('cic/settings/local_settings.py')
+        os.environ.setdefault('DJANGO_SETTINGS_MODULE', 'cic.settings.local_settings')
+    except FileNotFoundError:
+        os.environ.setdefault('DJANGO_SETTINGS_MODULE', 'cic.settings.settings')
     try:
         from django.core.management import execute_from_command_line
     except ImportError as exc:

@@ -1,7 +1,8 @@
 const path = require("path");
 const HtmlWebpackPlugin = require("html-webpack-plugin");
-console.log(__dirname)
-const static_dir = '/Users/sg3847/PycharmProjects/covid-infocommons/backend/search/static/search'
+
+const static_dir = path.resolve("../").concat("/backend/search/static/search")
+
 const MiniCssExtractPlugin = require("mini-css-extract-plugin");
 
 module.exports = {
@@ -9,7 +10,10 @@ module.exports = {
     output: { 
         path: static_dir,
         filename: 'main.js'
-     },
+    },
+    optimization: {
+        minimize: true,
+    },
     mode: process.env.NODE_ENV || "development",
     resolve: { 
             extensions: [".tsx", ".ts", ".js"],
