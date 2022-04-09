@@ -16,7 +16,7 @@ AWS_S3_CUSTOM_DOMAIN = '%s.s3.amazonaws.com' % AWS_S3_BUCKET_NAME_STATIC  # noqa
 SECURE_REFERRER_POLICY = 'strict-origin-when-cross-origin'
 STATIC_URL = "https://%s.s3.amazonaws.com/" % AWS_S3_BUCKET_NAME_STATIC
 
-OPENSEARCH_URL = os.getenv('OPENSEARCH_URL', 'vpc-cicecluster-hk6ksspjhvgpkedai3sp5m6a2a.us-east-1.es.amazonaws.com')
+OPENSEARCH_URL = os.getenv('OPENSEARCH_URL')
 
 OPENSEARCH = OpenSearch([OPENSEARCH_URL])
 
