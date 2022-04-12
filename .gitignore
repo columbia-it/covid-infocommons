@@ -40,4 +40,6 @@ cice-dev-*.json
 frontend/node_modules/
 
 #static assets
-static/
+static/*
+backend/static/
+backend/search/static/
