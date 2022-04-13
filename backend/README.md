@@ -1,7 +1,9 @@
 # cic-infocommons
 This repository contains the CIC Django project which includes the following apps:
 1. CIC RESTful APIs
-2. PI Survey form
+2. CIC UI
+    1. Grant Search Page
+    2. PI Survey form
 
 Frameworks/Libraries used include:
 1. [`{json:api}`](https://jsonapi.org/format/) specification for request and response formats.
@@ -75,10 +77,6 @@ export PATH=$PATH:<path to chromedriver>
 export AWS_PROFILE=<aws profile name>
 (venv)$ pip install selenium boto3
 ```
-- Tell Django to look for static files in location specified in STATIC_ROOT settings.
-```sh
- (venv)$ python manage.py collectstatic 
-```
 - Run `saml.py` to assume role. Running this command will launch Chrome and prompts CAS login
 ```sh
  (venv)$ python saml.py <role name> <aws account number> 
@@ -96,3 +94,32 @@ If you need to update DB schema prior to deploying, it can be done via zappa:
 (venv)$ $ zappa manage <stage> migrate
 (venv)$ zappa manage <stage> migrate
 ```
+
+Handling of tatic files
+
+- Tell Django to look for static files in location specified in STATIC_ROOT settings.
+```sh
+ (venv)$ python manage.py collectstatic 
+```
+- Push your static files to the cloud (S3). Make sure Django-S3-Storage has been configured in settings.py.
+    - Using your local environment:
+    ```sh
+    (venv)$ python manage.py collectstatic --noinput
+    ```
+    - Or to instruct your zappa-powered AWS lambda environment to do it for you(don't forget to push your code changes first):
+    ```sh
+    (venv)$zappa update dev
+    (venv)$zappa manage dev "collectstatic --noinput"
+    ```
+
+## Grant Search Page
+
+CIC frontend code is in **frontend** directory of this repo.
+
+To build the frontend code, run:
+
+```
+$npm run webpack
+```
+
+
