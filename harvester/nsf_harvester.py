@@ -28,6 +28,8 @@ def handle_grant(grant):
     grant_json = cic_json_format(grant)
     response_code = deposit_grant(grant_json)
     print(f"    -- {response_code}")
+    ### exit the program... just testing
+    exit()
 
 
 def cic_json_format(grant):
@@ -35,9 +37,9 @@ def cic_json_format(grant):
         "data": {
             "type": "Grant", 
             "attributes": {
-                "funder_divisions": ["research", "department"],
-                "program_reference_codes": ["CK090", "RND123"],
-                "keywords": ["covid", "research"],
+                "funder_divisions": [ grant['fundProgramName'] ],
+                "program_reference_codes": [],
+                "keywords": [],
                 "program_officials": [
                     {
                         "type": "Person",
@@ -70,13 +72,12 @@ def cic_json_format(grant):
     
 
 def deposit_grant(grant_json):
-    API_ENDPOINT = "https://cice-prod.paas.cc.columbia.edu/v1/grants"    
-    r = requests.post(url = API_ENDPOINT,
+    CIC_API_ENDPOINT = "https://cice-prod.paas.cc.columbia.edu/v1/grants"    
+    r = requests.post(url = CIC_API_ENDPOINT,
                       data = json.dumps(grant_json),
                       headers={"Content-Type":"application/vnd.api+json"})
     return r
     
-    
-print("The value of __name__ is:", repr(__name__))
+
 if __name__ == "__main__":
     main()
