@@ -1,34 +1,56 @@
-from datetime import datetime
+from datetime import date, datetime
 import requests, json
 
 CIC_BASE = "https://cice-dev.paas.cc.columbia.edu"
 CIC_GRANTS_API = f"{CIC_BASE}/v1/grants"
 CIC_FUNDER_API = f"{CIC_BASE}/v1/funders"
 
-def main():
-    grants = retrieve_nsf_grants()
-    print(f"Received {len(grants)} grants")
-    for g in grants:
-        process_grant(g)    
+NSF_GRANT_REQUEST = "https://api.nsf.gov/services/v1/awards.json?keyword=covid+covid-19+corid-19+corvid-19+coronavirus+sars2+%22SARS-CoV-2%22&printFields=abstractText,agency,awardAgencyCode,awardee,awardeeAddress,awardeeCity,awardeeCountryCode,awardeeCounty,awardeeDistrictCode,awardeeName,awardeeStateCode,awardeeZipCode,cfdaNumber,coPDPI,date,dunsNumber,estimatedTotalAmt,expDate,fundAgencyCode,fundProgramName,fundsObligatedAmt,id,offset,parentDunsNumber,pdPIName,perfAddress,perfCity,perfCountryCode,perfCounty,perfDistrictCode,perfLocation,perfStateCode,perfZipCode,piEmail,piFirstName,piLastName,piMiddeInitial,piPhone,poEmail,poName,poPhone,primaryProgram,projectOutComesReport,publicationConference,publicationResearch,rpp,startDate,title,transType"
+
+
+def main():    
+    max_year = date.today().year + 1
+    imported_count = 0
+
+    # The NSF API will only return a max of 3000 grants per request, and the default page size is 25
+    # So we request one month at a time, and step through each page
+    for year in range(2005, max_year):
+        for month in range(1, 13):
+            print(f'==================== Imported so far: {imported_count} ==========================')
+            print(f'==================== Retrieving month {year}-{month} ======================')
+
+            for offset in range(0, 3000, 25):
+                grants = retrieve_nsf_grants(year, month, offset)                
+                print(f"Received {len(grants)} grants")
+                if len(grants) == 0:
+                    break
+                for g in grants:
+                    process_grant(g)
+                imported_count += len(grants)
         
         
-def retrieve_nsf_grants():
-    NSF_GRANT_REQUEST = "https://api.nsf.gov/services/v1/awards.json?keyword=covid+covid-19+corid-19+corvid-19+coronavirus+sars2+%22SARS-CoV-2%22&printFields=abstractText,agency,awardAgencyCode,awardee,awardeeAddress,awardeeCity,awardeeCountryCode,awardeeCounty,awardeeDistrictCode,awardeeName,awardeeStateCode,awardeeZipCode,cfdaNumber,coPDPI,date,dunsNumber,estimatedTotalAmt,expDate,fundAgencyCode,fundProgramName,fundsObligatedAmt,id,offset,parentDunsNumber,pdPIName,perfAddress,perfCity,perfCountryCode,perfCounty,perfDistrictCode,perfLocation,perfStateCode,perfZipCode,piEmail,piFirstName,piLastName,piMiddeInitial,piPhone,poEmail,poName,poPhone,primaryProgram,projectOutComesReport,publicationConference,publicationResearch,rpp,startDate,title,transType&offset=0"
+def retrieve_nsf_grants(year, month, offset):
+    if month < 10:
+        monthstr = f'0{month}'
+    else:
+        monthstr = month
+    monthfilter = f"&dateStart={monthstr}/01/{year}&dateEnd={monthstr}/31/{year}"
+
+    nsf_url = f"{NSF_GRANT_REQUEST}{monthfilter}&offset={offset}"
 
     print("Reading from NSF API")
-    print(f"REQUEST = {NSF_GRANT_REQUEST}")
+    print(f"REQUEST = {nsf_url}")
 
-    response = requests.get(NSF_GRANT_REQUEST)
+    response = requests.get(nsf_url)
     print("-----")
-    response_json = response.json()
-    print(type(response_json))
+    response_json = response.json()    
     grants = response_json['response']['award']
     return grants
 
 
 def process_grant(grant):
-    print(f" -- processing grant {grant['title']}")
-    print(grant)
+    print(f" -- processing grant {grant['id']} -- {grant['title']}")
+
     # TODO -- existing_grant = find_cic_grant(grant['id'])
     #         print(f"    -- existing grant is {type(existing_grant)}")
     grant_json = nsf_to_cic_format(grant)
@@ -41,8 +63,6 @@ def process_grant(grant):
 
         
     print(f"    -- {response_code}")
-    ### exit the program... just testing one at a time
-    exit()
 
     
 def find_cic_grant(grant_id):
@@ -63,7 +83,7 @@ def nsf_to_cic_format(grant):
         "data": {
             "type": "Grant", 
             "attributes": {
-                "funder_divisions": [ grant['fundProgramName'] ],
+#                "funder_divisions": [ grant['fundProgramName'] ],
                 "program_reference_codes": [],
                 "keywords": [],
 #                "program_officials": [
