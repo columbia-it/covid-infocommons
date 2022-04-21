@@ -1,7 +1,7 @@
 
 import requests, json
 
-CIC_BASE = "https://cice-prod.paas.cc.columbia.edu"
+CIC_BASE = "https://cice-dev.paas.cc.columbia.edu"
 CIC_GRANT_REQUEST = f"{CIC_BASE}/v1/grants"
     
 def main():
