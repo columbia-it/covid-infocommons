@@ -12,7 +12,7 @@ def main():
     max_year = date.today().year + 1
     imported_count = 0
 
-    # The NIH API will only return a max of 500 grants per request, and the default page size is 25
+    # The NIH API will only return a max of 500 grants per request, and the default page size is 25 
     # So we request one month at a time, and step through each page
     for year in range(2022, max_year):
         for month in range(12, 13):
