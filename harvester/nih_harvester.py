@@ -3,6 +3,7 @@ import requests, json
 
 CIC_BASE = "https://cice-dev.paas.cc.columbia.edu"
 CIC_GRANTS_API = f"{CIC_BASE}/v1/grants"
+CIC_PEOPLE_API = f"{CIC_BASE}/v1/people"
 CIC_FUNDER_API = f"{CIC_BASE}/v1/funders"
 
 NIH_BASE = "https://api.reporter.nih.gov/v1/projects/Search"
@@ -58,8 +59,9 @@ def nih_query_criteria(offset):
         },
         "include_fields": [
             "ProjectTitle","AbstractText","FiscalYear","Organization", "ProjectNum","OrgCountry",
-            "ProjectNumSplit","ContactPiName","ProjectStartDate","ProjectEndDate",
-            "AwardAmount", "AgencyIcFundings", "PrefTerms"
+            "ProjectNumSplit","ContactPiName","PrincipalInvestigators","ProgramOfficers",
+            "ProjectStartDate","ProjectEndDate",
+            "AwardAmount", "AgencyIcFundings", "PrefTerms",
         ],
         "offset": offset,
         "limit":25
@@ -75,11 +77,10 @@ def process_grant(grant):
     grant_json = nih_to_cic_format(grant)
     if existing_grant is None:        
         print("   -- not found - creating")
-        response_code = deposit_cic_grant(grant_json)
+        response_code = create_cic_grant(grant_json)
     else:
         print("   -- found! updating")
         response_code = update_cic_grant(grant_json, existing_grant['id'])
-
         
     print(f"    -- {response_code}")
 
@@ -103,9 +104,40 @@ def find_cic_grant(grant_id):
         else:
             print(" -- Expected more grants, but 'next' link is missing")
             cic_grants = []
-        
-        
 
+            
+def find_cic_person(first, last):
+    # TODO -- this cycles through all people until it finds the correct ID; should really just request one by ID through the CIC API
+    print(f" -- Looking for existing person {first} {last}")
+    response = requests.get(f"{CIC_PEOPLE_API}")
+    response_json = response.json()    
+    cic_people = response_json['data']
+    while(len(cic_people) > 0):
+        for cp in cic_people:
+            if cp['attributes']['first_name'] == first and cp['attributes']['last_name'] == last:
+                print(f"   -- found person {cp['id']}")
+                return cp
+        if response_json['links']['next'] is not None:
+            print('.', end='', flush=True)
+            response = requests.get(f"{response_json['links']['next']}")
+            response_json = response.json()    
+            cic_people = response_json['data']
+        else:
+            print(" -- Expected more people, but 'next' link is missing")
+            cic_people = []
+
+            
+def person_name_to_cic_format(first, last):
+    person_data = {
+        "data": {
+            "type": "Person",
+            "attributes": {
+                "first_name": first,
+                "last_name": last
+        }}}
+    return person_data
+
+    
 def nih_to_cic_format(grant):
     grant_data = {
         "data": {
@@ -113,17 +145,9 @@ def nih_to_cic_format(grant):
             "attributes": {
                 "funder_divisions": nih_funding_divisions(grant['agency_ic_fundings']),
                 "keywords": nih_keywords(grant['pref_terms']),
-#                "program_officials": [
-#                    {
-#                        "type": "Person",
-#                        "id": "1"
-#                    }
-#                ],
+                "program_officials": nih_program_officials(grant['program_officers']),
 #                "other_investigators": [ ],
-#                "principal_investigator": {
-#                    "type": "Person",
-#                    "id": "1"
-#                },
+                "principal_investigator": nih_principal_investigator(grant['principal_investigators']),
                 "funder": {
                     "type": "Funder",
                     "id": 4 # TODO -- this should be looked up!
@@ -150,12 +174,61 @@ def nih_to_cic_format(grant):
     return grant_data
 
 
+def nih_principal_investigator(people):
+    # Create the appropriate people, then return them as an array of references like
+    #  {
+    #    "type": "Person",
+    #    "id": "1"
+    #  }
+
+    first = people[0]['first_name']
+    if len(people[0]['middle_name']) > 0:
+        first += ' ' + people[0]['middle_name']
+    last = people[0]['last_name']
+
+    person = find_or_create_person(first,last)
+    person_json = { "type": "Person",
+                    "id": int(person['id']) }
+    print(f" -- attaching person {person_json}")
+    return person_json
+
+
+def nih_program_officials(grant_officials):
+    # Create the appropriate people, then return them as an array of references like
+    # [
+    #  {
+    #    "type": "Person",
+    #    "id": "1"
+    #  }
+    # ]
+
+    first = grant_officials[0]['first_name']
+    if len(grant_officials[0]['middle_name']) > 0:
+        first += ' ' + grant_officials[0]['middle_name']
+    last = grant_officials[0]['last_name']
+
+    person = find_or_create_person(first,last)
+
+    return [ { "type": "Person",
+               "id": int(person['id']) } ]
+
+
+def find_or_create_person(first, last):
+    # see if person exists
+    person = find_cic_person(first, last)
+
+    if person is None:
+        person = create_cic_person(person_name_to_cic_format(first, last))
+
+    return person
+
+
 def nih_keywords(s):
     if(s is None or len(s) == 0):
         return []
     else:
         # TODO -- return s.split(';')
-        return s 
+        return s[0:98] 
 
 def nih_funding_divisions(ics):
     result = []
@@ -175,18 +248,29 @@ def nih_to_cic_date(d):
     return iso
 
 
-def deposit_cic_grant(grant_json):
+def create_cic_grant(grant_json):
     r = requests.post(url = CIC_GRANTS_API,
                       data = json.dumps(grant_json),
                       headers={"Content-Type":"application/vnd.api+json"})
     if r.status_code >= 300:
         print(f"ERROR {r} {r.text}")
-    return r
+        
+    return r.json()['data']
+
+
+def create_cic_person(person_json):
+    r = requests.post(url = CIC_PEOPLE_API,
+                      data = json.dumps(person_json),
+                      headers={"Content-Type":"application/vnd.api+json"})
+    if r.status_code >= 300:
+        print(f"ERROR {r} {r.text}")
+    print(f" -- created person {r.json()}")
+    return r.json()['data']
 
 
 def update_cic_grant(grant_json, grant_id):
     grant_json['data']['id'] = grant_id
-    print(f"XXXX up {grant_json}")
+    print(f" -- updating grant with {grant_json}")
     r = requests.patch(url = CIC_GRANTS_API + f"/{grant_id}",
                       data = json.dumps(grant_json),
                       headers={"Content-Type":"application/vnd.api+json"})
