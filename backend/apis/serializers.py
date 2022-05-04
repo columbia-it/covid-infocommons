@@ -8,6 +8,7 @@ class OrganizationSerializer(serializers.ModelSerializer):
     class Meta:
         model = Organization
         fields = '__all__'
+        depth = 2
 
 
 class FunderSerializer(serializers.ModelSerializer):
@@ -19,6 +20,7 @@ class FunderSerializer(serializers.ModelSerializer):
 
 class PersonSerializer(serializers.ModelSerializer):
     """Serializer for Person model"""
+    keywords = serializers.ListField(child=serializers.CharField(), required=False)
 
     def get_emails(self, obj):
         return ""
@@ -26,7 +28,7 @@ class PersonSerializer(serializers.ModelSerializer):
     class Meta:
         model = Person
         fields = ('id', 'affiliations', 'first_name', 'last_name', 'orcid', 'emails', 'private_emails', 'keywords')
-        depth = 1
+        depth = 2
 
 
 class CreatePersonSerializer(serializers.ModelSerializer):
@@ -41,21 +43,44 @@ class CreatePersonSerializer(serializers.ModelSerializer):
         fields = ('id', 'affiliations', 'first_name', 'last_name', 'orcid', 'emails', 'private_emails', 'keywords')
 
 
+class FunderDivisionListField(serializers.Field):
+    def to_internal_value(self, data):
+        """
+        Replace , with \t in the data (if any) during de-serialization
+        """
+        for i in range(len(data)):
+            if ',' in data[i]:
+                data[i] = data[i].replace(',', '\t')
+        return data
+
+    def to_representation(self, value):
+        """
+        Replace \t with , in the value (if any) during serialization
+        """
+        for i in range(len(value)):
+            if '\t' in value[i]:
+                value[i] = value[i].replace('\t', ',')
+        return value
+
+
 class GrantSerializer(serializers.ModelSerializer):
     """Serializer for Grant model"""
-    
+    keywords = serializers.ListField(child=serializers.CharField(), required=False)
+    funder_divisions = FunderDivisionListField()
+    program_reference_codes = serializers.ListField(child=serializers.CharField(), required=False)
+
     class Meta:
         model = Grant
         fields = ('id', 'award_id', 'title', 'funder', 'funder_divisions', 'program_reference_codes', 'program_officials', 'start_date', 'end_date', 'award_amount', 'principal_investigator', 'other_investigators', 'awardee_organization', 'abstract', 'keywords')
-        depth = 1
+        depth = 2
 
 
 class CreateGrantSerializer(serializers.ModelSerializer):
     """Serializer for Grant model"""
-    funder_divisions = serializers.ListField(child=serializers.CharField(), required=False)
+    funder_divisions = FunderDivisionListField()
     program_reference_codes = serializers.ListField(child=serializers.CharField(), required=False)
     keywords = serializers.ListField(child=serializers.CharField(), required=False)
-    
+
     class Meta:
         model = Grant
         fields = ('id', 'award_id', 'title', 'funder', 'funder_divisions', 'program_reference_codes', 'program_officials', 'start_date', 'end_date', 'award_amount', 'principal_investigator', 'other_investigators', 'awardee_organization', 'abstract', 'keywords')
@@ -67,7 +92,7 @@ class PublicationSerializer(serializers.ModelSerializer):
     class Meta:
         model = Publication
         fields = ('id', 'doi', 'title', 'authors', 'grants', 'issn', 'keywords', 'language', 'publication_date', 'publication_type')
-        depth = 1
+        depth = 2
 
 
 class CreatePublicationSerializer(serializers.ModelSerializer):

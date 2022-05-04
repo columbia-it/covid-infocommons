@@ -49,7 +49,7 @@ class AssetViewSet(ModelViewSet):
     queryset = Asset.objects.all()
     
     def get_serializer_class(self):
-        if self.action == 'create':
+        if self.action in ['create', 'partial_update']:
             return CreateAssetSerializer
         return AssetSerializer
 
@@ -76,7 +76,7 @@ class PersonViewSet(ModelViewSet):
     queryset = Person.objects.all()
 
     def get_serializer_class(self):
-        if self.action == 'create':
+        if self.action in ['create', 'partial_update']:
             return CreatePersonSerializer
         return PersonSerializer
     
@@ -103,7 +103,7 @@ class GrantViewSet(ModelViewSet):
     queryset = Grant.objects.all()
     
     def get_serializer_class(self):
-        if self.action == 'create':
+        if self.action in ['create', 'partial_update']:
             return CreateGrantSerializer
         return GrantSerializer
 
@@ -130,7 +130,7 @@ class PublicationViewSet(ModelViewSet):
     queryset = Publication.objects.all()
     
     def get_serializer_class(self):
-        if self.action == 'create':
+        if self.action in ['create', 'partial_update']:
             return CreatePublicationSerializer
         return PublicationSerializer
 
@@ -157,7 +157,7 @@ class DatasetViewSet(ModelViewSet):
     queryset = Dataset.objects.all()
     
     def get_serializer_class(self):
-        if self.action == 'create':
+        if self.action in ['create', 'partial_update']:
             return CreateDatasetSerializer
         return DatasetSerializer
 
