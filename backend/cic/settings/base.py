@@ -147,8 +147,7 @@ DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 REST_FRAMEWORK = {
     'PAGE_SIZE': 10,
     'EXCEPTION_HANDLER': 'rest_framework_json_api.exceptions.exception_handler',
-    'DEFAULT_PAGINATION_CLASS':
-        'rest_framework_json_api.pagination.JsonApiPageNumberPagination',
+    'DEFAULT_PAGINATION_CLASS': 'rest_framework_json_api.pagination.JsonApiPageNumberPagination',
     'DEFAULT_PARSER_CLASSES': (
         'rest_framework_json_api.parsers.JSONParser',
         'rest_framework.parsers.FormParser',
@@ -177,9 +176,9 @@ REST_FRAMEWORK = {
         'rest_framework_json_api.renderers.JSONRenderer',
     ),
     'TEST_REQUEST_DEFAULT_FORMAT': 'vnd.api+json',
-    # 'DEFAULT_PERMISSION_CLASSES': [
-    #     'apis.oauth2_introspection.ColumbiaSubClaimPermission',
-    # ]
+    'DEFAULT_PERMISSION_CLASSES': [
+        'apis.oauth2_introspection.ColumbiaSubClaimPermission',
+    ]
 }
 
 OAUTH2_SERVER = os.getenv('OAUTH2_SERVER','https://oauth-test.cc.columbia.edu')
@@ -196,6 +195,6 @@ OAUTH2_PROVIDER = {
     },
     'PKCE_REQUIRED': True,
     'OIDC_USERINFO_ENDPOINT': None if OAUTH2_SERVER == 'self' else OAUTH2_SERVER + '/idp/userinfo.openid',
-    #'OAUTH2_VALIDATOR_CLASS': 'apis.oauth2_validator.CustomOAuth2Validator',
+    'OAUTH2_VALIDATOR_CLASS': 'apis.oauth2_validator.CustomOAuth2Validator',
 }
 
