@@ -4,7 +4,6 @@ import requests
 
 CIC_ORGS_API = f"{cic_config.CIC_BASE}/v1/organizations"
 ROR_API = "https://api.ror.org/organizations"
-HEADERS = { 'Content-Type': 'application/json' }
 
 def main():
     print("CIC org demo")
@@ -84,8 +83,7 @@ def org_to_cic_format(name, country, ror = ''):
                 "country": country
         }}}
     return org_data
-
-
+            
 
 if __name__ == "__main__":
     main()
