@@ -1,7 +1,8 @@
 from datetime import date, datetime
-import requests, json
+import cic_orgs
+import json
+import requests
 
-CIC_BASE = "https://cice-dev.paas.cc.columbia.edu"
 CIC_GRANTS_API = f"{CIC_BASE}/v1/grants"
 CIC_PEOPLE_API = f"{CIC_BASE}/v1/people"
 CIC_FUNDER_API = f"{CIC_BASE}/v1/funders"
@@ -58,8 +59,10 @@ def nih_query_criteria(offset):
             "covid_response": ["Reg-CV", "CV"]
         },
         "include_fields": [
-            "ProjectTitle","AbstractText","FiscalYear","Organization", "ProjectNum","OrgCountry",
-            "ProjectNumSplit","ContactPiName","PrincipalInvestigators","ProgramOfficers",
+            "ProjectTitle", "AbstractText", "FiscalYear",
+            "Organization", "OrgCountry", "OrgName",
+            "ProjectNum", "ProjectNumSplit",
+            "ContactPiName","PrincipalInvestigators","ProgramOfficers",
             "ProjectStartDate","ProjectEndDate",
             "AwardAmount", "AgencyIcFundings", "PrefTerms",
         ],
@@ -104,7 +107,7 @@ def find_cic_grant(grant_id):
         else:
             print(" -- Expected more grants, but 'next' link is missing")
             cic_grants = []
-
+            
             
 def find_cic_person(first, last):
     # TODO -- this cycles through all people until it finds the correct ID; should really just request one by ID through the CIC API
@@ -152,16 +155,7 @@ def nih_to_cic_format(grant):
                     "type": "Funder",
                     "id": 4 # TODO -- this should be looked up!
                 },
-#                "awardee_organization": {
-#                    "type": "Organization",
-#                    "id": 4
-#                },
-#                "awardee_organization": {
-#                    "id": 4,
-#                    "ror": "https://ror.org/05dq2gs74",
-#                    "name": "Vanderbilt University Medical Center",
-#                    "country": "United States"
-#                },
+                "awardee_organization": nih_awardee_org(grant['org_name'],grant['org_country']),
                 "award_id": grant['project_num'],
                 "title": grant['project_title'],
                 "start_date": nih_to_cic_date(grant['project_start_date']),
@@ -172,6 +166,18 @@ def nih_to_cic_format(grant):
         }
     }
     return grant_data
+
+
+def nih_awardee_org(name, country):
+    #  {
+    #    "type": "Organization",
+    #    "id": 4
+    #   }
+    org = cic_orgs.find_or_create_org(name, country)
+    org_json = { "type": "Organization",
+                 "id": int(org['id']) }
+    print(f" -- attaching organization {org_json}")
+    return org_json
 
 
 def nih_principal_investigator(people):
@@ -221,7 +227,7 @@ def find_or_create_person(first, last):
         person = create_cic_person(person_name_to_cic_format(first, last))
 
     return person
-
+                  
 
 def nih_keywords(s):
     if(s is None or len(s) == 0):
