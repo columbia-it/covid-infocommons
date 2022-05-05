@@ -5,6 +5,7 @@ import requests
 CIC_ORGS_API = f"{cic_config.CIC_BASE}/v1/organizations"
 ROR_API = "https://api.ror.org/organizations"
 
+
 def main():
     print("CIC org demo")
     print()
