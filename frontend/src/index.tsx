@@ -7,20 +7,9 @@ import GrantsTable from './components/GrantsTable';
 function App() {
     return (
         <div className="App">
+            <link rel="stylesheet" href="https://fonts.googleapis.com/icon?family=Material+Icons"></link>
             <h1 id='cic-heading'>COVID INFORMATION COMMONS</h1>
-            <Card>
-                {
-                    <GrantsTable/>
-                    /* <DataTable
-                    title="Grants"
-                    columns={columns}
-                    data={grants}
-                    defaultSortFieldId="title"
-                    sortIcon={<SortIcon />}
-                    pagination
-                    selectableRows
-                /> */}
-            </Card>
+            <GrantsTable/>
         </div>
     )
 }

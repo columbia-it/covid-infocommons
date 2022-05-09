@@ -1,60 +1,28 @@
 import React, { Component } from "react";
-import MaterialTable from "material-table";
+import MaterialTable, { MTableToolbar } from "material-table";
 import axios from "axios";
+import { makeStyles } from "@material-ui/core/styles";
+import NumberFormat from 'react-number-format';
+import { Link } from '@mui/material';
 
-const columns = [
-    {
-        name: 'Projects',
-        selector: (row: any) => row.title,
-        width: "300px",
-        sortable: true
-    }, 
-    {
-        name: 'Award ID',
-        selector: (row: any) => row.award_id,
-        width: "200px",
-        sortable: true
-    },
-    {
-        name: 'Principal Investigator',
-        selector: (row: any) => row.principal_investigator.first_name,
-        width: "200px",
-        sortable: true
-    },
-    {
-        name: 'Abstract',
-        selector: (row: any) => row.abstract,
-        sortable: true
-    }
-]
-
-class MyState {
-    data : []
-    count : number
-
-    constructor(data: [], count: number) {
-        this.data = data
-        this.count = count
-    }
-}
-
-export default class GrantsTable extends React.Component<any, {grantsArray: [], data: []}> {
+export default class GrantsTable extends React.Component<any, {grantsArray: [], data: [], url: string}> {
     constructor(props:any) {
         super(props)
 
         this.state = {
             data: [],
-            grantsArray: []
+            grantsArray: [],
+            url: ""
         }
     }
 
     componentDidMount() {
-        const url = "https://cice-dev.paas.cc.columbia.edu/search/grants"
+        const url = process.env.NODE_ENV == 'production' ? 
+        "https://cic-apps.datascience.columbia.edu" : "https://cice-dev.paas.cc.columbia.edu"
 
-        axios.get(url).then(results => {
-            //console.log(results.data.hits.hits)
+        axios.get(url.concat('/search/grants')).then(results => {
             this.setState(
-                { data: results.data.hits.hits}
+                { data: results.data.hits.hits }
             )     
             var newArray = results.data.hits.hits.map(function(val:any) {
                 var pi_name = ''
@@ -66,11 +34,13 @@ export default class GrantsTable extends React.Component<any, {grantsArray: [], 
                     title: val['_source']['title'],
                     award_id: val['_source']['award_id'],
                     pi: pi_name,
-                    abstract: val['_source']['abstract']
+                    abstract: val['_source']['abstract'],
+                    award_amount: val['_source']['award_amount']
                 }
             })
             this.setState({
-                grantsArray: newArray
+                grantsArray: newArray,
+                url: url
             })    
         })
     }
@@ -78,20 +48,57 @@ export default class GrantsTable extends React.Component<any, {grantsArray: [], 
     render() {
       return (
         <MaterialTable
-            title="Grants"
             data={this.state.grantsArray}
             columns={[
                 {
-                    title: "Title", field: "title"
+                    title: "Projects", 
+                    render: (row: any) => {
+                        const detail_url = this.state.url.concat('/v1/grants/'+row.id)
+                        return (<Link href={detail_url}>{row.title}</Link>)
+                    }
                 },
                 {
-                    title: "PI", field: "pi",
+                    title: "Principal Investigator", field: "pi",
                 },
                 {
-                    title: "Abstract", field: "abstract"
+                    title: "Award Amount", field: "award_amount", render: (row:any) => 
+                    <div><NumberFormat value={row.award_amount} displayType={'text'} thousandSeparator={true} prefix={'$'} /></div>
                 }
             ]}
-            options={{ paging: false }}
+            options={
+                { 
+                    paging: true, 
+                    showTitle: false,
+                    search: true,
+                    searchFieldStyle: {
+                        width: "100%",
+                    }
+                }
+            }
+            components={{
+                Toolbar: props => {
+                    const propsCopy = { ...props };
+                    propsCopy.showTitle = false;
+                    propsCopy.searchText = "Search PI Entries"
+                    const useStyles = makeStyles({
+                        toolbarWrapper: {
+                            '& .MuiFormControl-root': {
+                                width: '100%'
+                            }
+                        },
+                        searchField: {
+                            width: '80%'
+                        }
+                    });
+                    const classes = useStyles();
+                    return (
+                        <div className={classes.toolbarWrapper}>
+                            <MTableToolbar {...propsCopy}/>
+                        </div>
+                    );
+                }
+            }
+        }
         />
       );
     }
