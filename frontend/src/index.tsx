@@ -9,7 +9,10 @@ function App() {
         <div className="App">
             <link rel="stylesheet" href="https://fonts.googleapis.com/icon?family=Material+Icons"></link>
             <h1 id='cic-heading'>COVID INFORMATION COMMONS</h1>
-            <GrantsTable/>
+            <div className="grants-table">
+                <GrantsTable/>
+            </div>
+            
         </div>
     )
 }

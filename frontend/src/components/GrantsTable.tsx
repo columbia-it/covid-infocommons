@@ -4,17 +4,29 @@ import axios from "axios";
 import { makeStyles } from "@material-ui/core/styles";
 import NumberFormat from 'react-number-format';
 import { Link } from '@mui/material';
+import { TablePagination } from "@material-ui/core";
+import { NoEncryption } from "@material-ui/icons";
 
-export default class GrantsTable extends React.Component<any, {grantsArray: [], data: [], url: string}> {
+
+export default class GrantsTable extends React.Component<any, {grantsArray: [], data: [], url: string, totalCount: number, page: number}> {
     constructor(props:any) {
         super(props)
 
         this.state = {
             data: [],
             grantsArray: [],
-            url: ""
+            url: "",
+            totalCount: 0,
+            page: 0
         }
     }
+
+    handleChangePage = (
+        event: React.ChangeEvent<HTMLInputElement>,
+        newPage: number
+      ) => {
+          this.setState({'page': newPage})
+      };
 
     componentDidMount() {
         const url = process.env.NODE_ENV == 'production' ? 
@@ -22,7 +34,11 @@ export default class GrantsTable extends React.Component<any, {grantsArray: [], 
 
         axios.get(url.concat('/search/grants')).then(results => {
             this.setState(
-                { data: results.data.hits.hits }
+                { 
+                    data: results.data.hits.hits,
+                    totalCount: results.data.hits.total.value,
+                    page: 0
+                }
             )     
             var newArray = results.data.hits.hits.map(function(val:any) {
                 var pi_name = ''
@@ -52,6 +68,7 @@ export default class GrantsTable extends React.Component<any, {grantsArray: [], 
             columns={[
                 {
                     title: "Projects", 
+                    field: "title",
                     render: (row: any) => {
                         const detail_url = this.state.url.concat('/v1/grants/'+row.id)
                         return (<Link href={detail_url}>{row.title}</Link>)
@@ -70,32 +87,43 @@ export default class GrantsTable extends React.Component<any, {grantsArray: [], 
                     paging: true, 
                     showTitle: false,
                     search: true,
-                    searchFieldStyle: {
-                        width: "100%",
-                    }
+                    exportButton: true
                 }
             }
             components={{
+                Pagination: props => (
+                    <TablePagination
+                        {...props}
+                        count={this.state.totalCount}
+                        rowsPerPage={5}
+                        page={this.state.page}
+                        onChangePage={this.handleChangePage}
+                    />
+                ),
                 Toolbar: props => {
                     const propsCopy = { ...props };
                     propsCopy.showTitle = false;
-                    propsCopy.searchText = "Search PI Entries"
+                    propsCopy.placeholder = "Search PI Entries"
                     const useStyles = makeStyles({
                         toolbarWrapper: {
-                            '& .MuiFormControl-root': {
+                            // '& .MuiToolbar-gutters': {
+                            //     paddingLeft: 0,
+                            //     paddingRight: 0,
+                            // },
+                            '& .MTableToolbar-spacer-8': {
+                                display: 'none'
+                            },
+                            '& .MTableToolbar-searchField-11': {
                                 width: '100%'
-                            }
+                            },
                         },
-                        searchField: {
-                            width: '80%'
-                        }
                     });
                     const classes = useStyles();
                     return (
                         <div className={classes.toolbarWrapper}>
                             <MTableToolbar {...propsCopy}/>
                         </div>
-                    );
+                    )
                 }
             }
         }
