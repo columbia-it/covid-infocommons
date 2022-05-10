@@ -23,7 +23,9 @@ def find_or_create_person(first, last):
 def create_cic_person(person_json):
     r = requests.post(url = CIC_PEOPLE_API,
                       data = json.dumps(person_json),
-                      headers={"Content-Type":"application/vnd.api+json"})
+                      headers={"Content-Type":"application/vnd.api+json",
+                               "Authorization": f"access_token {cic_config.CIC_TOKEN}"
+                      })
     if r.status_code >= 300:
         print(f"ERROR {r} {r.text}")
     print(f" -- created person {r.json()}")

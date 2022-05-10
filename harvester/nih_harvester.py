@@ -168,8 +168,8 @@ def nih_keywords(s):
     if(s is None or len(s) == 0):
         return []
     else:
-        # TODO -- return s.split(';')
-        return s[0:98] 
+        return s.split(';')
+        #return s[0:98] 
 
 def nih_funding_divisions(ics):
     result = []

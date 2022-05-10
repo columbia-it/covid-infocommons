@@ -16,10 +16,12 @@ def main():
 def create_cic_grant(grant_json):
     r = requests.post(url = CIC_GRANTS_API,
                       data = json.dumps(grant_json),
-                      headers={"Content-Type":"application/vnd.api+json"})
+                      headers={"Content-Type":"application/vnd.api+json",
+                               "Authorization": f"access_token {cic_config.CIC_TOKEN}"
+                      })
     if r.status_code >= 300:
         print(f"ERROR {r} {r.text}")
-        
+    print(f" -- created grant {r.json()}")
     return r.json()['data']
 
 
@@ -28,7 +30,9 @@ def update_cic_grant(grant_json, grant_id):
     print(f" -- updating grant with {grant_json}")
     r = requests.patch(url = CIC_GRANTS_API + f"/{grant_id}",
                       data = json.dumps(grant_json),
-                      headers={"Content-Type":"application/vnd.api+json"})
+                      headers={"Content-Type":"application/vnd.api+json",
+                               "Authorization": f"access_token {cic_config.CIC_TOKEN}"
+                      })
     if r.status_code >= 300:
         print(f"ERROR {r} {r.text}")
     return r
