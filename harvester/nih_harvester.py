@@ -6,30 +6,48 @@ import json
 import requests
 
 NIH_BASE = "https://api.reporter.nih.gov/v1/projects/Search"
+STOP_LIMIT = 100
+
+# Documentation for NIH grants API: https://api.reporter.nih.gov/?urls.primaryName=V2.0
 
 def main():    
     max_year = date.today().year + 1
     imported_count = 0
 
+    gx = retrieve_nih_grant('3R01AG057510-03S1')
+    process_grant(gx)
+    return
+    
     # The NIH API will only return a max of 500 grants per request, and the default page size is 25 
     # So we request one month at a time, and step through each page
     for year in range(2022, max_year):
         for month in range(12, 13):
             print(f'==================== Imported so far: {imported_count} ==========================')
             print(f'==================== Retrieving month {year}-{month} ======================')
-
+            
             for offset in range(0, 500, 25):
                 grants = retrieve_nih_grants(year, month, offset)                
                 if grants is None:
                     break
-                print(f"Received {len(grants)} grants")                          
+                print(f"Received {len(grants)} grants")
                 for g in grants:
                     process_grant(g)
-                    # TODO -- remove this when really running
-                    return
                 imported_count += len(grants)
-        
-        
+                if imported_count >= STOP_LIMIT:
+                    return
+
+                
+def retrieve_nih_grant(award_id):
+    criteria = nih_award_id_criteria(award_id)    
+    response = requests.post(url = NIH_BASE,
+                             data = json.dumps(criteria),
+                             headers={"Content-Type":"application/vnd.api+json"})
+    response_json = response.json()
+    grants = response_json['results']
+    print(grants[0])
+    return grants[0]
+    
+
 def retrieve_nih_grants(year, month, offset):
     if month < 10:
         monthstr = f'0{month}'
@@ -38,7 +56,7 @@ def retrieve_nih_grants(year, month, offset):
     monthfilter = f"&dateStart={monthstr}/01/{year}&dateEnd={monthstr}/31/{year}"
 
     print("Reading from NIH API")
-    criteria = nih_query_criteria(offset)
+    criteria = nih_covid_query_criteria(offset)
     
     response = requests.post(url = NIH_BASE,
                              data = json.dumps(criteria),
@@ -50,7 +68,7 @@ def retrieve_nih_grants(year, month, offset):
     return grants
 
 
-def nih_query_criteria(offset):
+def nih_covid_query_criteria(offset):
     c =  {
         "criteria":
         {
@@ -65,6 +83,26 @@ def nih_query_criteria(offset):
             "AwardAmount", "AgencyIcFundings", "PrefTerms",
         ],
         "offset": offset,
+        "limit":25
+    }
+    return c
+
+
+def nih_award_id_criteria(award_id):
+    c =  {
+        "criteria":
+        {
+            "project_nums": [award_id]
+        },
+        "include_fields": [
+            "ProjectTitle", "AbstractText", "FiscalYear",
+            "Organization", "OrgCountry", "OrgName",
+            "ProjectNum", "ProjectNumSplit",
+            "ContactPiName","PrincipalInvestigators","ProgramOfficers",
+            "ProjectStartDate","ProjectEndDate",
+            "AwardAmount", "AgencyIcFundings", "PrefTerms",
+        ],
+        "offset": 0,
         "limit":25
     }
     return c
@@ -116,7 +154,7 @@ def nih_to_cic_format(grant):
 def nih_awardee_org(name, country):
     #  {
     #    "type": "Organization",
-    #    "id": 4
+    #    "id": 24
     #   }
     org = cic_orgs.find_or_create_org(name, country)
     org_json = { "type": "Organization",
@@ -131,7 +169,6 @@ def nih_principal_investigator(people):
     #    "type": "Person",
     #    "id": "1"
     #  }
-
     first = people[0]['first_name']
     if len(people[0]['middle_name']) > 0:
         first += ' ' + people[0]['middle_name']
@@ -146,13 +183,10 @@ def nih_principal_investigator(people):
 
 def nih_program_officials(grant_officials):
     # Create the appropriate people, then return them as an array of references like
-    # [
     #  {
     #    "type": "Person",
     #    "id": "1"
     #  }
-    # ]
-
     first = grant_officials[0]['first_name']
     if len(grant_officials[0]['middle_name']) > 0:
         first += ' ' + grant_officials[0]['middle_name']
@@ -168,8 +202,7 @@ def nih_keywords(s):
     if(s is None or len(s) == 0):
         return []
     else:
-        return s.split(';')
-        #return s[0:98] 
+        return s.split(';')[0:5] #TODO 114 -- allow all keywords, not just a few
 
 def nih_funding_divisions(ics):
     result = []
