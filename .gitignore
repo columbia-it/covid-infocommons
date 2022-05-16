@@ -30,7 +30,17 @@ coverage.xml
 .hypothesis/
 .pytest_cache/
 
-#IDE
+# Emacs noise 
+*~
+\#*\#
+/.emacs.desktop
+/.emacs.desktop.lock
+*.elc
+auto-save-list
+tramp
+.\#*
+
+# IDE
 .idea/
 .vscode/
 .history/
