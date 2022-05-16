@@ -1,5 +1,6 @@
 import cic_config
 import json
+import logging
 import requests
 
 CIC_GRANTS_API = f"{cic_config.CIC_BASE}/v1/grants"
@@ -20,43 +21,46 @@ def create_cic_grant(grant_json):
                                "Authorization": f"access_token {cic_config.CIC_TOKEN}"
                       })
     if r.status_code >= 300:
+        logging.error(f"{r} {r.text}")
         print(f"ERROR {r} {r.text}")
-    print(f" -- created grant {r.json()}")
+        return {}
+    logging.info(f" -- created grant {r.json()}")
     return r.json()['data']
 
 
 def update_cic_grant(grant_json, grant_id):
     grant_json['data']['id'] = grant_id
-    print(f" -- updating grant with {grant_json}")
+    logging.info(f" -- updating grant with {grant_json}")
     r = requests.patch(url = CIC_GRANTS_API + f"/{grant_id}",
                       data = json.dumps(grant_json),
                       headers={"Content-Type":"application/vnd.api+json",
                                "Authorization": f"access_token {cic_config.CIC_TOKEN}"
                       })
     if r.status_code >= 300:
+        logging.error(f"{r} {r.text}")
         print(f"ERROR {r} {r.text}")
     return r
 
 
 def delete_cic_grant(grant_id):
-    print(f" -- deleting grant {grant_id}")
+    logging.info(f" -- deleting grant {grant_id}")
 
     response = requests.delete(url = CIC_GRANTS_API + f"/{grant_id}",
                                headers={"Content-Type":"application/vnd.api+json",
                                         "Authorization": f"access_token {cic_config.CIC_TOKEN}"
                                })
-    print(f"    -- {response}")
+    logging.info(f"    -- {response}")
     
     
 def find_cic_grant(grant_id):
-    print(f" -- Looking for existing grant {grant_id}")
+    logging.debug(f" -- Looking for existing grant {grant_id}")
     response = requests.get(f"{CIC_GRANTS_SEARCH_API}?award_id={grant_id}")
     response_json = response.json()
     cic_grants = response_json['hits']['hits']
     for cg in cic_grants:
-        print(f" --  checking {cg['_id']}")
+        logging.debug(f" --  checking {cg['_id']}")
         if cg['_source']['award_id'] == grant_id:
-            print(f"   -- found {cg['_source']['award_id']}")
+            logging.debug(f"   -- found {cg['_source']['award_id']}")
             # copy the id into the internal metadata, so it has the same structure as the rest of the API
             cg['_source']['id'] = cg['_id']
             return cg['_source']
@@ -65,9 +69,8 @@ def find_cic_grant(grant_id):
 
 # Find the first page of grants
 def find_cic_grants():
-    print(" -- Reading grants from CIC API")
+    logging.debug(" -- Reading grants from CIC API")
     response = requests.get(CIC_GRANTS_API)
-    print("-----")
     response_json = response.json()
     grants = response_json['data']
     return grants

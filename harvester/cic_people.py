@@ -1,5 +1,6 @@
 import cic_config
 import json
+import logging
 import requests
 
 CIC_PEOPLE_API = f"{cic_config.CIC_BASE}/v1/people"
@@ -10,7 +11,7 @@ def main():
     print()
     print(f"Find in CIC: {find_cic_person('Randy','Crichton')}")
 
-
+    
 def find_or_create_person(first, last):
     # see if person exists
     person = find_cic_person(first, last)
@@ -28,7 +29,9 @@ def create_cic_person(person_json):
                       })
     if r.status_code >= 300:
         print(f"ERROR {r} {r.text}")
-    print(f" -- created person {r.json()}")
+        logging.error(f"{r} {r.text}")
+        return None
+    logging.info(f" -- created person {r.json()}")
     return r.json()['data']
 
 
@@ -43,16 +46,25 @@ def person_name_to_cic_format(first, last):
     return person_data
 
 
+# Find the first page of people
+def find_cic_people():
+    logging.debug(" -- Reading people from CIC API")
+    response = requests.get(CIC_PEOPLE_API)
+    response_json = response.json()
+    people = response_json['data']
+    return people
+
+
 def find_cic_person(first, last):
     # TODO -- this cycles through all people until it finds the correct ID; should really just request one by ID through the CIC API
-    print(f" -- Looking for existing person {first} {last}")
+    logging.debug(f" -- Looking for existing person {first} {last}")
     response = requests.get(f"{CIC_PEOPLE_API}")
     response_json = response.json()    
     cic_people = response_json['data']
     while(len(cic_people) > 0):
         for cp in cic_people:
             if cp['attributes']['first_name'] == first and cp['attributes']['last_name'] == last:
-                print(f"   -- found person {cp['id']}")
+                logging.debug(f"   -- found person {cp['id']}")
                 return cp
         if response_json['links']['next'] is not None:
             print('.', end='', flush=True)
@@ -60,10 +72,20 @@ def find_cic_person(first, last):
             response_json = response.json()    
             cic_people = response_json['data']
         else:
-            print(" -- Expected more people, but 'next' link is missing")
             cic_people = []
 
 
+def delete_cic_person(person_id):
+    logging.info(f" -- deleting person {person_id}")
+
+    r = requests.delete(url = CIC_PEOPLE_API + f"/{person_id}",
+                               headers={"Content-Type":"application/vnd.api+json",
+                                        "Authorization": f"access_token {cic_config.CIC_TOKEN}"
+                               })
+    if r.status_code >= 300:
+        print(f"ERROR {r} {r.text}")
+        logging.error(f"{r} {r.text}")
+            
 
 if __name__ == "__main__":
     main()

@@ -3,6 +3,7 @@ import cic_grants
 import cic_orgs
 import cic_people
 import json
+import logging
 import requests
 
 NIH_BASE = "https://api.reporter.nih.gov/v1/projects/Search"
@@ -14,9 +15,11 @@ def main():
     max_year = date.today().year + 1
     imported_count = 0
 
-    gx = retrieve_nih_grant('3R01AG057510-03S1')
-    process_grant(gx)
-    return
+    # process a single grant for debugging purposes
+    #g = retrieve_nih_grant('3R01DK118222-03S1')
+    #process_grant(g)
+    #return
+
     
     # The NIH API will only return a max of 500 grants per request, and the default page size is 25 
     # So we request one month at a time, and step through each page
@@ -44,27 +47,26 @@ def retrieve_nih_grant(award_id):
                              headers={"Content-Type":"application/vnd.api+json"})
     response_json = response.json()
     grants = response_json['results']
-    print(grants[0])
+    logging.info(f"retrieved grant {grants[0]}")
     return grants[0]
     
 
 def retrieve_nih_grants(year, month, offset):
     if month < 10:
-        monthstr = f'0{month}'
+        monthstr = f"0{month}"
     else:
         monthstr = month
     monthfilter = f"&dateStart={monthstr}/01/{year}&dateEnd={monthstr}/31/{year}"
 
-    print("Reading from NIH API")
+    logging.info("Reading grants from NIH API")
     criteria = nih_covid_query_criteria(offset)
     
     response = requests.post(url = NIH_BASE,
                              data = json.dumps(criteria),
                              headers={"Content-Type":"application/vnd.api+json"})
-    print("-----")
     response_json = response.json()
     grants = response_json['results']
-    print(grants[1])
+    logging.debug(f"first grant found {grants[0]}")
     return grants
 
 
@@ -109,19 +111,21 @@ def nih_award_id_criteria(award_id):
 
 
 def process_grant(grant):
-    print(f" -- processing grant {grant['project_num']} -- {grant['project_title']}")
-
+    logging.info("======================================================================")
+    logging.info(f" -- processing grant {grant['project_num']} -- {grant['project_title']}")
+    logging.debug(grant)
+    
     existing_grant = cic_grants.find_cic_grant(grant['project_num'])
-    print(f"    -- existing grant is {type(existing_grant)}")
+    logging.debug(f"    -- existing grant is {type(existing_grant)}")
     grant_json = nih_to_cic_format(grant)
     if existing_grant is None:        
-        print("   -- not found - creating")
+        logging.debug("   -- not found - creating")
         response_code = cic_grants.create_cic_grant(grant_json)
     else:
-        print("   -- found! updating")
+        logging.debug("   -- found! updating")
         response_code = cic_grants.update_cic_grant(grant_json, existing_grant['id'])
-        
-    print(f"    -- {response_code}")
+
+    logging.info(f"    -- {response_code}")
 
     
 def nih_to_cic_format(grant):
@@ -132,8 +136,8 @@ def nih_to_cic_format(grant):
                 "funder_divisions": nih_funding_divisions(grant['agency_ic_fundings']),
                 "keywords": nih_keywords(grant['pref_terms']),
                 "program_officials": nih_program_officials(grant['program_officers']),
-#                "other_investigators": [ ],
                 "principal_investigator": nih_principal_investigator(grant['principal_investigators']),
+                "other_investigators": nih_other_investigators(grant['principal_investigators'][1:]),
                 "funder": {
                     "type": "Funder",
                     "id": 4 # TODO -- this should be looked up!
@@ -144,22 +148,41 @@ def nih_to_cic_format(grant):
                 "start_date": nih_to_cic_date(grant['project_start_date']),
                 "end_date": nih_to_cic_date(grant['project_end_date']),
                 "award_amount": grant['award_amount'],
-                "abstract": grant['abstract_text']
+                "abstract": nih_abstract(grant['abstract_text'])
             }
         }
     }
     return grant_data
 
 
+def nih_abstract(text):
+    # Remove errant \n put in by NIH API
+    text = text.replace('\n', ' ')
+
+    # remove annoying prefix markers
+    bad_prefixes = ['other project information – ',
+                    'project summary/abstract ',
+                    'project summary ',
+                    'project abstract ',
+                    'abstract ',
+                    'summary ']
+    for p in bad_prefixes:
+        plen = len(p)
+        if text[0:plen].lower() == p.lower():
+            text = text[plen:]
+
+    return text
+
+
 def nih_awardee_org(name, country):
     #  {
     #    "type": "Organization",
     #    "id": 24
-    #   }
+    #   }    
     org = cic_orgs.find_or_create_org(name, country)
     org_json = { "type": "Organization",
                  "id": int(org['id']) }
-    print(f" -- attaching organization {org_json}")
+    logging.debug(f" -- attaching organization {org_json}")
     return org_json
 
 
@@ -177,7 +200,27 @@ def nih_principal_investigator(people):
     person = cic_people.find_or_create_person(first,last)
     person_json = { "type": "Person",
                     "id": int(person['id']) }
-    print(f" -- attaching person {person_json}")
+    logging.debug(f" -- attaching person {person_json}")
+    return person_json
+
+
+def nih_other_investigators(people):
+    # Create the appropriate people, then return them as an array of references like
+    #  {
+    #    "type": "Person",
+    #    "id": "1"
+    #  }
+    person_json = []
+    for p in people:
+        first = p['first_name']
+        if len(p['middle_name']) > 0:
+            first += ' ' + p['middle_name']
+        last = p['last_name']
+
+        person = cic_people.find_or_create_person(first,last)
+        logging.debug(f" -- attaching person {person}")
+        person_json.append({ "type": "Person",
+                             "id": int(person['id']) })
     return person_json
 
 
@@ -202,7 +245,8 @@ def nih_keywords(s):
     if(s is None or len(s) == 0):
         return []
     else:
-        return s.split(';')[0:5] #TODO 114 -- allow all keywords, not just a few
+        s = s[0:99] # TODO 114 -- allow all keywords, not just a few
+        return s.split(';')
 
 def nih_funding_divisions(ics):
     result = []
