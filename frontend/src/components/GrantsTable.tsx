@@ -75,8 +75,7 @@ export default class GrantsTable extends React.Component<any, {grantsArray: [], 
                     title: "Projects", 
                     field: "title",
                     render: (row: any) => {
-                        //const detail_url = this.state.url.concat('/grants/'+row.id)
-                        const detail_url = 'http://127.0.0.1:8000/grants/1'
+                        const detail_url = this.state.url.concat('/grants/'+row.id)
                         return (<Link href={detail_url}>{row.title}</Link>)
                     }
                 },
