@@ -7,7 +7,6 @@ import { Link } from '@mui/material';
 import { TablePagination } from "@material-ui/core";
 import { NoEncryption } from "@material-ui/icons";
 
-
 export default class GrantsTable extends React.Component<any, {grantsArray: [], data: [], url: string, totalCount: number, page: number}> {
     constructor(props:any) {
         super(props)
@@ -29,8 +28,14 @@ export default class GrantsTable extends React.Component<any, {grantsArray: [], 
       };
 
     componentDidMount() {
-        const url = process.env.NODE_ENV == 'production' ? 
-        "https://cic-apps.datascience.columbia.edu" : "https://cice-dev.paas.cc.columbia.edu"
+        let url = "";
+        if (process.env.NODE_ENV == 'production') {
+            url = "https://cic-apps.datascience.columbia.edu";
+        } else if (process.env.NODE_ENV == 'development') {
+            url = "https://cice-dev.paas.cc.columbia.edu";
+        } else {
+            url = "http://127.0.0.1:8000"
+        }
 
         axios.get(url.concat('/search/grants')).then(results => {
             this.setState(
@@ -70,7 +75,8 @@ export default class GrantsTable extends React.Component<any, {grantsArray: [], 
                     title: "Projects", 
                     field: "title",
                     render: (row: any) => {
-                        const detail_url = this.state.url.concat('/v1/grants/'+row.id)
+                        //const detail_url = this.state.url.concat('/grants/'+row.id)
+                        const detail_url = 'http://127.0.0.1:8000/grants/1'
                         return (<Link href={detail_url}>{row.title}</Link>)
                     }
                 },
@@ -86,18 +92,17 @@ export default class GrantsTable extends React.Component<any, {grantsArray: [], 
                 { 
                     paging: true, 
                     showTitle: false,
-                    search: true,
-                    exportButton: true
+                    search: false,
+                    exportButton: false,
+                    pageSize: 5,
+                    exportAllData: false
                 }
             }
             components={{
                 Pagination: props => (
                     <TablePagination
                         {...props}
-                        count={this.state.totalCount}
-                        rowsPerPage={5}
-                        page={this.state.page}
-                        onChangePage={this.handleChangePage}
+                        rowsPerPageOptions={[]}
                     />
                 ),
                 Toolbar: props => {

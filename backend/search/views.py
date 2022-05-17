@@ -21,7 +21,7 @@ class GrantSearch(APIView):
             query['query'] = {
                 'multi_match': {
                 'query': keyword,
-                'fields': ['title', 'abstract', 'award_id']
+                'fields': ['title', 'abstract', 'award_id', 'keywords']
             }
         }
         

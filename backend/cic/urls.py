@@ -22,8 +22,8 @@ from django.contrib.auth.views import LoginView
 
 urlpatterns = [
     path('admin/', admin.site.urls),
-    path('', index, name='index'),
-    path('<int:grant_id>', detail),
+    path('grants/', index, name='index'),
+    path('grants/<int:grant_id>', detail),
     path('v1/', include('apis.urls')),
     path('survey/', include('pi_survey.urls')),
     path('o/', include('oauth2_provider.urls', namespace='oauth2_provider')),

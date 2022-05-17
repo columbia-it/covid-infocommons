@@ -40,11 +40,5 @@ module.exports = {
               }
         ]
     },
-    plugins: [new MiniCssExtractPlugin()],
-
-    // plugins: [
-    //     new HtmlWebpackPlugin({
-    //       template: path.join(__dirname, "src", "index.html"),
-    //     }),
-    // ],
+    plugins: [new MiniCssExtractPlugin()]
 }

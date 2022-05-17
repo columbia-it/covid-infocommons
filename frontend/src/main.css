@@ -1,7 +1,18 @@
-.App {
-    font-family: sans-serif;
-    text-align: center;
-  }
+.root {
+  margin: 20px;
+}
+
+.search-form {
+  display: flex;
+  justify-content: space-between;
+}
+
+.filter-button-div {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin: 15px;
+}
 
 .cic-heading {
   color: #3A6FA2;
@@ -9,12 +20,61 @@
   font-style: normal;
   font-size: 48px;
   font-family: sans-serif;
+  text-align: center;
 }
   
 .grants-table {
-  width: 70%;
+  width: 100%;
 }
 
 .search-bar {
-  width: 80%;
+  width: 100%;
+}
+
+.search-button {
+  width: 12%;
+}
+
+.download-csv {
+  text-align: center;
+  padding-bottom: 10px;
+}
+
+.download-button {
+  width: 60%;
+  height: 40px;
+}
+
+.filter-button {
+  color: #2C6BAC;
+}
+
+.flex-container {
+  display: flex;
+}
+
+.flex-child {
+  display: inline-block;
+}
+
+.flex-child:first-child {
+  width: 70%;
+}
+
+.flex-child:not(:first-child)  {
+  flex: 1;
+}
+
+.filter-div {
+  background-color: aqua;
+  margin: 10px;
+}
+
+.filter-results-label {
+  font-family: proxima-nova,sans-serif;
+  color: #555555;
+}
+
+.filter-accordion {
+  margin: 5px;
 }
