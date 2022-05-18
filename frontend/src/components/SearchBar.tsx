@@ -4,7 +4,10 @@ class SearchBar extends React.Component {
 
     render() {
         return (
-        <input type="text" defaultValue="Search PI Entries"></input>
+            <input 
+                type="text" 
+                defaultValue="Search PI Entries"
+                ></input>
         );
     }   
 }
