@@ -1,0 +1,102 @@
+{% load static %}
+{% load humanize %}
+{% load my_filters %}
+
+<!DOCTYPE html>
+<html lang="en">
+    {% block content %}
+    <head>
+        <meta charset="UTF-8">
+        <title>{{ grant.title }}</title>
+        <link rel="stylesheet" type="text/css" href="{% static '/main.css' %}" />
+    </head>
+    <body>
+        <div>
+            <header>
+                <small>Award Abstract #{{ grant.award_id}}</small>
+                <h1>
+                    <span>&quot;{{ grant.title }}&quot;</span>
+                </h1>
+            </header>
+            <section>
+                <small>Award Number:</small>
+                <p>{{ grant.award_id }}</p>
+            </section>
+            <section>
+                <small>Award Instrument:</small>
+                <p>Grant</p>
+            </section>
+            <section>
+                <small>Program Manager:</small>
+                <p>
+                    {% for program_official in grant.program_officials.all %}
+                    <ul>
+
+                        {% with program_official.first_name|add:" "|add:program_official.last_name as fullname %}
+                        {{ fullname }}
+                        {% endwith %}
+                    </ul>
+                    {% endfor %}
+                </p>
+            </section>
+            <section>
+                <small>Start Date:</small>
+                <p>
+                    <time>{{ grant.start_date }}</time>
+                </p>
+            </section>
+            <section>
+                <small>End Date:</small>
+                <p>
+                    <time>{{ grant.end_date }}</time>
+                </p>
+            </section>
+            <section>
+                <small>Awarded Amount to Date:</small>
+                <p>{{ grant.award_amount|currency }}</p>
+            </section>
+            <section>
+                <small>Investigator(s):
+                    <ul>
+                        <p>{{ grant.principal_investigator.first_name|add:" "|add:grant.principal_investigator.last_name}}</p>
+                        {% for other_investigator in grant.other_investigators.all %}
+                            {% with other_investigator.first_name|add:" "|add:other_investigator.last_name as fullname %}
+                            {{ fullname }}
+                            {% endwith %}
+                        {% endfor %}
+                    </ul>
+                </small>
+            </section>
+            <section>
+                <small>Sponsor:</small>
+                <p>
+                    {{ grant.awardee_organization.name}}
+                    <br>
+                    {{ grant.awardee_organization.address}}
+                    <br>
+                    {% with grant.awardee_organization.city|add:" "|add:grant.awardee_organization.state|add:" "|add:grant.awardee_organization.zip as address %}
+                        {{ address }}
+                    {% endwith %}
+                </p>
+            </section>
+            <section>
+                <small>Funder Divisions:</small>
+                <p>
+                    {% for funder_division in grant.funder_divisions.all %}
+                    <ul>
+                        {{ funder_division}}
+                    </ul>
+                    {% endfor %}
+                </p>
+            </section>
+            <section>
+                <small>Abstract:</small>
+                <p>
+                    {{ grant.abstract }}
+                </p>
+            </section>
+        </div>
+    </body>
+{% endblock content %}
+
+</html>

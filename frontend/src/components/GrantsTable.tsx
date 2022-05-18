@@ -1,60 +1,49 @@
 import React, { Component } from "react";
-import MaterialTable from "material-table";
+import MaterialTable, { MTableToolbar } from "material-table";
 import axios from "axios";
+import { makeStyles } from "@material-ui/core/styles";
+import NumberFormat from 'react-number-format';
+import { Link } from '@mui/material';
+import { TablePagination } from "@material-ui/core";
+import { NoEncryption } from "@material-ui/icons";
 
-const columns = [
-    {
-        name: 'Projects',
-        selector: (row: any) => row.title,
-        width: "300px",
-        sortable: true
-    }, 
-    {
-        name: 'Award ID',
-        selector: (row: any) => row.award_id,
-        width: "200px",
-        sortable: true
-    },
-    {
-        name: 'Principal Investigator',
-        selector: (row: any) => row.principal_investigator.first_name,
-        width: "200px",
-        sortable: true
-    },
-    {
-        name: 'Abstract',
-        selector: (row: any) => row.abstract,
-        sortable: true
-    }
-]
-
-class MyState {
-    data : []
-    count : number
-
-    constructor(data: [], count: number) {
-        this.data = data
-        this.count = count
-    }
-}
-
-export default class GrantsTable extends React.Component<any, {grantsArray: [], data: []}> {
+export default class GrantsTable extends React.Component<any, {grantsArray: [], data: [], url: string, totalCount: number, page: number}> {
     constructor(props:any) {
         super(props)
 
         this.state = {
             data: [],
-            grantsArray: []
+            grantsArray: [],
+            url: "",
+            totalCount: 0,
+            page: 0
         }
     }
 
-    componentDidMount() {
-        const url = "https://cice-dev.paas.cc.columbia.edu/search/grants"
+    handleChangePage = (
+        event: React.ChangeEvent<HTMLInputElement>,
+        newPage: number
+      ) => {
+          this.setState({'page': newPage})
+      };
 
-        axios.get(url).then(results => {
-            //console.log(results.data.hits.hits)
+    componentDidMount() {
+        let url = "";
+        if (process.env.NODE_ENV == 'production') {
+            url = "https://cic-apps.datascience.columbia.edu";
+        } else if (process.env.NODE_ENV == 'development') {
+            url = "https://cice-dev.paas.cc.columbia.edu";
+        } else {
+            url = "http://127.0.0.1:8000"
+        }
+
+        axios.get(url.concat('/search/grants')).then(results => {
             this.setState(
-                { data: results.data.hits.hits}
+                { 
+                    data: results.data.hits.hits,
+                    totalCount: results.data.hits.total.value,
+                    page: 0
+                }
             )     
             var newArray = results.data.hits.hits.map(function(val:any) {
                 var pi_name = ''
@@ -66,11 +55,13 @@ export default class GrantsTable extends React.Component<any, {grantsArray: [], 
                     title: val['_source']['title'],
                     award_id: val['_source']['award_id'],
                     pi: pi_name,
-                    abstract: val['_source']['abstract']
+                    abstract: val['_source']['abstract'],
+                    award_amount: val['_source']['award_amount']
                 }
             })
             this.setState({
-                grantsArray: newArray
+                grantsArray: newArray,
+                url: url
             })    
         })
     }
@@ -78,20 +69,68 @@ export default class GrantsTable extends React.Component<any, {grantsArray: [], 
     render() {
       return (
         <MaterialTable
-            title="Grants"
             data={this.state.grantsArray}
             columns={[
                 {
-                    title: "Title", field: "title"
+                    title: "Projects", 
+                    field: "title",
+                    render: (row: any) => {
+                        const detail_url = this.state.url.concat('/grants/'+row.id)
+                        return (<Link href={detail_url}>{row.title}</Link>)
+                    }
                 },
                 {
-                    title: "PI", field: "pi",
+                    title: "Principal Investigator", field: "pi",
                 },
                 {
-                    title: "Abstract", field: "abstract"
+                    title: "Award Amount", field: "award_amount", render: (row:any) => 
+                    <div><NumberFormat value={row.award_amount} displayType={'text'} thousandSeparator={true} prefix={'$'} /></div>
                 }
             ]}
-            options={{ paging: false }}
+            options={
+                { 
+                    paging: true, 
+                    showTitle: false,
+                    search: false,
+                    exportButton: false,
+                    pageSize: 5,
+                    exportAllData: false
+                }
+            }
+            components={{
+                Pagination: props => (
+                    <TablePagination
+                        {...props}
+                        rowsPerPageOptions={[]}
+                    />
+                ),
+                Toolbar: props => {
+                    const propsCopy = { ...props };
+                    propsCopy.showTitle = false;
+                    propsCopy.placeholder = "Search PI Entries"
+                    const useStyles = makeStyles({
+                        toolbarWrapper: {
+                            // '& .MuiToolbar-gutters': {
+                            //     paddingLeft: 0,
+                            //     paddingRight: 0,
+                            // },
+                            '& .MTableToolbar-spacer-8': {
+                                display: 'none'
+                            },
+                            '& .MTableToolbar-searchField-11': {
+                                width: '100%'
+                            },
+                        },
+                    });
+                    const classes = useStyles();
+                    return (
+                        <div className={classes.toolbarWrapper}>
+                            <MTableToolbar {...propsCopy}/>
+                        </div>
+                    )
+                }
+            }
+        }
         />
       );
     }

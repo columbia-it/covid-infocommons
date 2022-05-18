@@ -41,6 +41,7 @@ INSTALLED_APPS = [
     'django_mysql',
     'django_filters',
     'django_s3_storage',
+    'django.contrib.humanize',
     # ES
     'django_opensearch_dsl',
     # Third party apps
