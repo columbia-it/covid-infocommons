@@ -1,52 +1,158 @@
 import ReactDOM from 'react-dom';
 import "./main.css"
-import GrantsTable from './components/GrantsTable';
+import GrantsTable from './components/GrantTable';
 import GrantsFilter from './components/GrantsFilter';
 import SearchBar from './components/SearchBar';
 import Box from '@mui/material/Box';
 import TextField from '@mui/material/TextField';
 import Button from '@mui/material/Button';
+import React, { Component } from "react";
+import axios from "axios";
+import DownloadIcon from '@mui/icons-material/Download';
 
+interface Grant {
+    id: number
+    title: string
+    award_amount: number
+    abstract: string
+    award_id: string
+    pi: string
+}
 
-function App() {
-    return (
-        <Box
-            sx={{
-                width: '100%',
-                '& .MuiTextField-root': { width: '85%' },
-            }}
-            component="form"
-            noValidate
-            autoComplete="off"
-        >
-            <div className='root'>
-                <link rel="stylesheet" href="https://fonts.googleapis.com/icon?family=Material+Icons"></link>
-                <h1 className='cic-heading'>COVID INFORMATION COMMONS</h1>
-                <form className='search-form'>
-                    <TextField
-                        id="outlined-search" 
-                        label="Search PI Entries" 
-                        type="search" />
-                    <Button className='search-button' variant="contained">Search</Button>
-                </form>
-                <br/>
-                <br/>
-                <div className='flex-container'>
-                    <div className='flex-child'>
-                        <GrantsTable/>
-                    </div>
-                    <div className='flex-child'>
-                        <div className='download-csv'>
-                            <Button className='download-button' variant="contained">Download as CSV</Button>
+class App extends Component {
+    state = {
+        data: [],
+        url: ''
+    };
+
+    componentDidMount = () => {
+        this.setState({ data: this.get_grants_data('') });
+    }
+
+    searchHandler = (event:any) => {
+        const keyword = (document.getElementById('outlined-search') as HTMLInputElement).value;
+        this.setState({ url: this.get_url() })
+        this.setState({ data: this.get_grants_data(keyword) });
+    };
+
+    get_url = () => {
+        let url = "";
+        if (process.env.NODE_ENV == 'production') {
+            url = "https://cic-apps.datascience.columbia.edu";
+        } else if (process.env.NODE_ENV == 'development') {
+            url = "https://cice-dev.paas.cc.columbia.edu";
+        } else {
+            url = "http://127.0.0.1:8000"
+        }
+        return url
+    }
+
+    get_grants_data = (keyword:string) => {
+        var url = this.get_url().concat('/search/grants')
+        if (keyword) {
+            url = url.concat('?keyword=').concat(keyword)
+        }
+        
+        axios.get(url).then(results => {
+            var newArray = results.data.hits.hits.map(function(val:any) {
+                var pi_name = ''
+                if (val['_source']['principal_investigator'] != null) {
+                    pi_name = val['_source']['principal_investigator']['first_name'] + ' ' + val['_source']['principal_investigator']['last_name']
+                }
+                return {
+                    id: val['_source']['id'],
+                    title: val['_source']['title'],
+                    award_id: val['_source']['award_id'],
+                    pi: pi_name,
+                    abstract: val['_source']['abstract'],
+                    award_amount: val['_source']['award_amount']
+                }
+            })
+            this.setState({ data: newArray })
+        })
+    }
+
+    downloadFile = (data:any, fileName:any, fileType:any) => {
+        const blob = new Blob([data], { type: fileType })
+        const a = document.createElement('a')
+        a.download = fileName
+        a.href = window.URL.createObjectURL(blob)
+        const clickEvt = new MouseEvent('click', {
+          view: window,
+          bubbles: true,
+          cancelable: true,
+        })
+        a.dispatchEvent(clickEvt)
+        a.remove()
+    }
+      
+
+    exportToCsv = (event:any) => {
+        event.preventDefault()
+        // Headers for each column
+        let headers = ['Id,Title,Award_Amount,Award_ID,PI,Abstract,']
+      
+        // Convert grants data to csv
+        let grantsCsv = this.state.data.reduce((acc:any, grant:any) => {
+            const grant_to_add:Grant = grant
+            acc.push([
+                grant_to_add.id,
+                grant_to_add.title, 
+                grant_to_add.award_amount,
+                grant_to_add.award_id,
+                grant_to_add.pi,
+                grant_to_add.abstract]
+            .join(','))
+            return acc
+        }, [])
+        this.downloadFile([...headers, ...grantsCsv].join('\n'), 'grants.csv', 'text/csv')
+    }
+
+    render() {
+        return (
+            <Box
+                sx={{
+                    width: '100%',
+                    '& .MuiTextField-root': { width: '85%' },
+                }}
+                component="form"
+                noValidate
+                autoComplete="off"
+            >
+                <div className='root'>
+                    <link rel="stylesheet" href="https://fonts.googleapis.com/icon?family=Material+Icons"></link>
+                    <h1 className='cic-heading'>COVID INFORMATION COMMONS</h1>
+                    <form className='search-form'>
+                        <TextField
+                            id="outlined-search" 
+                            label="Search PI Entries" 
+                            type="search" />
+                        <Button onClick={ this.searchHandler } className='search-button' variant="contained">Search</Button>
+                    </form>
+                    <br/>
+                    <br/>
+                    <div className='flex-container'>
+                        <div className='flex-child'>
+                            <GrantsTable data={ this.state.data} url={ this.state.url }/>
                         </div>
-                        <div>
-                            <GrantsFilter/>
+                        <div className='flex-child'>
+                            <div className='download-csv'>
+                                <Button onClick={ this.exportToCsv } 
+                                        className='download-button' 
+                                        variant="contained"
+                                        endIcon={ <DownloadIcon /> }>Download Results as CSV
+                                </Button>
+                            </div>
+                            <div>
+                                <GrantsFilter/>
+                            </div>
                         </div>
                     </div>
                 </div>
-            </div>
-        </Box>
-    )
+            </Box>
+        );
+    }
+    
 }
 
 const rootElement = document.getElementById("root");
