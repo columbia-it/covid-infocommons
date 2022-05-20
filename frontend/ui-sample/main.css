@@ -82,6 +82,10 @@
 
 /* ******************** General styles to copy the Columbia Sites settings ****************** */
 
+*:before, *:after {
+    box-sizing: border-box;
+}
+
 a {
     color: #216497;
     text-decoration: none;
@@ -89,6 +93,19 @@ a {
 
 a:visited {
     color: #216497;
+}
+
+b {
+    font-weight: 600;
+    font-weight: bold;
+}
+
+body {
+    color: #555555;
+    background: #FFF;
+    background-color: #FFF;
+    font-family: "Helvetica Neue",Helvetica,Arial,sans-serif;
+    font-size: 14px;
 }
 
 h1 {
@@ -104,6 +121,22 @@ h1 {
     font-weight: normal;
 }
 
+html {
+    -webkit-tap-highlight-color: transparent;
+    -webkit-text-size-adjust: 100%;
+}
+
+p {
+    -webkit-text-size-adjust: 100%;
+    -webkit-tap-highlight-color: transparent;
+    line-height: 1.42857143;
+    font-family: "proxima-nova",sans-serif;
+    color: #555555;
+    font-size: 16px;
+    box-sizing: border-box;
+    margin: 0 0 20px;
+}
+
 small {
     -webkit-text-size-adjust: 100%;
     -webkit-tap-highlight-color: transparent;
@@ -114,7 +147,12 @@ small {
     font-size: 85%;
 }
 
-p, ul {
+strong {
+    font-weight: 600;
+    font-weight: bold;
+}
+
+ul {
     -webkit-text-size-adjust: 100%;
     -webkit-tap-highlight-color: transparent;
     line-height: 1.42857143;
@@ -123,6 +161,24 @@ p, ul {
     font-size: 16px;
     box-sizing: border-box;
     margin: 0 0 20px;
+    list-style-type: disc;
+}
+
+.columbia-heading {
+    -webkit-text-size-adjust: 100%;
+    -webkit-tap-highlight-color: transparent;
+    font-size: 14px;
+    line-height: 1.42857143;
+    font-weight: 400;
+    font-family: "Helvetica Neue",Helvetica,Arial,sans-serif;
+    box-sizing: border-box;
+    background-color: transparent;
+    text-decoration: none;
+    display: inline-block;
+    color: #3A6FA2;
+    text-transform: uppercase;
+    padding: 13px 0;
+    cursor: pointer;
 }
 
 .visually-hidden {
@@ -143,32 +199,39 @@ p, ul {
     word-wrap: normal;
 }
 
-.columbia-heading {
+#site-name {
     -webkit-text-size-adjust: 100%;
     -webkit-tap-highlight-color: transparent;
-    font-size: 14px;
-    line-height: 1.42857143;
-    font-weight: 400;
-    font-family: "Helvetica Neue",Helvetica,Arial,sans-serif;
+    font-family: "trajan-pro-3",sans-serif;
+    font-size: 48px;
+    -webkit-font-smoothing: antialiased;
     box-sizing: border-box;
     background-color: transparent;
     text-decoration: none;
-    display: inline-block;
     color: #3A6FA2;
-    text-transform: uppercase;
-    padding: 13px 0;
+    font-weight: 400;
+    font-style: normal;
+}
+
+#site-nav li a, #site-nav li div {
+    font-size: 1.4em;
+    color: #3A6FA2;
+    display: block;
+    padding-top: 10px;
+    padding-right: 15px;
+    padding-bottom: 10px;
+    padding-left: 15px;
+    line-height: 20px;
+    text-align: left;
+    margin-bottom: 5px;
+    text-decoration: none;
     cursor: pointer;
 }
 
-.site-name {
-    -webkit-text-size-adjust: 100%;
-    -webkit-tap-highlight-color: transparent;
-    line-height: 1.42857143;
-    color: #555555;
-    font-family: "trajan-pro-3",sans-serif;
-    box-sizing: border-box;
+#site-nav li {
+    z-index: 6;
+    display: block;
     float: left;
-    padding: 0;
-    font-size: 48px;
-    -webkit-font-smoothing: antialiased;
+    height: 3em;
+    width: auto;
 }
