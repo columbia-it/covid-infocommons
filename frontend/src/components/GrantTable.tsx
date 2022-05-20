@@ -6,13 +6,15 @@ import { Link } from '@mui/material';
 import NumberFormat from 'react-number-format';
 
 type Prop = {
-    'title': string;
-    'pi': string;
-    'award_amount': number;
+    'title': string
+    'pi': string
+    'award_amount': number
 }
 type GrantsTableProps = {
     data: Prop[],
     url: string
+    totalCount: number
+    pageIndex: number
 }
 
 class GrantsTable extends Component<GrantsTableProps> {
@@ -20,10 +22,16 @@ class GrantsTable extends Component<GrantsTableProps> {
         console.log(prevProps)
     }
 
+    pageChangeHandler = (event: any, page: number) => {
+        console.log('page changed.')
+    }
+
     render() {
         return (
             <MaterialTable
             data={this.props.data}
+            onChangePage={ this.pageChangeHandler }
+            page={ this.props.pageIndex }
             columns={[
                 {
                     title: "Projects", 
@@ -56,6 +64,7 @@ class GrantsTable extends Component<GrantsTableProps> {
                     <TablePagination
                         {...props}
                         rowsPerPageOptions={[]}
+                        count={ this.props.totalCount }
                     />
                 ),
                 Toolbar: props => {

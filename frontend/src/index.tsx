@@ -19,20 +19,29 @@ interface Grant {
     pi: string
 }
 
-class App extends Component {
+interface AppState {
+    data: Grant[]
+    url: string
+    totalCount: number
+    pageIndex: number
+}
+
+class App extends Component<any, AppState> {
     state = {
         data: [],
-        url: ''
+        url: '',
+        totalCount: 0,
+        pageIndex: 0
     };
 
     componentDidMount = () => {
-        this.setState({ data: this.get_grants_data('') });
+        this.get_grants_data('')
     }
 
     searchHandler = (event:any) => {
         const keyword = (document.getElementById('outlined-search') as HTMLInputElement).value;
         this.setState({ url: this.get_url() })
-        this.setState({ data: this.get_grants_data(keyword) });
+        this.get_grants_data(keyword)
     };
 
     get_url = () => {
@@ -54,6 +63,7 @@ class App extends Component {
         }
         
         axios.get(url).then(results => {
+            this.setState({ totalCount: results.data.hits.total.value })
             var newArray = results.data.hits.hits.map(function(val:any) {
                 var pi_name = ''
                 if (val['_source']['principal_investigator'] != null) {
@@ -133,7 +143,11 @@ class App extends Component {
                     <br/>
                     <div className='flex-container'>
                         <div className='flex-child'>
-                            <GrantsTable data={ this.state.data} url={ this.state.url }/>
+                            <GrantsTable
+                                totalCount={ this.state.totalCount} 
+                                data={ this.state.data} 
+                                url={ this.state.url }
+                                pageIndex={ this.state.pageIndex }/>
                         </div>
                         <div className='flex-child'>
                             <div className='download-csv'>
