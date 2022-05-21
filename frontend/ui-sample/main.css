@@ -1,6 +1,6 @@
 
 .root {
-  margin: 20px;
+    margin: 20px;
 }
 
 .search-form {
@@ -106,6 +106,7 @@ body {
     background-color: #FFF;
     font-family: "Helvetica Neue",Helvetica,Arial,sans-serif;
     font-size: 14px;
+    padding: 50px;
 }
 
 h1 {
@@ -213,7 +214,7 @@ ul {
     font-style: normal;
 }
 
-/* *******************************************************   Menu bar   ********************************************** */
+/* ************************************************   Menu bar   ********************************************** */
 /* Adapted from the "Simple, CSS only, responsive menu" at https://www.sliderrevolution.com/resources/css-menu/ */
 
 #site-nav .container {
@@ -256,6 +257,7 @@ ul {
     text-align: left;
     font-size: 14px;
     margin: 0 0 0px;
+    padding-inline-start: 0px;
 }
 
 /* clear'n floats */
@@ -396,3 +398,137 @@ ul {
   }
 }
 
+
+/* **********************************************   Breadcrumb bar   ****************************************** */
+
+
+#breadcrumb {
+    -webkit-text-size-adjust: 100%;
+    -webkit-tap-highlight-color: transparent;
+    line-height: 1.42857143;
+    font-family: "proxima-nova",sans-serif;
+    font-size: 18px;
+    box-sizing: border-box;
+    display: block;
+    background: #F6F6F8;
+    color: #717171;
+    padding: 0;
+    margin-bottom: 0;
+    overflow: hidden;
+}
+
+#breadcrumb .sr-only {
+    -webkit-text-size-adjust: 100%;
+    -webkit-tap-highlight-color: transparent;
+    box-sizing: border-box;
+    font-family: inherit;
+    font-weight: 500;
+    color: #555555;
+    font-size: 1.7em;
+    line-height: 1.22em;
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    padding: 0;
+    margin: -1px;
+    overflow: hidden;
+    clip: rect(0,0,0,0);
+    border: 0;
+}
+
+#breadcrumb .container {
+        -webkit-text-size-adjust: 100%;
+    -webkit-tap-highlight-color: transparent;
+    line-height: 1.42857143;
+    font-family: "proxima-nova",sans-serif;
+    font-size: 18px;
+    color: #717171;
+    box-sizing: border-box;
+    padding-right: 15px;
+    padding-left: 15px;
+    margin-right: auto;
+    margin-left: auto;
+    width: 970px;
+}
+
+#breadcrumb li {
+        -webkit-text-size-adjust: 100%;
+    -webkit-tap-highlight-color: transparent;
+    line-height: 1.42857143;
+    font-family: "proxima-nova",sans-serif;
+    color: #717171;
+    list-style: none;
+    font-size: 14px;
+    box-sizing: border-box;
+    float: left;
+    padding: 0;
+    position: relative;
+    background: none;
+    display: block;
+    overflow: visible;
+    margin-left: 0;
+    z-index: 9;
+}
+
+#breadcrumb li a {
+        -webkit-text-size-adjust: 100%;
+    -webkit-tap-highlight-color: transparent;
+    line-height: 1.42857143;
+    font-family: "proxima-nova",sans-serif;
+    list-style: none;
+    font-size: 14px;
+    box-sizing: border-box;
+    background-color: transparent;
+    text-decoration: none;
+    color: #216497;
+    position: relative;
+    display: block;
+    max-width: 30em;
+    padding: 12px 50px 12px 0;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    z-index: 2;
+    padding-left: 0;
+}
+
+#breadcrumb li a:before {
+    border-bottom-color: rgba(0,0,0,0);
+    border-bottom-style: solid;
+    border-bottom-width: 2000px;
+    border-left-color: rgb(219,220,224);
+    border-left-style: solid;
+    border-left-width: 2000px;
+    border-top-color: rgba(0,0,0,0);
+    border-top-style: solid;
+    box-sizing: border-box;
+    font-size: 2000px;
+    height: 4000px;
+    margin-bottom: -2000px;
+    margin-top: -2000px;
+    pointer-events: none;
+    position: absolute;
+    right: 10px;
+    top: 22px;
+    width: 2000px;
+    z-index: 2;
+}
+
+#breadcrumb li .active {
+        -webkit-text-size-adjust: 100%;
+    -webkit-tap-highlight-color: transparent;
+    line-height: 1.42857143;
+    font-family: "proxima-nova",sans-serif;
+    list-style: none;
+    font-size: 14px;
+    box-sizing: border-box;
+    float: left;
+    padding: 0;
+    position: relative;
+    background: none;
+    color: #717171;
+    display: block;
+    overflow: hidden;
+    margin-left: -30px;
+    z-index: 8;
+}
