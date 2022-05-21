@@ -213,6 +213,16 @@ ul {
     font-style: normal;
 }
 
+/* ******************** Menu bar ******************** */
+
+#site-nav .container {
+  display: inline-block;
+  -webkit-box-shadow: 0 0 70px #fff;
+  -moz-box-shadow: 0 0 70px #fff;
+  box-shadow: 0 0 70px #fff;
+  margin-top: 40px;
+}
+
 #site-nav li a, #site-nav li div {
     font-size: 1.4em;
     color: #3A6FA2;
@@ -226,6 +236,7 @@ ul {
     margin-bottom: 5px;
     text-decoration: none;
     cursor: pointer;
+
 }
 
 #site-nav li {
@@ -235,3 +246,150 @@ ul {
     height: 3em;
     width: auto;
 }
+
+#site-nav ul {
+    list-style: none;
+    position: relative;
+    text-align: left;
+}
+
+/* clear'n floats */
+#site-nav ul:after {
+  clear: both;
+}
+
+#site-nav ul:before, #site-nav ul:after {
+    content: " ";
+    display: table;
+}
+
+#site-nav nav {
+  position: relative;
+  background: #2B2B2B;
+  background-image: -webkit-linear-gradient(bottom, #2B2B2B 7%, #333333 100%);
+  background-image: -moz-linear-gradient(bottom, #2B2B2B 7%, #333333 100%);
+  background-image: -o-linear-gradient(bottom, #2B2B2B 7%, #333333 100%);
+  background-image: linear-gradient(bottom, #2B2B2B 7%, #333333 100%);
+  text-align: center;
+  letter-spacing: 1px;
+  text-shadow: 1px 1px 1px #0E0E0E;
+  -webkit-box-shadow: 2px 2px 3px #888;
+  -moz-box-shadow: 2px 2px 3px #888;
+  box-shadow: 2px 2px 3px #888;
+  border-bottom-right-radius: 8px;
+  border-bottom-left-radius: 8px;
+}
+
+/* prime */
+#site-nav ul.primary li a {
+  display: block;
+  padding: 20px 30px;
+  border-right: 1px solid #3D3D3D;
+}
+
+#site-nav ul.primary li:last-child a {
+  border-right: none;
+}
+
+#site-nav ul.primary li a:hover { 
+  color: #000;
+}
+
+/* subs */
+#site-nav ul.sub {
+  position: absolute;
+  z-index: 200;
+  box-shadow: 2px 2px 0 #BEBEBE;
+  width: 35%;
+  display:none;
+}
+
+#site-nav ul.sub li {
+  float: none;
+  margin: 0;
+}
+
+#site-nav ul.sub li a {
+  border-bottom: 1px dotted #ccc;
+  border-right: none;
+  color: #000;
+  padding: 15px 30px;
+}
+
+#site-nav ul.sub li:last-child a {
+  border-bottom: none;
+}
+
+#site-nav ul.sub li a:hover {
+  color: #000;
+  background: #eeeeee;
+}
+
+/* sub display*/
+#site-nav ul.primary li:hover ul {
+  display: block;
+  background: #fff;
+}
+
+/* keeps the tab background white */
+#site-nav ul.primary li:hover a {
+  background: #fff;
+  color: #666;
+  text-shadow: none;
+}
+
+#site-nav ul.primary li:hover > a{
+  color: #000;
+} 
+
+/* Mobile menu */
+@media only screen and (max-width: 600px) {
+  .decor {
+    padding: 3px;
+  }
+  
+  .wrap {
+    width: 100%;
+    margin-top: 0px;
+  }
+  
+   li {
+    float: none;
+  }
+  
+  ul.primary li:hover a {
+    background: none;
+    color: #8B8B8B;
+    text-shadow: 1px 1px #000;
+  }
+
+  ul.primary li:hover ul {
+    display: block;
+    background: #272727;
+    color: #fff;
+  }
+  
+  ul.sub {
+    display: block;  
+    position: static;
+    box-shadow: none;
+    width: 100%;
+  }
+  
+  ul.sub li a {
+    background: #272727;
+    border: none;
+    color: #8B8B8B;
+  }
+  
+  ul.sub li a:hover {
+    color: #ccc;
+    background: none;
+  }
+}
+
+/* TODO
+   - make sample menu right
+   - change labels /classes in header file
+*/
+
