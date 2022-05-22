@@ -121,11 +121,10 @@ class App extends Component {
             >
                 <div className='root'>
                     <link rel="stylesheet" href="https://fonts.googleapis.com/icon?family=Material+Icons"></link>
-                    <h1 className='cic-heading'>COVID INFORMATION COMMONS</h1>
                     <form className='search-form'>
                         <TextField
                             id="outlined-search" 
-                            label="Search PI Entries" 
+                            label="Search" 
                             type="search" />
                         <Button onClick={ this.searchHandler } className='search-button' variant="contained">Search</Button>
                     </form>
