@@ -11,7 +11,6 @@ def main():
     print("CIC org demo")
     print()
     print(f"Find in CIC by ROR: {find_cic_org_by_ror('https://ror.org/008s83205')}")
-    return
     print(f"Find in CIC by name: {find_cic_org('Yale University')}")
     print(f"Find in ROR: {find_ror_org('Duke University')}")
     print(f"Find in ROR: {find_ror_org('Duke UniVERsity')}")
