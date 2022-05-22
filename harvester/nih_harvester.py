@@ -20,6 +20,7 @@ def main():
     #process_grant(g)
     #return
 
+    print("NIH Harvester")
     
     # The NIH API will only return a max of 500 grants per request, and the default page size is 25 
     # So we request one month at a time, and step through each page

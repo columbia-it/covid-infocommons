@@ -11,7 +11,7 @@ People by ORCID or email:
 - filter by single ORCID
   `/v1/people?filter[orcid]=http://orcid.org/0000-0002-1825-0097`
 - filter by multiple ORCIDs
-  `/v1/people?filter[orcid.in]=http://orcid.org/0000-0003-1989-0090,http://orcid.org/0002-0013-1909-0091
+  `/v1/people?filter[orcid.in]=http://orcid.org/0000-0003-1989-0090,http://orcid.org/0002-0013-1909-0091`
 - filter by emails
   `/v1/people?filter[emails.icontains]=RandyMCrichton@rhyta.com`
 

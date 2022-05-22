@@ -10,7 +10,9 @@ ROR_API = "https://api.ror.org/organizations"
 def main():
     print("CIC org demo")
     print()
-    print(f"Find in CIC: {find_cic_org('Education Cities')}")
+    print(f"Find in CIC by ROR: {find_cic_org_by_ror('https://ror.org/008s83205')}")
+    return
+    print(f"Find in CIC by name: {find_cic_org('Yale University')}")
     print(f"Find in ROR: {find_ror_org('Duke University')}")
     print(f"Find in ROR: {find_ror_org('Duke UniVERsity')}")
     print(f"find_or_create: {find_or_create_org('CROW Canyon Archaeological Center', 'United States')}")
@@ -26,7 +28,7 @@ def find_cic_orgs():
 
     
 def find_cic_org(name):
-    # TODO --- update to use search instead of cycling through all
+    # TODO 127 --- update to use search instead of cycling through all
     logging.info(f" -- find {name} from {CIC_ORGS_API}")
     response = requests.get(f"{CIC_ORGS_API}")
     response_json = response.json()    
@@ -46,9 +48,8 @@ def find_cic_org(name):
 
 
 def find_cic_org_by_ror(ror_id):
-    # TODO --- update to use filtering instead of cycling through all
-    logging.info(f" -- find {ror_id} from {CIC_ORGS_API}")
-    response = requests.get(f"{CIC_ORGS_API}")
+    logging.info(f" -- find {ror_id} from {CIC_ORGS_API}?filter[ror]={ror_id}")
+    response = requests.get(f"{CIC_ORGS_API}?filter[ror]={ror_id}")
     response_json = response.json()    
     cic_orgs = response_json['data']
     while(len(cic_orgs) > 0):
@@ -56,11 +57,6 @@ def find_cic_org_by_ror(ror_id):
             if co['attributes']['ror'] == ror_id:
                 logging.debug(f"   -- found {co['attributes']['ror']}")
                 return co
-        if response_json['links']['next'] is not None:
-            print('.', end='', flush=True)
-            response = requests.get(f"{response_json['links']['next']}")
-            response_json = response.json()    
-            cic_orgs = response_json['data']
         else:
             return None
 
