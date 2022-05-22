@@ -203,7 +203,7 @@ ul {
 #site-name {
     -webkit-text-size-adjust: 100%;
     -webkit-tap-highlight-color: transparent;
-    font-family: "trajan-pro-3",sans-serif;
+    font-family: "trajan-pro-3","Cinzel",sans-serif;
     font-size: 48px;
     -webkit-font-smoothing: antialiased;
     box-sizing: border-box;
