@@ -1,7 +1,7 @@
 import ReactDOM from 'react-dom';
 import "./main.css"
 import GrantsTable from './components/GrantTable';
-import GrantsFilter from './components/GrantsFilter';
+import { GrantsFilter, OrgNameFacet } from './components/GrantsFilter';
 import SearchBar from './components/SearchBar';
 import Box from '@mui/material/Box';
 import TextField from '@mui/material/TextField';
@@ -24,6 +24,7 @@ interface AppState {
     url: string
     totalCount: number
     pageIndex: number
+    awardee_org_names: OrgNameFacet[]
 }
 
 class App extends Component<any, AppState> {
@@ -31,14 +32,17 @@ class App extends Component<any, AppState> {
         data: [],
         url: '',
         totalCount: 0,
-        pageIndex: 0
+        pageIndex: 0,
+        awardee_org_names: []
     };
 
     componentDidMount = () => {
         this.get_grants_data('')
+        this.get_org_name_facet()
     }
 
     searchHandler = (event:any) => {
+        event.preventDefault()
         const keyword = (document.getElementById('outlined-search') as HTMLInputElement).value;
         this.setState({ url: this.get_url() })
         this.get_grants_data(keyword)
@@ -56,6 +60,13 @@ class App extends Component<any, AppState> {
         return url
     }
 
+    get_org_name_facet() {
+        var url = this.get_url().concat('/search/facets?field=awardee_organization.name')
+        axios.get(url).then(results => {
+            this.setState({ awardee_org_names: results.data.aggregations.patterns.buckets })
+        })
+    }
+
     get_grants_data = (keyword:string) => {
         var url = this.get_url().concat('/search/grants')
         if (keyword) {
@@ -64,6 +75,7 @@ class App extends Component<any, AppState> {
         
         axios.get(url).then(results => {
             this.setState({ totalCount: results.data.hits.total.value })
+
             var newArray = results.data.hits.hits.map(function(val:any) {
                 var pi_name = ''
                 if (val['_source']['principal_investigator'] != null) {
@@ -101,7 +113,6 @@ class App extends Component<any, AppState> {
         event.preventDefault()
         // Headers for each column
         let headers = ['Id,Title,Award_Amount,Award_ID,PI,Abstract,']
-      
         // Convert grants data to csv
         let grantsCsv = this.state.data.reduce((acc:any, grant:any) => {
             const grant_to_add:Grant = grant
@@ -116,6 +127,15 @@ class App extends Component<any, AppState> {
             return acc
         }, [])
         this.downloadFile([...headers, ...grantsCsv].join('\n'), 'grants.csv', 'text/csv')
+    }
+
+    enterHandler = (e:any) => {
+        if (e.key === 'Enter') {
+            e.preventDefault();
+            const keyword = (document.getElementById('outlined-search') as HTMLInputElement).value;
+            this.setState({ url: this.get_url() })
+            this.get_grants_data(keyword)
+        }
     }
 
     render() {
@@ -135,19 +155,24 @@ class App extends Component<any, AppState> {
                     <form className='search-form'>
                         <TextField
                             id="outlined-search" 
-                            label="Search PI Entries" 
-                            type="search" />
-                        <Button onClick={ this.searchHandler } className='search-button' variant="contained">Search</Button>
+                            label="Search" 
+                            type="search" 
+                            onKeyDown={ this.enterHandler }/>
+                        <Button 
+                            onClick={ this.searchHandler } 
+                            className='search-button' 
+                            variant="contained">Search</Button>
                     </form>
                     <br/>
                     <br/>
                     <div className='flex-container'>
                         <div className='flex-child'>
                             <GrantsTable
-                                totalCount={ this.state.totalCount} 
+                                totalCount={ this.state.totalCount } 
                                 data={ this.state.data} 
                                 url={ this.state.url }
-                                pageIndex={ this.state.pageIndex }/>
+                                //pageIndex={ this.state.pageIndex }
+                            />
                         </div>
                         <div className='flex-child'>
                             <div className='download-csv'>
@@ -158,7 +183,8 @@ class App extends Component<any, AppState> {
                                 </Button>
                             </div>
                             <div>
-                                <GrantsFilter/>
+                                <GrantsFilter
+                                    awardee_org_names={ this.state.awardee_org_names }/>
                             </div>
                         </div>
                     </div>

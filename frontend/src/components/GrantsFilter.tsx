@@ -7,26 +7,18 @@ import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
 import Card from '@mui/material/Card';
 import CardContent from '@mui/material/CardContent';
 import { Button, TextField } from "@material-ui/core";
-import { Box, ThemeProvider, createTheme } from '@mui/system';
-import { spacing } from '@mui/system';
 import Autocomplete from '@mui/material/Autocomplete';
 
-const top100Films = [
-    { title: 'The Shawshank Redemption', year: 1994 },
-    { title: 'The Godfather', year: 1972 },
-    { title: 'The Godfather: Part II', year: 1974 },
-    { title: 'The Dark Knight', year: 2008 },
-    { title: '12 Angry Men', year: 1957 },
-    { title: "Schindler's List", year: 1993 },
-    { title: 'Pulp Fiction', year: 1994 }]
+interface OrgNameFacet {
+    key: string
+    doc_count: number
+}
 
-class GrantsFilter extends Component {
-//   const [expanded, setExpanded] = React.useState<string | false>(false);
+interface GrantsFilterProps {
+    awardee_org_names: OrgNameFacet[];
+}
 
-//   const handleChange =
-//     (panel: string) => (event: React.SyntheticEvent, isExpanded: boolean) => {
-//       setExpanded(isExpanded ? panel : false);
-//     };
+class GrantsFilter extends Component<GrantsFilterProps, any> {
     
     render() {
         return (
@@ -74,13 +66,11 @@ class GrantsFilter extends Component {
                         <Typography sx={{ px: 2 }}>Awardee Organizaion</Typography>
                     </AccordionSummary>
                     <AccordionDetails>
-                        {/* <TextField variant='outlined' label='Type institution name'>
-                        </TextField> */}
                         <Autocomplete
                             freeSolo
                             id="free-solo-2-demo"
                             disableClearable
-                            options={top100Films.map((option) => option.title)}
+                            options={this.props.awardee_org_names.map((option) => option.key)}
                             renderInput={(params) => (
                             <TextField        
                                 {...params}
@@ -155,6 +145,6 @@ class GrantsFilter extends Component {
     };
 }
 
-export default GrantsFilter;
+export {GrantsFilter, OrgNameFacet};
 
 

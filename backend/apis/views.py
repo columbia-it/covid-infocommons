@@ -1,3 +1,4 @@
+from urllib import request
 from rest_framework_json_api.views import ModelViewSet, RelationshipView
 from .models import Person, Organization, Grant, Publication, Dataset, Asset
 from .serializers import PersonSerializer, OrganizationSerializer, \
@@ -6,6 +7,9 @@ from django.utils.decorators import method_decorator
 from apis.oauth2_introspection import HasClaim
 import re
 from rest_framework.schemas.openapi import AutoSchema
+
+usual_rels = ('exact', 'lt', 'gt', 'gte', 'lte', 'in')
+text_rels = ('icontains', 'iexact', 'contains')
 
 
 class OrganizationViewSet(ModelViewSet):
@@ -30,6 +34,9 @@ class OrganizationViewSet(ModelViewSet):
         tags=['organizations'],
     )
 
+    filterset_fields = {
+        'ror': usual_rels + text_rels
+    }
 
 class AssetViewSet(ModelViewSet):
     """ View for Asset APIs
@@ -83,6 +90,12 @@ class PersonViewSet(ModelViewSet):
     schema = AutoSchema(
         tags=['people'],
     )
+
+    filterset_fields = {
+        'orcid': usual_rels + text_rels,
+        'emails': usual_rels + text_rels,
+        'private_emails': usual_rels + text_rels
+    }
 
 
 class GrantViewSet(ModelViewSet):

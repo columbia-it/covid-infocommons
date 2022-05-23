@@ -34,7 +34,7 @@ def search_grants(request):
     keyword = request.GET.get('keyword', None)
     start = request.GET.get('from', 0)
     query = {
-        'size': 200,
+        'size': 1000,
         'from': start
     }
     
