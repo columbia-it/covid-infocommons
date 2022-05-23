@@ -56,10 +56,11 @@ def find_cic_people():
 
 
 def find_cic_person(first, last):
-    # TODO 124 -- this cycles through all people until it finds the correct ID; should really just request one by ID through the CIC API
     logging.debug(f" -- Looking for existing person {first} {last}")
-    response = requests.get(f"{CIC_PEOPLE_API}")
-    response_json = response.json()    
+    response = requests.get(f"{CIC_PEOPLE_API}?filter[last_name={last}")
+    response_json = response.json()
+    if response.status_code >= 300 or 'data' not in response_json:
+        return None
     cic_people = response_json['data']
     while(len(cic_people) > 0):
         for cp in cic_people:
