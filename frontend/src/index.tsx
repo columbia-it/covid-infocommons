@@ -151,7 +151,6 @@ class App extends Component<any, AppState> {
             >
                 <div className='root'>
                     <link rel="stylesheet" href="https://fonts.googleapis.com/icon?family=Material+Icons"></link>
-                    <h1 className='cic-heading'>COVID INFORMATION COMMONS</h1>
                     <form className='search-form'>
                         <TextField
                             id="outlined-search" 

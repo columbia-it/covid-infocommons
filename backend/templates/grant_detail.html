@@ -11,11 +11,12 @@
         <link rel="stylesheet" type="text/css" href="{% static '/main.css' %}" />
     </head>
     <body>
+	{% include "cic_header.html" %}
         <div>
             <header>
                 <small>Award Abstract #{{ grant.award_id}}</small>
                 <h1>
-                    <span>&quot;{{ grant.title }}&quot;</span>
+                    <span>{{ grant.title }}</span>
                 </h1>
             </header>
             <section>
@@ -96,6 +97,7 @@
                 </p>
             </section>
         </div>
+	{% include "cic_footer.html" %}
     </body>
 {% endblock content %}
 

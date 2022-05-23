@@ -80,20 +80,6 @@
   margin: 5px;
 }
 
-.titleLink {
-  font-family: ui-sans-serif;
-  font-size: 18px;
-}
-
-.truncAbstract {
-  font-family: ui-sans-serif;
-  font-size: 16px;
-}
-
-.showMoreLink {
-  color: cornflowerblue;
-}
-
 /* ******************** General styles to copy the Columbia Sites settings ****************** */
 
 *:before, *:after {
