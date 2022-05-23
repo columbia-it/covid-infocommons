@@ -9,8 +9,8 @@ CIC_GRANTS_SEARCH_API = f"{cic_config.CIC_BASE}/search/grants"
 def main():
     print("CIC grant demo")
     print("")
-    print("finding test grant 2030139")
-    grant = find_cic_grant('2030139')
+    print("finding test grant 3R43CA243815-01S2")
+    grant = find_cic_grant('3R43CA243815-01S2')
     print(f" -- found {grant['id']} -- {grant['award_id']} -- {grant['title']}")
 
 
@@ -54,7 +54,8 @@ def delete_cic_grant(grant_id):
     
 def find_cic_grant(grant_id):
     logging.debug(f" -- Looking for existing grant {grant_id}")
-    response = requests.get(f"{CIC_GRANTS_SEARCH_API}?award_id={grant_id}")
+    logging.debug(f"    -- {CIC_GRANTS_SEARCH_API}?keyword={grant_id}")
+    response = requests.get(f"{CIC_GRANTS_SEARCH_API}?keyword={grant_id}")
     response_json = response.json()
     cic_grants = response_json['hits']['hits']
     for cg in cic_grants:
