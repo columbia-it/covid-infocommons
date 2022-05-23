@@ -75,27 +75,33 @@ def nsf_to_cic_format(grant):
         "data": {
             "type": "Grant", 
             "attributes": {
-                "funder_divisions": [ grant['fundProgramName'] ],
+                "funder_divisions": [ nsf_division(grant) ],
                 "program_reference_codes": [],
                 "keywords": [],
                 "program_officials": nsf_program_official(grant),
                 "other_investigators": [ ],
-                "principal_investigator": nsf_principal_investigator(grant['piFirstName'],grant['piLastName'],grant['piEmail']),
+                "principal_investigator": nsf_principal_investigator(grant),
                 "funder": {
                     "type": "Funder",
                     "id": 3 # TODO -- this should be looked up!
                 },
-                "awardee_organization": nsf_awardee_org(grant['awardeeName'], grant['awardeeCountryCode']),
+                "awardee_organization": nsf_awardee_org(grant),
                 "award_id": grant['id'],
                 "title": grant['title'],
                 "start_date": nsf_to_cic_date(grant['startDate']),
                 "end_date": nsf_to_cic_date(grant['expDate']),
-                "award_amount": grant['estimatedTotalAmt'] or 0,
+                "award_amount": nsf_award_amount(grant),
                 "abstract": grant['abstractText']
             }
         }
     }
     return grant_data
+
+
+def nsf_division(grant):
+    if 'fundProgramName' not in grant:
+        return None
+    return grant['fundProgramName']
 
 
 def nsf_program_official(grant):
@@ -116,13 +122,16 @@ def nsf_program_official(grant):
                "id": int(person['id']) } ]
 
 
-def nsf_principal_investigator(first, last, email):
+def nsf_principal_investigator(grant):
     # TODO -- incorporate the email into any person that is created
     # Turn the person into a reference like
     #  {
     #    "type": "Person",
     #    "id": "1"
     #  }
+    first = grant['piFirstName']
+    last = grant['piLastName']
+    # TODO 128 grant['piEmail']
     person = cic_people.find_or_create_person(first,last)
     if person is None:
         return None
@@ -130,11 +139,18 @@ def nsf_principal_investigator(first, last, email):
              "id": int(person['id']) }
 
 
-def nsf_awardee_org(name, country_code):
+def nsf_awardee_org(grant):
     #  {
     #    "type": "Organization",
     #    "id": 24
-    #   }    
+    #   }
+    if 'awardeeName' not in grant:
+        return None
+    name = grant['awardeeName']
+    if 'awardeeCountryCode' not in grant:
+        country_code = 'US'
+    else:
+        country_code = grant['awardeeCountryCode']
     org = cic_orgs.find_or_create_org(name, country_code)
     org_json = { "type": "Organization",
                  "id": int(org['id']) }
@@ -147,6 +163,13 @@ def nsf_to_cic_date(d):
     iso = parsed.strftime("%Y-%m-%d")
     return iso
 
+
+def nsf_award_amount(grant):
+    if 'estimatedTotalAmt' not in grant:
+        return 0
+    else:
+        return grant['estimatedTotalAmt']
+    
 
 if __name__ == "__main__":
     main()
