@@ -94,7 +94,8 @@ class PersonViewSet(ModelViewSet):
     filterset_fields = {
         'orcid': usual_rels + text_rels,
         'emails': usual_rels + text_rels,
-        'private_emails': usual_rels + text_rels
+        'private_emails': usual_rels + text_rels,
+        'last_name': usual_rels + text_rels
     }
 
 
