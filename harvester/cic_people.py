@@ -9,7 +9,7 @@ CIC_PEOPLE_API = f"{cic_config.CIC_BASE}/v1/people"
 def main():
     print("CIC people demo")
     print()
-    print(f"Find in CIC: {find_cic_person('Randy','Crichton')}")
+    print(f"Find in CIC: {find_cic_person('Shreeram','Akilesh')}")
 
     
 def find_or_create_person(first, last):
@@ -56,7 +56,7 @@ def find_cic_people():
 
 
 def find_cic_person(first, last):
-    # TODO -- this cycles through all people until it finds the correct ID; should really just request one by ID through the CIC API
+    # TODO 124 -- this cycles through all people until it finds the correct ID; should really just request one by ID through the CIC API
     logging.debug(f" -- Looking for existing person {first} {last}")
     response = requests.get(f"{CIC_PEOPLE_API}")
     response_json = response.json()    

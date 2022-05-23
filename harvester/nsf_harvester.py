@@ -1,11 +1,14 @@
 from datetime import date, datetime
-import requests, json
+import cic_grants
+import cic_orgs
+import cic_people
+import json
+import logging
+import requests
 
-CIC_BASE = "https://cice-dev.paas.cc.columbia.edu"
-CIC_GRANTS_API = f"{CIC_BASE}/v1/grants"
-CIC_FUNDER_API = f"{CIC_BASE}/v1/funders"
 
 NSF_GRANT_REQUEST = "https://api.nsf.gov/services/v1/awards.json?keyword=covid+covid-19+corid-19+corvid-19+coronavirus+sars2+%22SARS-CoV-2%22&printFields=abstractText,agency,awardAgencyCode,awardee,awardeeAddress,awardeeCity,awardeeCountryCode,awardeeCounty,awardeeDistrictCode,awardeeName,awardeeStateCode,awardeeZipCode,cfdaNumber,coPDPI,date,dunsNumber,estimatedTotalAmt,expDate,fundAgencyCode,fundProgramName,fundsObligatedAmt,id,offset,parentDunsNumber,pdPIName,perfAddress,perfCity,perfCountryCode,perfCounty,perfDistrictCode,perfLocation,perfStateCode,perfZipCode,piEmail,piFirstName,piLastName,piMiddeInitial,piPhone,poEmail,poName,poPhone,primaryProgram,projectOutComesReport,publicationConference,publicationResearch,rpp,startDate,title,transType"
+SKIP_EXISTING = True
 
 
 def main():    
@@ -38,114 +41,112 @@ def retrieve_nsf_grants(year, month, offset):
 
     nsf_url = f"{NSF_GRANT_REQUEST}{monthfilter}&offset={offset}"
 
-    print("Reading from NSF API")
-    print(f"REQUEST = {nsf_url}")
+    logging.info("Reading from NSF API")
+    logging.info(f"REQUEST = {nsf_url}")
 
     response = requests.get(nsf_url)
-    print("-----")
     response_json = response.json()    
     grants = response_json['response']['award']
     return grants
 
 
 def process_grant(grant):
-    print(f" -- processing grant {grant['id']} -- {grant['title']}")
+    logging.info("======================================================================")
+    logging.info(f" -- processing grant {grant['id']} -- {grant['title']}")
 
-    # TODO -- existing_grant = find_cic_grant(grant['id'])
-    #         print(f"    -- existing grant is {type(existing_grant)}")
-    grant_json = nsf_to_cic_format(grant)
-    if 1==1: # TODO -- existing_grant is None:        
-        print("   -- not found - creating")
-        response_code = deposit_cic_grant(grant_json)
+    existing_grant = cic_grants.find_cic_grant(grant['id'])
+    if existing_grant is None:        
+        logging.debug("   -- not found - creating")
+        grant_json = nsf_to_cic_format(grant)
+        response_code = cic_grants.create_cic_grant(grant_json)
     else:
-        print("   -- found! updating")
-        response_code = update_cic_grant(grant_json, grant['id'])
-
+        if SKIP_EXISTING:
+            logging.debug("  -- found existing grant! skipping due to SKIP_EXISTING setting")
+            return
+        logging.debug("   -- found existing grant! updating")
+        grant_json = nsf_to_cic_format(grant)
+        response_code = cic_grants.update_cic_grant(grant_json, grant['id'])
         
-    print(f"    -- {response_code}")
+    logging.info(f"    -- {response_code}")
 
     
-def find_cic_grant(grant_id):
-    # TODO -- this cycles through all grants until it finds the correct ID; should really just request one by ID through the CIC API
-    print(f" -- Looking for existing grant {grant_id}")
-    response = requests.get(f"{CIC_GRANTS_API}")
-    response_json = response.json()
-    cic_grants = response_json['data']
-    for cg in cic_grants:
-        print(f"   -- {cg['attributes']['award_id']}")
-        if cg['attributes']['award_id'] == grant_id:
-            return cg
-    print(" -- grant not found")
-        
-
 def nsf_to_cic_format(grant):
     grant_data = {
         "data": {
             "type": "Grant", 
             "attributes": {
-#                "funder_divisions": [ grant['fundProgramName'] ],
+                "funder_divisions": [ grant['fundProgramName'] ],
                 "program_reference_codes": [],
                 "keywords": [],
-#                "program_officials": [
-#                    {
-#                        "type": "Person",
-#                        "id": "1"
-#                    }
-#                ],
+                "program_officials": nsf_program_official(grant),
                 "other_investigators": [ ],
-#                "principal_investigator": {
-#                    "type": "Person",
-#                    "id": "1"
-#                },
+                "principal_investigator": nsf_principal_investigator(grant['piFirstName'],grant['piLastName'],grant['piEmail']),
                 "funder": {
                     "type": "Funder",
                     "id": 3 # TODO -- this should be looked up!
                 },
-#                "awardee_organization": {
-#                    "type": "Organization",
-#                    "id": 4
-#                },
-#                "awardee_organization": {
-#                    "id": 4,
-#                    "ror": "https://ror.org/05dq2gs74",
-#                    "name": "Vanderbilt University Medical Center",
-#                    "country": "United States"
-#                },
+                "awardee_organization": nsf_awardee_org(grant['awardeeName'], grant['awardeeCountryCode']),
                 "award_id": grant['id'],
                 "title": grant['title'],
                 "start_date": nsf_to_cic_date(grant['startDate']),
                 "end_date": nsf_to_cic_date(grant['expDate']),
-                "award_amount": grant['estimatedTotalAmt'],
+                "award_amount": grant['estimatedTotalAmt'] or 0,
                 "abstract": grant['abstractText']
             }
         }
     }
     return grant_data
-    
+
+
+def nsf_program_official(grant):
+    # TODO -- incorporate the grant['poEmail'] into any person that is created
+    # Turn the person into a reference like
+    #  {
+    #    "type": "Person",
+    #    "id": "1"
+    #  }
+    if 'poName' not in grant:
+        return None
+    name = grant['poName']
+    last_space = name.rfind(" ")
+    last = name[last_space+1:]
+    first = name[:last_space]
+    person = cic_people.find_or_create_person(first,last)
+    return [ { "type": "Person",
+               "id": int(person['id']) } ]
+
+
+def nsf_principal_investigator(first, last, email):
+    # TODO -- incorporate the email into any person that is created
+    # Turn the person into a reference like
+    #  {
+    #    "type": "Person",
+    #    "id": "1"
+    #  }
+    person = cic_people.find_or_create_person(first,last)
+    if person is None:
+        return None
+    return { "type": "Person",
+             "id": int(person['id']) }
+
+
+def nsf_awardee_org(name, country_code):
+    #  {
+    #    "type": "Organization",
+    #    "id": 24
+    #   }    
+    org = cic_orgs.find_or_create_org(name, country_code)
+    org_json = { "type": "Organization",
+                 "id": int(org['id']) }
+    logging.debug(f" -- attaching organization {org_json}")
+    return org_json
+
 
 def nsf_to_cic_date(d):
     parsed = datetime.strptime(d, "%m/%d/%Y")
     iso = parsed.strftime("%Y-%m-%d")
     return iso
 
-
-def deposit_cic_grant(grant_json):
-    r = requests.post(url = CIC_GRANTS_API,
-                      data = json.dumps(grant_json),
-                      headers={"Content-Type":"application/vnd.api+json"})
-    if r.status_code >= 300:
-        print(f"ERROR {r} {r.text}")
-    return r
-
-
-def update_cic_grant(grant_json, grant_id):
-    r = requests.patch(url = CIC_GRANTS_API + f"/{grant_id}",
-                      data = json.dumps(grant_json),
-                      headers={"Content-Type":"application/vnd.api+json"})
-    if r.status_code >= 300:
-        print(f"ERROR {r} {r.text}")
-    return r
-    
 
 if __name__ == "__main__":
     main()
