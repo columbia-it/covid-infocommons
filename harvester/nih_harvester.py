@@ -135,8 +135,8 @@ def nih_to_cic_format(grant):
                 "funder_divisions": nih_funding_divisions(grant['agency_ic_fundings']),
                 "keywords": nih_keywords(grant['pref_terms']),
                 "program_officials": nih_program_officials(grant['program_officers']),
-                "principal_investigator": nih_principal_investigator(grant['principal_investigators']),
-                "other_investigators": nih_other_investigators(grant['principal_investigators'][1:]),
+                "principal_investigator": nih_principal_investigator(grant),
+                "other_investigators": nih_other_investigators(grant),
                 "funder": {
                     "type": "Funder",
                     "id": 4 # TODO -- this should be looked up!
@@ -188,12 +188,15 @@ def nih_awardee_org(name, country):
     return org_json
 
 
-def nih_principal_investigator(people):
+def nih_principal_investigator(grant):
     # Create the appropriate people, then return them as an array of references like
     #  {
     #    "type": "Person",
     #    "id": "1"
     #  }
+    if 'principal_investigators' not in grant:
+        return None
+    people = grant['principal_investigators']
     first = people[0]['first_name']
     if len(people[0]['middle_name']) > 0:
         first += ' ' + people[0]['middle_name']
@@ -206,12 +209,15 @@ def nih_principal_investigator(people):
     return person_json
 
 
-def nih_other_investigators(people):
+def nih_other_investigators(grant):
     # Create the appropriate people, then return them as an array of references like
     #  {
     #    "type": "Person",
     #    "id": "1"
     #  }
+    if 'principal_investigators' not in grant:
+        return None
+    people = grant['principal_investigators'][1:] #exclude the first investigator
     person_json = []
     for p in people:
         first = p['first_name']
