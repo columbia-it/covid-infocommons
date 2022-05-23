@@ -62,9 +62,14 @@ def find_cic_org_by_ror(ror_id):
         
 def find_ror_org(name, country = 'United States'):
     name = name.lower()
+    query_name = name.replace("&", "").replace("?","").replace("/"," ") # don't confuse the ROR API
     country = country.lower()
     logging.info(f" -- find {name} from {ROR_API}")
-    response = requests.get(f"{ROR_API}?query={name}")
+    response = requests.get(f"{ROR_API}?query={query_name}")
+    if response.status_code >= 300:
+        logging.error(f"{response} {response.text}")
+        print(f"ERROR {response} {response.text}")
+        return None
     response_json = response.json()
     logging.debug(f" -- found {response_json['number_of_results']} results")
     if response_json['number_of_results'] == 0:
@@ -80,7 +85,7 @@ def find_ror_org(name, country = 'United States'):
     
 def find_or_create_org(name, country):
     # ensure capitliazation of the US
-    if country.lower() == 'united states' or country.lower() == 'usa':
+    if country.lower() == 'united states' or country.lower() == 'usa' or country.lower() == 'us':
         country = 'United States'
         
     org = find_cic_org(name)
@@ -104,7 +109,7 @@ def create_cic_org(org_json):
     if r.status_code >= 300:
         logging.error(f"{r} {r.text}")
         print(f"ERROR {r} {r.text}")
-        
+
     return r.json()['data']
 
 

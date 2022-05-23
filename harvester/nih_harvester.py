@@ -8,6 +8,7 @@ import requests
 
 NIH_BASE = "https://api.reporter.nih.gov/v1/projects/Search"
 STOP_LIMIT = 100000
+SKIP_EXISTING = True
 
 # Documentation for NIH grants API: https://api.reporter.nih.gov/?urls.primaryName=V2.0
 
@@ -25,20 +26,20 @@ def main():
     # The NIH API will only return a max of 500 grants per request, and the default page size is 25 
     # So we request one month at a time, and step through each page
     for year in range(2019, max_year):
-        for month in range(1, 13):
-            print(f'==================== Imported so far: {imported_count} ==========================')
-            print(f'==================== Retrieving month {year}-{month} ======================')
+        print(f'==================== Imported so far: {imported_count} ==========================')
+        print(f'==================== Retrieving {year} ======================')
             
-            for offset in range(0, 500, 25):
-                grants = retrieve_nih_grants(year, month, offset)                
-                if grants is None:
-                    break
-                print(f"Received {len(grants)} grants")
-                for g in grants:
-                    process_grant(g)
-                imported_count += len(grants)
-                if imported_count >= STOP_LIMIT:
-                    return
+        for offset in range(0, 5000, 25):
+            grants = retrieve_nih_grants(year, offset)                
+            if grants is None or len(grants) == 0:
+                break
+            print("")
+            print(f"Received {len(grants)} grants, offset {offset}")
+            for g in grants:
+                process_grant(g)
+            imported_count += len(grants)
+            if imported_count >= STOP_LIMIT:
+                return
 
                 
 def retrieve_nih_grant(award_id):
@@ -52,29 +53,23 @@ def retrieve_nih_grant(award_id):
     return grants[0]
     
 
-def retrieve_nih_grants(year, month, offset):
-    if month < 10:
-        monthstr = f"0{month}"
-    else:
-        monthstr = month
-    monthfilter = f"&dateStart={monthstr}/01/{year}&dateEnd={monthstr}/31/{year}"
-
+def retrieve_nih_grants(year, offset):
     logging.info("Reading grants from NIH API")
-    criteria = nih_covid_query_criteria(offset)
+    criteria = nih_covid_query_criteria(year, offset)
     
     response = requests.post(url = NIH_BASE,
                              data = json.dumps(criteria),
                              headers={"Content-Type":"application/vnd.api+json"})
     response_json = response.json()
     grants = response_json['results']
-    logging.debug(f"first grant found {grants[0]}")
     return grants
 
 
-def nih_covid_query_criteria(offset):
+def nih_covid_query_criteria(year,offset):
     c =  {
         "criteria":
         {
+            "fiscal_years":[ year ],
             "covid_response": ["Reg-CV", "CV"]
         },
         "include_fields": [
@@ -117,13 +112,16 @@ def process_grant(grant):
     logging.debug(grant)
     
     existing_grant = cic_grants.find_cic_grant(grant['project_num'])
-    logging.debug(f"    -- existing grant is {type(existing_grant)}")
-    grant_json = nih_to_cic_format(grant)
     if existing_grant is None:        
         logging.debug("   -- not found - creating")
+        grant_json = nih_to_cic_format(grant)
         response_code = cic_grants.create_cic_grant(grant_json)
     else:
-        logging.debug("   -- found! updating")
+        if SKIP_EXISTING:
+            logging.debug("  -- found existing grant! skipping due to SKIP_EXISTING setting")
+            return
+        logging.debug("   -- found existing grant! updating")
+        grant_json = nih_to_cic_format(grant)
         response_code = cic_grants.update_cic_grant(grant_json, existing_grant['id'])
 
     logging.info(f"    -- {response_code}")
@@ -157,6 +155,9 @@ def nih_to_cic_format(grant):
 
 
 def nih_abstract(text):
+    if text is None:
+        return
+    
     # Remove errant \n put in by NIH API
     text = text.replace('\n', ' ')
 
@@ -219,6 +220,8 @@ def nih_other_investigators(people):
         last = p['last_name']
 
         person = cic_people.find_or_create_person(first,last)
+        if person is None:
+            return None
         logging.debug(f" -- attaching person {person}")
         person_json.append({ "type": "Person",
                              "id": int(person['id']) })
@@ -247,7 +250,9 @@ def nih_keywords(s):
         return []
     else:
         s = s[0:99] # TODO 114 -- allow all keywords, not just a few
-        return s.split(';')
+        keys = s.split(';')
+        keys = [i for i in keys if i]
+        return keys
 
 def nih_funding_divisions(ics):
     result = []
