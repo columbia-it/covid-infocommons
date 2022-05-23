@@ -1,4 +1,4 @@
-import * as React from 'react';
+import React, {Component} from "react";
 import Accordion from '@mui/material/Accordion';
 import AccordionDetails from '@mui/material/AccordionDetails';
 import AccordionSummary from '@mui/material/AccordionSummary';
@@ -7,20 +7,22 @@ import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
 import Card from '@mui/material/Card';
 import CardContent from '@mui/material/CardContent';
 import { Button, TextField } from "@material-ui/core";
-import { Box, ThemeProvider, createTheme } from '@mui/system';
-import { spacing } from '@mui/system';
+import Autocomplete from '@mui/material/Autocomplete';
 
-export default function GrantsFilter() {
-  const [expanded, setExpanded] = React.useState<string | false>(false);
+interface OrgNameFacet {
+    key: string
+    doc_count: number
+}
 
-  const handleChange =
-    (panel: string) => (event: React.SyntheticEvent, isExpanded: boolean) => {
-      setExpanded(isExpanded ? panel : false);
-    };
-      
+interface GrantsFilterProps {
+    awardee_org_names: OrgNameFacet[];
+}
 
-  return (
-    <Card sx={{ width: '100%' }}>
+class GrantsFilter extends Component<GrantsFilterProps, any> {
+    
+    render() {
+        return (
+        <Card sx={{ width: '100%' }}>
         <CardContent>
             <div className="filter-button-div">
                 <label className="filter-results-label">Filter Results</label>
@@ -64,8 +66,23 @@ export default function GrantsFilter() {
                         <Typography sx={{ px: 2 }}>Awardee Organizaion</Typography>
                     </AccordionSummary>
                     <AccordionDetails>
-                        <TextField variant='outlined' label='Type institution name'>
-                        </TextField>
+                        <Autocomplete
+                            freeSolo
+                            id="free-solo-2-demo"
+                            disableClearable
+                            options={this.props.awardee_org_names.map((option) => option.key)}
+                            renderInput={(params) => (
+                            <TextField        
+                                {...params}
+                                label="Search input"
+                                InputProps={{
+                                    ...params.InputProps,
+                                    type: 'search',
+                                }}
+                                variant='outlined'
+                            />
+                            )}
+                        />
                     </AccordionDetails>
                 </Accordion>
                 <Accordion>
@@ -124,6 +141,10 @@ export default function GrantsFilter() {
                 </Accordion>
             </div>
         </CardContent>
-    </Card>
-  );
+    </Card>);
+    };
 }
+
+export {GrantsFilter, OrgNameFacet};
+
+
