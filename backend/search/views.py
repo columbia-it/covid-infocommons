@@ -33,8 +33,10 @@ def get_facet_by_field(request) :
 def search_grants(request):
     keyword = request.GET.get('keyword', None)
     start = request.GET.get('from', 0)
+    size = request.GET.get('size', 20)
+    
     query = {
-        'size': 1000,
+        'size': size,
         'from': start
     }
     

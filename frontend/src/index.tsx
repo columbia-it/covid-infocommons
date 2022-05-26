@@ -2,11 +2,10 @@ import ReactDOM from 'react-dom';
 import "./main.css"
 import GrantsTable from './components/GrantTable';
 import { GrantsFilter, OrgNameFacet } from './components/GrantsFilter';
-import SearchBar from './components/SearchBar';
 import Box from '@mui/material/Box';
 import TextField from '@mui/material/TextField';
 import Button from '@mui/material/Button';
-import React, { Component } from "react";
+import { Component } from "react";
 import axios from "axios";
 import DownloadIcon from '@mui/icons-material/Download';
 
@@ -27,50 +26,56 @@ interface AppState {
     awardee_org_names: OrgNameFacet[]
 }
 
+let url = ''
+if (process.env.NODE_ENV == 'production') {
+    url = "https://cic-apps.datascience.columbia.edu";
+} else if (process.env.NODE_ENV == 'development') {
+    url = "https://cice-dev.paas.cc.columbia.edu";
+} else {
+    url = "http://127.0.0.1:8000"
+}
+
 class App extends Component<any, AppState> {
     state = {
         data: [],
-        url: '',
+        url: url,
         totalCount: 0,
         pageIndex: 0,
         awardee_org_names: []
-    };
+    }
+
+    constructor(props:any) {
+        super(props)
+        this.pageChangeHandler = this.pageChangeHandler.bind(this)
+    }
 
     componentDidMount = () => {
-        this.get_grants_data('')
+        this.get_grants_data()
         this.get_org_name_facet()
     }
 
     searchHandler = (event:any) => {
         event.preventDefault()
         const keyword = (document.getElementById('outlined-search') as HTMLInputElement).value;
-        this.setState({ url: this.get_url() })
         this.get_grants_data(keyword)
-    };
-
-    get_url = () => {
-        let url = "";
-        if (process.env.NODE_ENV == 'production') {
-            url = "https://cic-apps.datascience.columbia.edu";
-        } else if (process.env.NODE_ENV == 'development') {
-            url = "https://cice-dev.paas.cc.columbia.edu";
-        } else {
-            url = "http://127.0.0.1:8000"
-        }
-        return url
     }
 
     get_org_name_facet() {
-        var url = this.get_url().concat('/search/facets?field=awardee_organization.name')
+        var url = this.state.url.concat('/search/facets?field=awardee_organization.name')
         axios.get(url).then(results => {
             this.setState({ awardee_org_names: results.data.aggregations.patterns.buckets })
         })
     }
 
-    get_grants_data = (keyword:string) => {
-        var url = this.get_url().concat('/search/grants')
-        if (keyword) {
-            url = url.concat('?keyword=').concat(keyword)
+    get_grants_data = (keyword?:string) => {
+        const from:number = (this.state.pageIndex * 20) + 1
+        var url = this.state.url.concat('/search/grants?from='.concat(from.toString().concat('&size=20')))
+
+        if (!keyword) {
+            keyword = (document.getElementById('outlined-search') as HTMLInputElement).value;
+        }
+        if (keyword && keyword.length > 0) {
+            url = url.concat('&keyword=').concat(keyword)
         }
         
         axios.get(url).then(results => {
@@ -132,10 +137,15 @@ class App extends Component<any, AppState> {
     enterHandler = (e:any) => {
         if (e.key === 'Enter') {
             e.preventDefault();
-            const keyword = (document.getElementById('outlined-search') as HTMLInputElement).value;
-            this.setState({ url: this.get_url() })
-            this.get_grants_data(keyword)
+            this.get_grants_data()
         }
+    }
+
+    pageChangeHandler(page:number, pageSize: number) {
+        this.setState({
+            pageIndex: page
+        })
+        this.get_grants_data()
     }
 
     render() {
@@ -170,7 +180,8 @@ class App extends Component<any, AppState> {
                                 totalCount={ this.state.totalCount } 
                                 data={ this.state.data} 
                                 url={ this.state.url }
-                                //pageIndex={ this.state.pageIndex }
+                                pageChangeHandler={ this.pageChangeHandler }
+                                pageIndex={ this.state.pageIndex }
                             />
                         </div>
                         <div className='flex-child'>
