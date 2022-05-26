@@ -8,7 +8,13 @@
     <head>
         <meta charset="UTF-8">
         <title>{{ grant.title }}</title>
-        <link rel="stylesheet" type="text/css" href="{% static '/main.css' %}" />
+
+	<!-- Use the Cinzel font as a substitute for Trajan Pro 3 -->	   
+	<link rel="preconnect" href="https://fonts.googleapis.com" />		   
+	<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+	<link href="https://fonts.googleapis.com/css2?family=Cinzel&display=swap" rel="stylesheet" />
+
+        <link rel="stylesheet" type="text/css" href="{% static '/search/main.css' %}" />
     </head>
     <body>
 	{% include "cic_header.html" %}
