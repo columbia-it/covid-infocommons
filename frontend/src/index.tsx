@@ -1,7 +1,7 @@
 import ReactDOM from 'react-dom';
 import "./main.css"
 import GrantsTable from './components/GrantTable';
-import { GrantsFilter, OrgNameFacet } from './components/GrantsFilter';
+import { GrantsFilter } from './components/GrantsFilter';
 import SearchBar from './components/SearchBar';
 import Box from '@mui/material/Box';
 import TextField from '@mui/material/TextField';
@@ -25,7 +25,7 @@ interface AppState {
     url: string
     totalCount: number
     pageIndex: number
-    awardee_org_names: OrgNameFacet[]
+    awardee_org_names: string[]
 }
 
 class App extends Component<any, AppState> {
@@ -188,7 +188,8 @@ class App extends Component<any, AppState> {
                             </div>
                             <div>
                                 <GrantsFilter
-                                    awardee_org_names={ this.state.awardee_org_names }/>
+                                    awardee_org_names={ this.state.awardee_org_names }
+                                    />
                             </div>
                         </div>
                     </div>

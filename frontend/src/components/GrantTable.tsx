@@ -4,6 +4,9 @@ import { TablePagination } from "@material-ui/core";
 import { makeStyles } from "@material-ui/core/styles";
 import { Link, TableContainer } from '@mui/material';
 import NumberFormat from 'react-number-format';
+import AbcIcon from '@mui/icons-material/Abc';
+import { green, red } from '@mui/material/colors';
+import SvgIcon, { SvgIconProps } from '@mui/material/SvgIcon';
 
 type Prop = {
     'title': string
@@ -31,8 +34,16 @@ class GrantsTable extends Component<GrantsTableProps> {
 	};
 
     componentDidMount() {
-        console.log('Table rendered')
         console.log(this.props.totalCount)
+    }
+
+    get_funder_icon(funder_name:string) {
+        if (funder_name == 'National Institutes of Health') {
+            return <SvgIcon><path d="M10 20v-6h4v6h5v-8h3L12 3 2 12h3v8z" color='#008000'/></SvgIcon>
+        }
+        if (funder_name == 'National Science Foundation') {
+            return <SvgIcon><path d="M10 20v-6h4v6h5v-8h3L12 3 2 12h3v8z" color='#FF0000'/></SvgIcon>
+        }
     }
 
     render() {
@@ -47,7 +58,9 @@ class GrantsTable extends Component<GrantsTableProps> {
                         render: (row: any) => {
                             const detail_url = this.props.url.concat('/grants/'+row.id)
                             return (<div>
-                                        <div>{ row.funder_name }</div>
+                                        <div>
+                                            { this.get_funder_icon(row.funder_name) }
+                                        </div>
                                         <div className="titleLink">
                                             <Link href={detail_url}>{row.title}</Link>
                                         </div>
