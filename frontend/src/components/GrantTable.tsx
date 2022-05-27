@@ -47,6 +47,7 @@ class GrantsTable extends Component<GrantsTableProps> {
                         render: (row: any) => {
                             const detail_url = this.props.url.concat('/grants/'+row.id)
                             return (<div>
+                                        <div>{ row.funder_name }</div>
                                         <div className="titleLink">
                                             <Link href={detail_url}>{row.title}</Link>
                                         </div>
