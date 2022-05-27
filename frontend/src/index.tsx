@@ -1,7 +1,7 @@
 import ReactDOM from 'react-dom';
 import "./main.css"
 import GrantsTable from './components/GrantTable';
-import { GrantsFilter, OrgNameFacet } from './components/GrantsFilter';
+import { GrantsFilter } from './components/GrantsFilter';
 import SearchBar from './components/SearchBar';
 import Box from '@mui/material/Box';
 import TextField from '@mui/material/TextField';
@@ -24,7 +24,8 @@ interface AppState {
     url: string
     totalCount: number
     pageIndex: number
-    awardee_org_names: OrgNameFacet[]
+    awardee_org_names: string[]
+    pi_names: string[]
 }
 
 class App extends Component<any, AppState> {
@@ -33,12 +34,14 @@ class App extends Component<any, AppState> {
         url: '',
         totalCount: 0,
         pageIndex: 0,
-        awardee_org_names: []
+        awardee_org_names: [],
+        pi_names: []
     };
 
     componentDidMount = () => {
         this.get_grants_data('')
         this.get_org_name_facet()
+        this.get_pi_name_facet()
     }
 
     searchHandler = (event:any) => {
@@ -63,7 +66,14 @@ class App extends Component<any, AppState> {
     get_org_name_facet() {
         var url = this.get_url().concat('/search/facets?field=awardee_organization.name')
         axios.get(url).then(results => {
-            this.setState({ awardee_org_names: results.data.aggregations.patterns.buckets })
+            this.setState({ awardee_org_names: results.data })
+        })
+    }
+
+    get_pi_name_facet() {
+        var url = this.get_url().concat('/search/facets?field=principal_investigator.first_name')
+        axios.get(url).then(results => {
+            this.setState({ pi_names: results.data })
         })
     }
 
@@ -183,7 +193,10 @@ class App extends Component<any, AppState> {
                             </div>
                             <div>
                                 <GrantsFilter
-                                    awardee_org_names={ this.state.awardee_org_names }/>
+                                    awardee_org_names={ this.state.awardee_org_names }
+                                    pi_names={ this.state.pi_names}
+                                    start_date={ new Date() }
+                                />
                             </div>
                         </div>
                     </div>

@@ -1,6 +1,7 @@
 from django.http import JsonResponse
 from django.conf import settings
 from opensearchpy.client import OpenSearch
+import json
 
 def get_facet_by_field(request) :
     field_name = request.GET.get('field', None)
@@ -13,11 +14,27 @@ def get_facet_by_field(request) :
         verify_certs = True,
     )
 
+    # query = {
+    #     "size": 1600,
+    #     "aggs" : {
+    #         "patterns" : {
+    #             "terms" : { "field" : "{}.keyword".format(field_name) }
+    #         }
+    #     }
+    # }
+    results = []
     query = {
         "size": 0,
         "aggs" : {
-            "patterns" : {
-                "terms" : { "field" : "{}.keyword".format(field_name) }
+            "totals": {
+                "composite": {
+                    "sources": {
+                        "field": {
+                            "terms" : { "field" : "{}.keyword".format(field_name) }
+                        }
+                    }
+                    
+                }
             }
         }
     }
@@ -26,9 +43,32 @@ def get_facet_by_field(request) :
         body = query,
         index = 'grant_index'
     )
+    print(response)
+    for i in response['aggregations']['totals']['buckets']:
+        results.append(i['key']['field'])
+    after_key_flag = "after_key" in response['aggregations']['totals']
+    print(after_key_flag)
+    while after_key_flag:
+        after_value = response['aggregations']['totals']['after_key']['field']
+        query['aggs']['totals']['composite']['after'] = { "field": after_value } 
+        print(query)
+        response = client.search(
+            body = query,
+            index = 'grant_index'
+        )
+        print(response)
+        for i in response['aggregations']['totals']['buckets']:
+            results.append(i['key']['field'])
+        after_key_flag = "after_key" in response['aggregations']['totals']
 
-    return JsonResponse(response)
+        #after_key_flag = False
+    #     for i in response['aggregations']['totals']['buckets']:
+    #         results.append(i['key']['field'])
+    #     after_key_flag = "after_key" in response['aggregations']['totals']
 
+    #print(response['aggregations']['totals']['after_key'])
+    print(results)
+    return JsonResponse(results, safe=False)
 
 def search_grants(request):
     keyword = request.GET.get('keyword', None)
