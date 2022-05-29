@@ -3,6 +3,7 @@ import "./main.css"
 import GrantsTable from './components/GrantTable';
 import { GrantsFilter } from './components/GrantsFilter';
 import SearchBar from './components/SearchBar';
+import { css, jsx, ThemeProvider } from '@emotion/react'
 import Box from '@mui/material/Box';
 import TextField from '@mui/material/TextField';
 import Button from '@mui/material/Button';
@@ -164,7 +165,7 @@ class App extends Component<any, AppState> {
                             onKeyDown={ this.enterHandler }/>
                         <Button 
                             onClick={ this.searchHandler } 
-                            className='search-button' 
+                            className='search-button'
                             variant="contained">Search</Button>
                     </form>
                     <br/>

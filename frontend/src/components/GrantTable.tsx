@@ -1,12 +1,9 @@
 import React, {Component} from "react";
 import MaterialTable, { MTableToolbar } from "material-table";
 import { TablePagination } from "@material-ui/core";
-import { makeStyles } from "@material-ui/core/styles";
+import { css, jsx, ThemeProvider } from '@emotion/react'
 import { Link, TableContainer } from '@mui/material';
 import NumberFormat from 'react-number-format';
-import AbcIcon from '@mui/icons-material/Abc';
-import { green, red } from '@mui/material/colors';
-import SvgIcon, { SvgIconProps } from '@mui/material/SvgIcon';
 
 type Prop = {
     'title': string
@@ -19,6 +16,13 @@ type GrantsTableProps = {
     totalCount: number
     //pageIndex: number
 }
+
+
+const theme = {
+  backgroundColor: 'green',
+  color: 'red'
+}
+
 
 class GrantsTable extends Component<GrantsTableProps> {
     componentDidUpdate(prevProps:any) {
@@ -39,10 +43,32 @@ class GrantsTable extends Component<GrantsTableProps> {
 
     get_funder_icon(funder_name:string) {
         if (funder_name == 'National Institutes of Health') {
-            return <SvgIcon><path d="M10 20v-6h4v6h5v-8h3L12 3 2 12h3v8z" color='#008000'/></SvgIcon>
+	    return(
+		    <div css={css`
+                     color: #FFFFFF;
+                     background-color: #777777;
+                     border-radius: 4px;
+                     width: min-content;
+                     padding-left: 5px; padding-right: 5px;
+                     `}
+		    >
+		    NIH
+		    </div>
+	    )
         }
         if (funder_name == 'National Science Foundation') {
-            return <SvgIcon><path d="M10 20v-6h4v6h5v-8h3L12 3 2 12h3v8z" color='#FF0000'/></SvgIcon>
+	    return (
+		    <div css={css`
+                     color: #FFFFFF;
+                     background-color: #3C75CF;
+                     border-radius: 4px;
+                     width: min-content;
+                     padding-left: 5px; padding-right: 5px;
+                     `}
+		    >
+		    NSF
+		    </div>
+	    )
         }
     }
 
