@@ -60,6 +60,10 @@ def retrieve_nih_grants(year, offset):
     response = requests.post(url = NIH_BASE,
                              data = json.dumps(criteria),
                              headers={"Content-Type":"application/vnd.api+json"})
+    if response.status_code >= 300:
+        logging.error(f"{response} {response.text}")
+        print(f"ERROR {response} {response.text}")
+        return []
     response_json = response.json()
     grants = response_json['results']
     return grants
@@ -203,6 +207,8 @@ def nih_principal_investigator(grant):
     last = people[0]['last_name']
 
     person = cic_people.find_or_create_person(first,last)
+    if person is None:
+        return None
     person_json = { "type": "Person",
                     "id": int(person['id']) }
     logging.debug(f" -- attaching person {person_json}")
@@ -246,7 +252,8 @@ def nih_program_officials(grant_officials):
     last = grant_officials[0]['last_name']
 
     person = cic_people.find_or_create_person(first,last)
-
+    if person is None:
+        return []
     return [ { "type": "Person",
                "id": int(person['id']) } ]
 

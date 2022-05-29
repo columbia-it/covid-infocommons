@@ -63,7 +63,7 @@ class GrantsFilter extends Component<GrantsFilterProps, any> {
                         aria-controls="panel3a-content"
                         id="panel3a-header"
                     >
-                        <Typography sx={{ px: 2 }}>Awardee Organizaion</Typography>
+                        <Typography sx={{ px: 2 }}>Awardee Organization</Typography>
                     </AccordionSummary>
                     <AccordionDetails>
                         <Autocomplete
