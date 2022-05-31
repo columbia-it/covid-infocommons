@@ -1,8 +1,7 @@
-import React, {Component} from "react";
+import { Component } from "react";
 import MaterialTable, { MTableToolbar } from "material-table";
 import { TablePagination } from "@material-ui/core";
-import { makeStyles } from "@material-ui/core/styles";
-import { Link, TableContainer } from '@mui/material';
+import { Link } from '@mui/material';
 import NumberFormat from 'react-number-format';
 
 type Prop = {
@@ -10,36 +9,29 @@ type Prop = {
     'pi': string
     'award_amount': number
 }
+
 type GrantsTableProps = {
     data: Prop[],
     url: string
     totalCount: number
-    //pageIndex: number
+    pageChangeHandler: (page:number, pageSize: number) => void 
+    pageIndex: number
 }
 
 class GrantsTable extends Component<GrantsTableProps> {
-    componentDidUpdate(prevProps:any) {
-        console.log(prevProps)
-    }
-
-    pageChangeHandler = (event: any, page: number) => {
-        console.log('page changed.')
-    }
-
     truncate = (str:string, n:number) => {
 		return str?.length > n ? str.substring(0, n - 1) + "..." : str;
-	};
-
-    componentDidMount() {
-        console.log('Table rendered')
-        console.log(this.props.totalCount)
-    }
+	}
 
     render() {
         return (
             <MaterialTable
                 data={ this.props.data }
+                page={ this.props.pageIndex }
                 totalCount={ this.props.totalCount }
+                onChangePage={ (page, pageSize) => {
+                    this.props.pageChangeHandler(page, pageSize)
+                } }
                 columns={[
                     {
                         title: "Projects", 
@@ -47,6 +39,7 @@ class GrantsTable extends Component<GrantsTableProps> {
                         render: (row: any) => {
                             const detail_url = this.props.url.concat('/grants/'+row.id)
                             return (<div>
+                                        <div>{ row.funder_name }</div>
                                         <div className="titleLink">
                                             <Link href={detail_url}>{row.title}</Link>
                                         </div>
@@ -75,17 +68,16 @@ class GrantsTable extends Component<GrantsTableProps> {
                         exportAllData: false
                     }
                 }
-                // components={{
-                //     Pagination: props => (
-                //         <TablePagination
-                //             {...props}
-                //             rowsPerPageOptions={[]}
-                //             count={ this.props.totalCount }
-                //         />
-                //     ),
-                // }
-
-                // }
+                components={
+                    {
+                        Pagination: props => (
+                            <TablePagination
+                                {...props}
+                                rowsPerPageOptions={[]}
+                            />
+                        ),
+                    }
+                }
             />
         )
     }
