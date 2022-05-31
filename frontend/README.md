@@ -2,7 +2,7 @@
 CIC-E Frontend
 =================
 
-The Frontend package provides a search and viewing system for CIC-E content.
+The Frontend package provides a search and viewing system for CIC-E content. It is based on React and Material UI. 
 
 Installation
 =================
