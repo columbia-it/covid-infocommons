@@ -1,13 +1,26 @@
 import ReactDOM from 'react-dom';
 import "./main.css"
 import GrantsTable from './components/GrantTable';
+
 import { GrantsFilter, OrgNameFacet } from './components/GrantsFilter';
+import { css, jsx, ThemeProvider } from '@emotion/react'
 import Box from '@mui/material/Box';
 import TextField from '@mui/material/TextField';
 import Button from '@mui/material/Button';
-import { Component } from "react";
+import { createTheme } from '@mui/material/styles';
+import React, { Component } from "react";
 import axios from "axios";
 import DownloadIcon from '@mui/icons-material/Download';
+
+const styles = {
+    // See MUI Button CSS classes at https://mui.com/material-ui/api/button/
+    "&.MuiButton-contained": {
+	color: "#FFFFFF",
+	backgroundColor: "#2C6BAC",
+	minWidth: "max-content",
+	whiteSpace: "nowrap"
+    },
+};
 
 interface Grant {
     id: number
@@ -24,7 +37,7 @@ interface AppState {
     url: string
     totalCount: number
     pageIndex: number
-    awardee_org_names: OrgNameFacet[]
+    awardee_org_names: string[]
 }
 
 let url = ''
@@ -172,7 +185,9 @@ class App extends Component<any, AppState> {
                             label="Search" 
                             type="search" 
                             onKeyDown={ this.enterHandler }/>
-                        <Button 
+
+                        <Button
+	                    sx={styles}
                             onClick={ this.searchHandler } 
                             className='search-button' 
                             variant="contained">Search</Button>
@@ -188,21 +203,23 @@ class App extends Component<any, AppState> {
                                 pageChangeHandler={ this.pageChangeHandler }
                                 pageIndex={ this.state.pageIndex }
                             />
-                        </div>
-                        <div className='flex-child'>
-                            <div className='download-csv'>
-                                <Button onClick={ this.exportToCsv } 
-                                        className='download-button' 
-                                        variant="contained"
-                                        endIcon={ <DownloadIcon /> }>Download Results as CSV
-                                </Button>
+                </div>
+                <div className='flex-child'>
+                <div className='download-csv'>
+                <Button sx={styles}
+	                onClick={ this.exportToCsv } 
+                        className='download-button' 
+                        variant="contained"
+            endIcon={ <DownloadIcon /> }>Download Results as CSV</Button>
                             </div>
                             <div>
                                 <GrantsFilter
-                                    awardee_org_names={ this.state.awardee_org_names }/>
+                                    awardee_org_names={ this.state.awardee_org_names }
+                                    />
                             </div>
                         </div>
-                    </div>
+                </div>
+
                 </div>
             </Box>
         );

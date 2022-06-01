@@ -118,6 +118,8 @@ def nsf_program_official(grant):
     last = name[last_space+1:]
     first = name[:last_space]
     person = cic_people.find_or_create_person(first,last)
+    if person is None:
+        return []
     return [ { "type": "Person",
                "id": int(person['id']) } ]
 

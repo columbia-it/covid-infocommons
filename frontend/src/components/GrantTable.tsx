@@ -1,7 +1,8 @@
 import { Component } from "react";
 import MaterialTable, { MTableToolbar } from "material-table";
 import { TablePagination } from "@material-ui/core";
-import { Link } from '@mui/material';
+import { css, jsx, ThemeProvider } from '@emotion/react'
+import { Link, TableContainer } from '@mui/material';
 import NumberFormat from 'react-number-format';
 
 type Prop = {
@@ -18,10 +19,42 @@ type GrantsTableProps = {
     pageIndex: number
 }
 
+
 class GrantsTable extends Component<GrantsTableProps> {
     truncate = (str:string, n:number) => {
 		return str?.length > n ? str.substring(0, n - 1) + "..." : str;
 	}
+
+    get_funder_icon(funder_name:string) {
+        if (funder_name == 'National Institutes of Health') {
+	    return(
+		    <div css={css`
+                     color: #FFFFFF;
+                     background-color: #777777;
+                     border-radius: 4px;
+                     width: min-content;
+                     padding-left: 5px; padding-right: 5px;
+                     `}
+		    >
+		    NIH
+		    </div>
+	    )
+        }
+        if (funder_name == 'National Science Foundation') {
+	    return (
+		    <div css={css`
+                     color: #FFFFFF;
+                     background-color: #3C75CF;
+                     border-radius: 4px;
+                     width: min-content;
+                     padding-left: 5px; padding-right: 5px;
+                     `}
+		    >
+		    NSF
+		    </div>
+	    )
+        }
+    }
 
     render() {
         return (
@@ -39,7 +72,9 @@ class GrantsTable extends Component<GrantsTableProps> {
                         render: (row: any) => {
                             const detail_url = this.props.url.concat('/grants/'+row.id)
                             return (<div>
-                                        <div>{ row.funder_name }</div>
+                                        <div>
+                                            { this.get_funder_icon(row.funder_name) }
+                                        </div>
                                         <div className="titleLink">
                                             <Link href={detail_url}>{row.title}</Link>
                                         </div>
