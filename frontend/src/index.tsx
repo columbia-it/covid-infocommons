@@ -1,7 +1,7 @@
 import ReactDOM from 'react-dom';
 import "./main.css"
 import GrantsTable from './components/GrantTable';
-import { GrantsFilter } from './components/GrantsFilter';
+import { GrantsFilter, OrgNameFacet } from './components/GrantsFilter';
 import SearchBar from './components/SearchBar';
 import Box from '@mui/material/Box';
 import TextField from '@mui/material/TextField';
@@ -20,14 +20,21 @@ interface Grant {
     funder_name: string
 }
 
+type Filter = {
+    startDate?: string,
+    endDate?: string
+}
+
 interface AppState {
     data: Grant[]
     url: string
     totalCount: number
     pageIndex: number
-    awardee_org_names: string[]
+    awardee_org_names: OrgNameFacet[]
     pi_names: string[]
+    filter: Filter
 }
+
 
 let url = ''
 if (process.env.NODE_ENV == 'production') {
@@ -45,18 +52,44 @@ class App extends Component<any, AppState> {
         totalCount: 0,
         pageIndex: 0,
         awardee_org_names: [],
-        pi_names: []
+        pi_names: [],
+        filter: {
+            'startDate': '',
+            'endDate': '',
+        }
     }
 
     constructor(props:any) {
         super(props)
         this.pageChangeHandler = this.pageChangeHandler.bind(this)
+        this.filterChangeHandler = this.filterChangeHandler.bind(this)
+
     }
 
     componentDidMount = () => {
         this.get_grants_data()
         this.get_org_name_facet()
         this.get_pi_name_facet()
+    }
+
+    filterChangeHandler(fieldName:string, value:any) {
+        console.log('Field = '.concat(fieldName))
+        console.log('Value = ')
+        console.log(value)
+        var currentFilter = this.state.filter
+        if (fieldName == 'startDate') {
+            currentFilter['startDate'] = value
+            // this.setState({
+            //     filter: {'startDate': value}    
+            // })
+        }
+        if (fieldName == 'endDate') {
+            currentFilter['endDate'] = value
+            // this.setState({
+            //     filter: {'endDate': value}    
+            // })
+        }
+        this.setState({filter: currentFilter})
     }
 
     searchHandler = (event:any) => {
@@ -68,29 +101,45 @@ class App extends Component<any, AppState> {
     get_org_name_facet() {
         var url = this.state.url.concat('/search/facets?field=awardee_organization.name')
         axios.get(url).then(results => {
-            this.setState({ awardee_org_names: results.data })
+            this.setState({ awardee_org_names: results.data.aggregations.patterns.buckets })
         })
     }
 
     get_pi_name_facet() {
         var url = this.state.url.concat('/search/facets?field=principal_investigator.first_name')
         axios.get(url).then(results => {
-            this.setState({ pi_names: results.data })
+            this.setState({ pi_names: results.data.aggregations.patterns.buckets })
         })
     }
 
     get_grants_data = (keyword?:string) => {
+        var url = this.state.url.concat('/search/grants')
+        var params: { [key: string]: any } = {};
+
         const from:number = (this.state.pageIndex * 20) + 1
-        var url = this.state.url.concat('/search/grants?from='.concat(from.toString().concat('&size=20')))
+        params.from = from
 
         if (!keyword) {
             keyword = (document.getElementById('outlined-search') as HTMLInputElement).value;
         }
         if (keyword && keyword.length > 0) {
-            url = url.concat('&keyword=').concat(keyword)
+            //url = url.concat('&keyword=').concat(keyword)
+            params.keyword = keyword
         }
-        
-        axios.get(url).then(results => {
+        console.log(this.state.filter)
+
+        let property: keyof typeof this.state.filter
+        for (property in this.state.filter) {
+            console.log('k = ')
+            console.log(property)
+            console.log(this.state.filter[property])
+            if (this.state.filter[property]) {
+                params[property] = this.state.filter[property]
+            }
+        }
+        console.log('Params = ')
+        console.log(params)
+        axios.get(url, {params: params}).then(results => {
             this.setState({ totalCount: results.data.hits.total.value })
 
             var newArray = results.data.hits.hits.map(function(val:any) {
@@ -164,6 +213,10 @@ class App extends Component<any, AppState> {
         this.get_grants_data()
     }
 
+    nsfDirectorateChangeHandler(val:string) {
+        console.log('add the selected nsf directorate to filter')
+    }
+
     render() {
         return (
             <Box
@@ -213,6 +266,8 @@ class App extends Component<any, AppState> {
                                     awardee_org_names={ this.state.awardee_org_names }
                                     pi_names={ this.state.pi_names}
                                     start_date={ new Date() }
+                                    nsfDirectorateChangeHandler={ this.nsfDirectorateChangeHandler }
+                                    filterChangeHandler={ this.filterChangeHandler }
                                 />
                             </div>
                         </div>
