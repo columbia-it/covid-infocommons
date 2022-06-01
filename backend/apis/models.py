@@ -80,7 +80,7 @@ class Grant(models.Model):
     other_investigators = models.ManyToManyField(Person, blank=True, related_name='grant_other_investigators')
     awardee_organization = models.ForeignKey(Organization, on_delete=models.CASCADE, null=True, blank=True)
     abstract = models.TextField(null=True, blank=True)
-    keywords = ListCharField(base_field=models.CharField(max_length=255, null=True, blank=True), max_length=100, null=True, blank=True)
+    keywords = ListCharField(base_field=models.CharField(max_length=255, null=True, blank=True), max_length=2000, null=True, blank=True)
 
     def __str__(self):
         return self.title
