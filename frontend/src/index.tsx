@@ -13,10 +13,13 @@ import axios from "axios";
 import DownloadIcon from '@mui/icons-material/Download';
 
 const styles = {
-  "&.MuiButton-contained": {
-      color: "#FFFFFF",
-      backgroundColor: "#2C6BAC"
-  },
+    // See MUI Button CSS classes at https://mui.com/material-ui/api/button/
+    "&.MuiButton-contained": {
+	color: "#FFFFFF",
+	backgroundColor: "#2C6BAC",
+	minWidth: "max-content",
+	whiteSpace: "nowrap"
+    },
 };
 
 interface Grant {
@@ -192,8 +195,7 @@ class App extends Component<any, AppState> {
 	                onClick={ this.exportToCsv } 
                         className='download-button' 
                         variant="contained"
-                        endIcon={ <DownloadIcon /> }>Download Results as CSV
-                                </Button>
+            endIcon={ <DownloadIcon /> }>Download Results as CSV</Button>
                             </div>
                             <div>
                                 <GrantsFilter
