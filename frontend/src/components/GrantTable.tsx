@@ -18,12 +18,6 @@ type GrantsTableProps = {
 }
 
 
-const theme = {
-  backgroundColor: 'green',
-  color: 'red'
-}
-
-
 class GrantsTable extends Component<GrantsTableProps> {
     componentDidUpdate(prevProps:any) {
         console.log(prevProps)
