@@ -13,65 +13,11 @@ import axios from "axios";
 import DownloadIcon from '@mui/icons-material/Download';
 
 const styles = {
-  "&.MuiButton-root": {
-    border: "2px black solid"
-  },
-  "&.MuiButton-text": {
-    color: "grey"
-  },
   "&.MuiButton-contained": {
-      color: "red",
-      backgroundColor: "yellow"
+      color: "#FFFFFF",
+      backgroundColor: "#2C6BAC"
   },
-  "&.MuiButton-outlined": {
-    color: "brown"
-  }
 };
-
-const theme = createTheme({
-    palette: {
-	primary: {
-	    // light: will be calculated from palette.primary.main,
-	    main: '#808000',
-	    // dark: will be calculated from palette.primary.main,
-	    // contrastText: will be calculated to contrast with palette.primary.main
-	},
-	secondary: {
-	    light: '#800000',
-	    main: '#800080',
-	    // dark: will be calculated from palette.secondary.main,
-	    contrastText: '#ffcc00',
-	},
-	// Used by `getContrastText()` to maximize the contrast between
-	// the background and the text.
-	contrastThreshold: 3,
-	// Used by the functions below to shift a color's luminance by approximately
-	// two indexes within its tonal palette.
-	// E.g., shift from Red 500 to Red 300 or Red 700.
-	tonalOffset: 0.2,
-    },
-    components: {
-	// Name of the component
-	MuiButton: {
-	    styleOverrides: {		
-		// Name of the slot
-		contained: {
-		    // Some CSS
-		    fontSize: '1rem',
-		    backgroundColor: "pink",
-		    color: "green",
-		},
-	    },
-	},
-	// Name of the component
-	MuiButtonBase: {
-	    defaultProps: {
-		// The props to change the default for.
-		disableRipple: true, // No more ripple, on the whole application 💣!
-	    },
-	},
-    },
-});
 
 interface Grant {
     id: number
@@ -218,7 +164,6 @@ class App extends Component<any, AppState> {
                 autoComplete="off"
             >
                 <div className='root'>
-		 <ThemeProvider theme={theme}>
                     <link rel="stylesheet" href="https://fonts.googleapis.com/icon?family=Material+Icons"></link>
                     <form className='search-form'>
                         <TextField
@@ -226,55 +171,28 @@ class App extends Component<any, AppState> {
                             label="Search" 
                             type="search" 
                             onKeyDown={ this.enterHandler }/>
-                        <Button 
-                            onClick={ this.searchHandler } 
-                            className='search-button'
-                            variant="contained">Search</Button>
-                    </form>
-                    <br/>
-                    <br/>
-                    <div className='flex-container'>
-                        <div className='flex-child'>
-                            <GrantsTable
-                                totalCount={ this.state.totalCount } 
-                                data={ this.state.data} 
-                                url={ this.state.url }
-                                //pageIndex={ this.state.pageIndex }
+                <Button sx={styles}
+                        onClick={ this.searchHandler } 
+                        className='search-button'
+                        variant="contained">Search</Button>
+                </form>
+                <br/>
+                <br/>
+                <div className='flex-container'>
+                <div className='flex-child'>
+                <GrantsTable totalCount={ this.state.totalCount } 
+                             data={ this.state.data} 
+                             url={ this.state.url }
+                             //pageIndex={ this.state.pageIndex }
                             />
-                        </div>
-                        <div className='flex-child'>
+                </div>
+                <div className='flex-child'>
                 <div className='download-csv'>
-		<Button variant='outlined'
-	                sx={{ color: 'yellow', backgroundColor: 'orange', borderColor: 'green' }}
-		        >
-		SXA Button
-	    </Button>
-		//JSX
-		<Button
-	    //just an example...better to use the const above
-	    sx={{
-		"&.MuiButton-text": { color: "#808080" },
-		border: "2px black solid"
-	    }}
-	    variant="text"
-	    
-		>
-		Text
-	    </Button>
-		<Button sx={styles} variant="contained">
-		Contained
-	    </Button>
-		<Button sx={styles} variant="outlined">
-		Outlined
-	    </Button>
-		<Button color="primary" className='download-button' variant="contained" sx={{ backgroundColor: 'green' }}>P button</Button>
-		<Button color="secondary" className='download-button' variant="contained">S button</Button>
-		<Button className='download-button' variant="contained" sx={{ backgroundColor: 'green', color: 'yellow' }}>SX button</Button>
-                                <Button onClick={ this.exportToCsv } 
-                                        className='download-button' 
-            variant="contained"
-	    color="primary"
-                                        endIcon={ <DownloadIcon /> }>Download Results as CSV
+                <Button sx={styles}
+	                onClick={ this.exportToCsv } 
+                        className='download-button' 
+                        variant="contained"
+                        endIcon={ <DownloadIcon /> }>Download Results as CSV
                                 </Button>
                             </div>
                             <div>
@@ -284,7 +202,7 @@ class App extends Component<any, AppState> {
                             </div>
                         </div>
                 </div>
-		</ThemeProvider>
+
                 </div>
             </Box>
         );
