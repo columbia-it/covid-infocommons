@@ -63,12 +63,14 @@ def search_grants(request):
         elif 'bool' not in query['query']:
             query['query'].update({'bool': {'must':[]}})
         
-        query['query']['bool']['must'].append({
-                "match": {
-                    "funder_divisions": nsf_directorate 
+        query['query']['bool']['must'].append(
+            {
+                'match_phrase': {
+                    'funder_divisions': nsf_directorate
                 }
-        })
-        
+            }
+        )
+      
     client = OpenSearch(
         hosts = [{'host': settings.OPENSEARCH_URL, 'port': 443}],
         use_ssl = True,

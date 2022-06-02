@@ -92,17 +92,18 @@ class App extends Component<any, AppState> {
     get_grants_data = (keyword?:string) => {
         var url = this.state.url.concat('/search/grants')
         var params: { [key: string]: any } = {};
-        
-        const from:number = (this.state.pageIndex * 20) + 1
-        params.from = from
 
-        //var url = this.state.url.concat('/search/grants?from='.concat(from.toString().concat('&size=20')))
+        let from:number = 0
+
+        if (this.state.pageIndex > 0) {
+            from = (this.state.pageIndex * 20) + 1
+        } 
+        params.from = from
 
         if (!keyword) {
             keyword = (document.getElementById('outlined-search') as HTMLInputElement).value;
         }
         if (keyword && keyword.length > 0) {
-            //url = url.concat('&keyword=').concat(keyword)
             params.keyword = keyword
         }
 
@@ -190,7 +191,11 @@ class App extends Component<any, AppState> {
     filterChangeHandler(fieldName:string, value:any) {
         var currentFilter = this.state.filter
         if (fieldName == 'nsf_directorate') {
-            currentFilter['nsf_directorate'] = value
+            if (value) {
+                currentFilter['nsf_directorate'] = value
+            } else {
+                delete currentFilter.nsf_directorate;
+            }
         }
         console.log(currentFilter)
         this.setState({filter: currentFilter})

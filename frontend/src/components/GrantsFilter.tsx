@@ -99,6 +99,9 @@ class GrantsFilter extends Component<GrantsFilterProps, any> {
                                 InputProps={{
                                     ...params.InputProps,
                                     type: 'search',
+                                    onChange: e => {
+                                        this.nsfDirectorateChangeHandler(e.target.value)
+                                    },
                                 }}
                                 variant='outlined'
                             />
