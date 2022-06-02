@@ -37,7 +37,12 @@ interface AppState {
     url: string
     totalCount: number
     pageIndex: number
-    awardee_org_names: string[]
+    awardee_org_names: OrgNameFacet[]
+    filter: Filter
+}
+
+interface Filter {
+    nsf_directorate?: string
 }
 
 let url = ''
@@ -50,17 +55,20 @@ if (process.env.NODE_ENV == 'production') {
 }
 
 class App extends Component<any, AppState> {
-    state = {
+    state:AppState = {
         data: [],
         url: url,
         totalCount: 0,
         pageIndex: 0,
-        awardee_org_names: []
+        awardee_org_names: [],
+        filter: {
+        }
     }
 
     constructor(props:any) {
         super(props)
         this.pageChangeHandler = this.pageChangeHandler.bind(this)
+        this.filterChangeHandler = this.filterChangeHandler.bind(this)
     }
 
     componentDidMount = () => {
@@ -82,17 +90,31 @@ class App extends Component<any, AppState> {
     }
 
     get_grants_data = (keyword?:string) => {
-        const from:number = (this.state.pageIndex * 20) + 1
-        var url = this.state.url.concat('/search/grants?from='.concat(from.toString().concat('&size=20')))
+        var url = this.state.url.concat('/search/grants')
+        var params: { [key: string]: any } = {};
+
+        let from:number = 0
+
+        if (this.state.pageIndex > 0) {
+            from = (this.state.pageIndex * 20) + 1
+        } 
+        params.from = from
 
         if (!keyword) {
             keyword = (document.getElementById('outlined-search') as HTMLInputElement).value;
         }
         if (keyword && keyword.length > 0) {
-            url = url.concat('&keyword=').concat(keyword)
+            params.keyword = keyword
+        }
+
+        let property: keyof typeof this.state.filter
+        for (property in this.state.filter) {
+            if (this.state.filter[property]) {
+                params[property] = this.state.filter[property]
+            }
         }
         
-        axios.get(url).then(results => {
+        axios.get(url, {params: params}).then(results => {
             this.setState({ totalCount: results.data.hits.total.value })
 
             var newArray = results.data.hits.hits.map(function(val:any) {
@@ -166,6 +188,19 @@ class App extends Component<any, AppState> {
         this.get_grants_data()
     }
 
+    filterChangeHandler(fieldName:string, value:any) {
+        var currentFilter = this.state.filter
+        if (fieldName == 'nsf_directorate') {
+            if (value) {
+                currentFilter['nsf_directorate'] = value
+            } else {
+                delete currentFilter.nsf_directorate;
+            }
+        }
+        console.log(currentFilter)
+        this.setState({filter: currentFilter})
+    }
+
     render() {
         return (
             <Box
@@ -215,7 +250,8 @@ class App extends Component<any, AppState> {
                             <div>
                                 <GrantsFilter
                                     awardee_org_names={ this.state.awardee_org_names }
-                                    />
+                                    filterChangeHandler={ this.filterChangeHandler }
+                                />
                             </div>
                         </div>
                 </div>
