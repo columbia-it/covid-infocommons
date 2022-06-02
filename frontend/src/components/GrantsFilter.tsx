@@ -15,11 +15,55 @@ interface OrgNameFacet {
 }
 
 interface GrantsFilterProps {
-    awardee_org_names: OrgNameFacet[];
+    awardee_org_names: OrgNameFacet[]
+    filterChangeHandler: (fieldName:string, value:any) => void
 }
 
+const nsf_directorates = [
+    'Biological Sciences',
+    'Computer and Information Science and Engineering',
+    'Education and Human Resources',
+    'Engineering',
+    'Geosciences',
+    'Mathematical and Physical Sciences',
+    'Social, Behavioral, and Economic Sciences',
+    'Office of the Director'
+]
+
+const nih_institues = [
+    'National Cancer Institute (NCI)',
+    'National Eye Institute (NEI)',
+    'National Heart, Lung, and Blood Institute (NHLBI)',
+    'National Human Genome Research Institute (NHGRI)',
+    'National Institute on Aging (NIA)',
+    'National Institute on Alcohol Abuse and Alcoholism (NIAAA)',
+    'National Institute of Allergy and Infectious Diseases (NIAID)',
+    'National Institute of Arthritis and Musculoskeletal and Skin Diseases (NIAMS)',
+    'National Institute of Biomedical Imaging and Bioengineering (NIBIB)',
+    'Eunice Kennedy Shriver National Institute of Child Health and Human Development (NICHD)',
+    'National Institute on Deafness and Other Communication Disorders (NIDCD)',
+    'National Institute of Dental and Craniofacial Research (NIDCR)',
+    'National Institute of Diabetes and Digestive and Kidney Diseases (NIDDK)',
+    'National Institute on Drug Abuse (NIDA)',
+    'National Institute of Environmental Health Sciences (NIEHS)',
+    'National Institute of General Medical Sciences (NIGMS)',
+    'National Institute of Mental Health (NIMH)',
+    'National Institute on Minority Health and Health Disparities (NIMHD)',
+    'National Institute of Neurological Disorders and Stroke (NINDS)',
+    'National Institute of Nursing Research (NINR)',
+    'National Library of Medicine (NLM)',
+    'NIH Clinical Center (CC)',
+    'Center for Information Technology (CIT)',
+    'Center for Scientific Review (CSR)',
+    'Fogarty International Center (FIC)',
+    'National Center for Advancing Translational Sciences (NCATS)',
+    'National Center for Complementary and Integrative Health (NCCIH)'
+]
 class GrantsFilter extends Component<GrantsFilterProps, any> {
-    
+    nsfDirectorateChangeHandler(value:string) {
+        this.props.filterChangeHandler('nsf_directorate', value)
+    }
+
     render() {
         return (
         <Card sx={{ width: '100%' }}>
@@ -37,11 +81,60 @@ class GrantsFilter extends Component<GrantsFilterProps, any> {
                         aria-controls="panel1a-content"
                         id="panel1a-header"
                     >
-                        <Typography sx={{ px: 2 }}>Directorate</Typography>
+                        <Typography sx={{ px: 2 }}>NSF Directorate</Typography>
                     </AccordionSummary>
                     <AccordionDetails>
-                        <TextField variant='outlined' label='Type directorate title'>
-                        </TextField>
+                        {/* <TextField variant='outlined' label='Type directorate title'>
+                        </TextField> */}
+                        <Autocomplete
+                            freeSolo
+                            id="free-solo-3-demo"
+                            disableClearable
+                            onChange={ (event, value) => this.nsfDirectorateChangeHandler(value) }
+                            options={ nsf_directorates.map((option) => option) }
+                            renderInput={(params) => (
+                            <TextField        
+                                {...params}
+                                label="Select NSF Directorate"
+                                InputProps={{
+                                    ...params.InputProps,
+                                    type: 'search',
+                                }}
+                                variant='outlined'
+                            />
+                            )}
+                        />
+                    </AccordionDetails>
+                </Accordion>
+                <Accordion>
+                    <AccordionSummary
+                        expandIcon={<ExpandMoreIcon />}
+                        aria-controls="panel1a-content"
+                        id="panel1a-header"
+                    >
+                        <Typography sx={{ px: 2 }}>NIH Institute/Center</Typography>
+                    </AccordionSummary>
+                    <AccordionDetails>
+                        {/* <TextField variant='outlined' label='Type directorate title'>
+                        </TextField> */}
+                        <Autocomplete
+                            freeSolo
+                            id="free-solo-5-demo"
+                            disableClearable
+                            onChange={ (event, value) => this.nsfDirectorateChangeHandler(value) }
+                            options={ nih_institues.map((option) => option) }
+                            renderInput={(params) => (
+                            <TextField        
+                                {...params}
+                                label="Select NIH Institute/Center"
+                                InputProps={{
+                                    ...params.InputProps,
+                                    type: 'search',
+                                }}
+                                variant='outlined'
+                            />
+                            )}
+                        />
                     </AccordionDetails>
                 </Accordion>
                 <Accordion>
