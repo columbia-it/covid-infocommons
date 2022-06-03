@@ -8,6 +8,11 @@ import Card from '@mui/material/Card';
 import CardContent from '@mui/material/CardContent';
 import { Button, TextField } from "@material-ui/core";
 import Autocomplete from '@mui/material/Autocomplete';
+import {
+    MuiPickersUtilsProvider,
+    KeyboardDatePicker,
+  } from '@material-ui/pickers';
+import DateFnsUtils from '@date-io/date-fns';
 
 interface OrgNameFacet {
     key: string
@@ -17,6 +22,13 @@ interface OrgNameFacet {
 interface GrantsFilterProps {
     awardee_org_names: OrgNameFacet[]
     filterChangeHandler: (fieldName:string, value:any) => void
+}
+
+interface GrantFilterState {
+    startDate: Date
+    endDate: Date
+    isStartDatePickerOpen: boolean
+    isEndDatePickerOpen: boolean
 }
 
 const nsf_directorates = [
@@ -59,9 +71,39 @@ const nih_institues = [
     'National Center for Advancing Translational Sciences (NCATS)',
     'National Center for Complementary and Integrative Health (NCCIH)'
 ]
-class GrantsFilter extends Component<GrantsFilterProps, any> {
+class GrantsFilter extends Component<GrantsFilterProps, GrantFilterState> {
+    constructor(props:GrantsFilterProps) {
+        super(props)
+        this.state = {
+            startDate: new Date(),
+            endDate: new Date(),
+            isStartDatePickerOpen: false,
+            isEndDatePickerOpen: false
+        }
+        this.startDateChangeHandler = this.startDateChangeHandler.bind(this)
+        this.endDateChangeHandler = this.endDateChangeHandler.bind(this)
+    }
+
+    startDateChangeHandler(date:Date) {
+        this.setState({startDate:date})
+        this.props.filterChangeHandler('startDate', date)
+    }
+
+    endDateChangeHandler(date:Date) {
+        this.setState({endDate:date})
+        this.props.filterChangeHandler('endDate', date)
+    }
+
     nsfDirectorateChangeHandler(value:string) {
         this.props.filterChangeHandler('nsf_directorate', value)
+    }
+
+    setIsStartDatePickerOpen(val:boolean) {
+        this.setState({isStartDatePickerOpen: val})
+    }
+
+    setIsEndDatePickerOpen(val:boolean) {
+        this.setState({isEndDatePickerOpen: val})
     }
 
     render() {
@@ -230,9 +272,56 @@ class GrantsFilter extends Component<GrantsFilterProps, any> {
                         <Typography sx={{ px: 2 }}>Start/End Date</Typography>
                     </AccordionSummary>
                     <AccordionDetails>
-                        <Typography>
-                            Textfield goes here
-                        </Typography>
+                        <MuiPickersUtilsProvider utils={DateFnsUtils}>
+                            <KeyboardDatePicker
+                                disableToolbar={ true }
+                                variant="inline"
+                                format="MM/dd/yyyy"
+                                margin="normal"
+                                id="date-picker-inline"
+                                label="Start Date (On or after):"
+                                value={ this.state.startDate }
+                                inputVariant="outlined"
+                                onChange={ this.startDateChangeHandler }
+                                KeyboardButtonProps={{
+                                    onFocus: (e) => {
+                                        this.setIsStartDatePickerOpen(true);
+                                    },
+                                    'aria-label': 'change date',
+                                }}
+                                PopoverProps={{
+                                    disableRestoreFocus: true,
+                                    onClose: () => {
+                                        this.setIsStartDatePickerOpen(false);
+                                    }
+                                }}
+                                open={ this.state.isStartDatePickerOpen }
+                            />
+                            <KeyboardDatePicker
+                                disableToolbar={true}
+                                variant="inline"
+                                format="MM/dd/yyyy"
+                                margin="normal"
+                                id="date-picker-inline"
+                                label="End Date (On or before):"
+                                value={ this.state.endDate }
+                                inputVariant="outlined"
+                                onChange={ this.endDateChangeHandler }
+                                KeyboardButtonProps={{
+                                    onFocus: (e) => {
+                                        this.setIsEndDatePickerOpen(true);
+                                    },
+                                    'aria-label': 'change date',
+                                }}
+                                PopoverProps={{
+                                    disableRestoreFocus: true,
+                                    onClose: () => {
+                                        this.setIsEndDatePickerOpen(false);
+                                    }
+                                }}
+                                open={ this.state.isEndDatePickerOpen }
+                            />
+                        </MuiPickersUtilsProvider>
                     </AccordionDetails>
                 </Accordion>
             </div>

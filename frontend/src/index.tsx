@@ -43,6 +43,8 @@ interface AppState {
 
 interface Filter {
     nsf_directorate?: string
+    start_date?: Date
+    end_date?: Date
 }
 
 let url = ''
@@ -197,8 +199,30 @@ class App extends Component<any, AppState> {
                 delete currentFilter.nsf_directorate;
             }
         }
+        if (fieldName == 'startDate') {
+            if (value) {
+                currentFilter['start_date'] = this.removeTime(value)
+            } else {
+                delete currentFilter.start_date;
+            }
+        }
+        if (fieldName == 'endDate') {
+            if (value) {
+                currentFilter['end_date'] = this.removeTime(value)
+            } else {
+                delete currentFilter.end_date;
+            }
+        }
         console.log(currentFilter)
         this.setState({filter: currentFilter})
+    }
+
+    removeTime(date:Date) {
+        return new Date(
+            date.getFullYear(),
+            date.getMonth(),
+            date.getDate()
+        )
     }
 
     render() {
