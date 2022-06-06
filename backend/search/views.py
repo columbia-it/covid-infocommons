@@ -12,7 +12,7 @@ def get_facet_by_field(request) :
     )
 
     query = {
-        "size": 0,
+        "size": 10,
         "aggs" : {
             "patterns" : {
                 "terms" : { "field" : "{}.keyword".format(field_name) }
@@ -34,7 +34,8 @@ def search_grants(request):
 
     # Get filter/search criteria from request
     keyword = request.GET.get('keyword', None)
-    nsf_directorate = request.GET.get('nsf_directorate', None)
+    funder_division = request.GET.get('funder_division', None)
+    awardee_organization = request.GET.get('awardee_organization', None)
     start_date = request.GET.get('start_date', None)
     end_date = request.GET.get('end_date', None)
 
@@ -56,11 +57,27 @@ def search_grants(request):
             }
         })
 
-    if nsf_directorate:     
+    if awardee_organization:
         query['query']['bool']['must'].append(
+            { 
+                'match_phrase': { 
+                    'awardee_organization.name': awardee_organization
+                }
+            },
+        )
+
+    if funder_division:  
+        if 'match_phrase' in query:
+               query['query']['bool']['must']['match_phrase'].append(
+                   {
+                       'funder_divisions': funder_division
+                    }
+               )
+        else:
+            query['query']['bool']['must'].append(
             {
                 'match_phrase': {
-                    'funder_divisions': nsf_directorate
+                    'funder_divisions': funder_division
                 }
             }
         )
@@ -86,7 +103,7 @@ def search_grants(request):
         use_ssl = True,
         verify_certs = True,
     )
-   
+
     response = client.search(
         body = query,
         index = 'grant_index'

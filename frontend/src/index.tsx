@@ -42,9 +42,10 @@ interface AppState {
 }
 
 interface Filter {
-    nsf_directorate?: string
+    funder_division?: string
     start_date?: Date
     end_date?: Date
+    awardee_organization?: string
 }
 
 let url = ''
@@ -192,11 +193,18 @@ class App extends Component<any, AppState> {
 
     filterChangeHandler(fieldName:string, value:any) {
         var currentFilter = this.state.filter
-        if (fieldName == 'nsf_directorate') {
-            if (value) {
-                currentFilter['nsf_directorate'] = value
+        if (fieldName == 'funder_division') {
+            if (!value || value.length === 0) {
+                delete currentFilter.funder_division;
             } else {
-                delete currentFilter.nsf_directorate;
+                currentFilter['funder_division'] = value
+            }
+        }
+        if (fieldName == 'awardee_organization') {
+            if (!value || value.length === 0) {
+                delete currentFilter.awardee_organization;
+            } else {
+                currentFilter['awardee_organization'] = value
             }
         }
         if (fieldName == 'startDate') {
