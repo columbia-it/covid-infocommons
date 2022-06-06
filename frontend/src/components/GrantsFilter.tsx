@@ -94,10 +94,6 @@ class GrantsFilter extends Component<GrantsFilterProps, GrantFilterState> {
         this.props.filterChangeHandler('endDate', date)
     }
 
-    nsfDirectorateChangeHandler(value:string) {
-        this.props.filterChangeHandler('nsf_directorate', value)
-    }
-
     setIsStartDatePickerOpen(val:boolean) {
         this.setState({isStartDatePickerOpen: val})
     }
@@ -132,7 +128,9 @@ class GrantsFilter extends Component<GrantsFilterProps, GrantFilterState> {
                             freeSolo
                             id="free-solo-3-demo"
                             disableClearable
-                            onChange={ (event, value) => this.nsfDirectorateChangeHandler(value) }
+                            onChange={ (event, value) => 
+                                this.props.filterChangeHandler('funder_division', value)
+                            }
                             options={ nsf_directorates.map((option) => option) }
                             renderInput={(params) => (
                             <TextField        
@@ -142,7 +140,7 @@ class GrantsFilter extends Component<GrantsFilterProps, GrantFilterState> {
                                     ...params.InputProps,
                                     type: 'search',
                                     onChange: e => {
-                                        this.nsfDirectorateChangeHandler(e.target.value)
+                                        this.props.filterChangeHandler('funder_division', e.target.value)
                                     },
                                 }}
                                 variant='outlined'
@@ -166,7 +164,9 @@ class GrantsFilter extends Component<GrantsFilterProps, GrantFilterState> {
                             freeSolo
                             id="free-solo-5-demo"
                             disableClearable
-                            onChange={ (event, value) => this.nsfDirectorateChangeHandler(value) }
+                            onChange={ (event, value) => 
+                                this.props.filterChangeHandler('funder_division', value)
+                            }
                             options={ nih_institues.map((option) => option) }
                             renderInput={(params) => (
                             <TextField        
@@ -175,6 +175,9 @@ class GrantsFilter extends Component<GrantsFilterProps, GrantFilterState> {
                                 InputProps={{
                                     ...params.InputProps,
                                     type: 'search',
+                                    onChange: e => {
+                                        this.props.filterChangeHandler('funder_division', e.target.value)
+                                    },
                                 }}
                                 variant='outlined'
                             />
@@ -209,6 +212,9 @@ class GrantsFilter extends Component<GrantsFilterProps, GrantFilterState> {
                             id="free-solo-2-demo"
                             disableClearable
                             options={this.props.awardee_org_names.map((option) => option.key)}
+                            onChange={ (event, value) => 
+                                this.props.filterChangeHandler('awardee_organization', value)
+                            }
                             renderInput={(params) => (
                             <TextField        
                                 {...params}
@@ -216,6 +222,9 @@ class GrantsFilter extends Component<GrantsFilterProps, GrantFilterState> {
                                 InputProps={{
                                     ...params.InputProps,
                                     type: 'search',
+                                    onChange: e => {
+                                        this.props.filterChangeHandler('awardee_organization', e.target.value)
+                                    },
                                 }}
                                 variant='outlined'
                             />
