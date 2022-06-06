@@ -17,7 +17,7 @@ def main():
 
     # The NSF API will only return a max of 3000 grants per request, and the default page size is 25
     # So we request one month at a time, and step through each page
-    for year in range(2005, max_year):
+    for year in range(max_year, 2005, -1):
         for month in range(1, 13):
             print(f'==================== Imported so far: {imported_count} ==========================')
             print(f'==================== Retrieving month {year}-{month} ======================')
@@ -112,7 +112,7 @@ def nsf_program_official(grant):
     #    "id": "1"
     #  }
     if 'poName' not in grant:
-        return None
+        return []
     name = grant['poName']
     last_space = name.rfind(" ")
     last = name[last_space+1:]
