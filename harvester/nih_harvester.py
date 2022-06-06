@@ -7,6 +7,7 @@ import logging
 import requests
 
 NIH_BASE = "https://api.reporter.nih.gov/v1/projects/Search"
+
 STOP_LIMIT = 100000
 SKIP_EXISTING = True
 
@@ -25,7 +26,7 @@ def main():
     
     # The NIH API will only return a max of 500 grants per request, and the default page size is 25 
     # So we request one month at a time, and step through each page
-    for year in range(2019, max_year):
+    for year in range(max_year, 2019, -1):
         print(f'==================== Imported so far: {imported_count} ==========================')
         print(f'==================== Retrieving {year} ======================')
             
@@ -262,7 +263,7 @@ def nih_keywords(s):
     if(s is None or len(s) == 0):
         return []
     else:
-        s = s[0:99] # TODO 114 -- allow all keywords, not just a few
+        s = s[0:1999] # some NIH grants have a staggering amount of keywords
         keys = s.split(';')
         keys = [i for i in keys if i]
         return keys
