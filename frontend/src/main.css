@@ -124,7 +124,6 @@
     margin-left: auto;
     width: 150px;
     transition: opacity .2s;
-    position: fixed;
     bottom: 0;
     z-index: 5;
     left: 3;
