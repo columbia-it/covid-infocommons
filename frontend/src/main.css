@@ -1,6 +1,9 @@
 
 .root {
-    margin: 20px;
+    margin-top: 20px;
+    margin-left: 0px;
+    margin-right: 0px;
+    margin-bottom: 20px;
 }
 
 .search-form {
@@ -23,7 +26,115 @@
   font-family: ui-rounded;
   text-align: center;
 }
-  
+
+#site-footer {
+    margin-left: calc(50% - 50vw);
+    width: 100vw;
+    -webkit-text-size-adjust: 100%;
+    -webkit-tap-highlight-color: transparent;
+    font-size: 14px;
+    line-height: 1.42857143;
+    font-family: "proxima-nova",sans-serif;
+    box-sizing: border-box;
+    hyphens: manual;
+    background: #093552;
+    color: #FFF;
+    padding: 40px 30px 30px;
+}
+
+#icon-table {
+    margin-left: 30px;
+    width: 100%;
+}
+
+#icon-table .text {
+    margin-left: 10px;
+}
+
+#icon-table a {
+    color: rgb(166,183,200);
+}
+
+#icon-table a:visited {
+    color: rgb(166,183,200);
+}
+
+.cic-icon {
+    width: 40px;
+    padding: 10px;
+    float: left;
+    color: rgb(166,183,200);
+}
+
+.cic-icon a {
+    color: rgb(166,183,200);
+}
+
+.cic-icon a:visited {
+    color: rgb(166,183,200);
+}
+
+.cu-foot-link {
+    float: right;
+    padding: 10px;
+}
+
+.sr-only {
+    -webkit-text-size-adjust: 100%;
+    -webkit-tap-highlight-color: transparent;
+    font-size: 14px;
+    line-height: 1.42857143;
+    font-family: "proxima-nova",sans-serif;
+    hyphens: manual;
+    white-space: nowrap;
+    color: #a6b7c8;
+    box-sizing: border-box;
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    padding: 0;
+    margin: -1px;
+    overflow: hidden;
+    clip: rect(0,0,0,0);
+    border: 0;
+}
+
+#cu-footer {
+    -webkit-text-size-adjust: 100%;
+    -webkit-tap-highlight-color: transparent;
+    font-size: 14px;
+    font-family: "proxima-nova",sans-serif;
+    box-sizing: border-box;
+    line-height: 27px;
+    padding: 30px 0;
+    color: #FFF;
+}
+
+#back-to-top-container {
+    -webkit-text-size-adjust: 100%;
+    -webkit-tap-highlight-color: transparent;
+    font-size: 14px;
+    line-height: 1.42857143;
+    font-family: "proxima-nova",sans-serif;
+    background: #093552;
+    box-sizing: border-box;
+    padding-right: 15px;
+    padding-left: 15px;
+    margin-right: auto;
+    margin-left: auto;
+    width: 150px;
+    transition: opacity .2s;
+    bottom: 0;
+    z-index: 5;
+    left: 3;
+    right: 0;
+    opacity: 1;
+}
+
+#back-to-top-container a {
+    color: rgb(166,183,200);
+}
+
 .grants-table {
   width: 100%;
 }
@@ -72,8 +183,8 @@
 }
 
 .filter-results-label {
-  font-family: proxima-nova,sans-serif;
-  color: #555555;
+    font-family: "proxima-nova", "Montserrat",sans-serif;
+    color: #555555;
 }
 
 .filter-accordion {
@@ -81,17 +192,17 @@
 }
 
 .titleLink {
-  font-family: ui-sans-serif;
-  font-size: 18px;
+    font-family: "proxima-nova", "Montserrat",sans-serif;
+    font-size: 18px;
 }
 
 .truncAbstract {
-  font-family: ui-sans-serif;
-  font-size: 16px;
+    font-family: "proxima-nova", "Montserrat",sans-serif;
+    font-size: 14px;
 }
 
 .showMoreLink {
-  color: cornflowerblue;
+    color: #216497;
 }
 
 /* ******************** General styles to copy the Columbia Sites settings ****************** */
@@ -114,13 +225,35 @@ b {
     font-weight: bold;
 }
 
+@media (min-width: 1200px)
 body {
+    width: 1170px;
+}
+
+@media (min-width: 992px)
+body {
+    width: 970px;
+}
+
+@media (min-width: 768px)
+body {
+    width: 750px;
+    padding-bottom: 50px;
+    margin-top: 0;
+}
+
+body {
+    display: block;
     color: #555555;
     background: #FFF;
     background-color: #FFF;
     font-family: "Helvetica Neue",Helvetica,Arial,sans-serif;
     font-size: 14px;
-    padding: 50px;
+    padding-right: 15px;
+    padding-left: 15px;
+    margin-top: 0px;
+    margin-right: 50px;
+    margin-left: 50px;
 }
 
 h1 {
@@ -145,7 +278,7 @@ p {
     -webkit-text-size-adjust: 100%;
     -webkit-tap-highlight-color: transparent;
     line-height: 1.42857143;
-    font-family: "proxima-nova",sans-serif;
+    font-family: "proxima-nova", "Montserrat",sans-serif;
     color: #555555;
     font-size: 16px;
     box-sizing: border-box;
@@ -156,7 +289,7 @@ small {
     -webkit-text-size-adjust: 100%;
     -webkit-tap-highlight-color: transparent;
     line-height: 1.42857143;
-    font-family: "proxima-nova",sans-serif;
+    font-family: "proxima-nova", "Montserrat",sans-serif;
     color: #555555;
     box-sizing: border-box;
     font-size: 85%;
@@ -171,7 +304,7 @@ ul {
     -webkit-text-size-adjust: 100%;
     -webkit-tap-highlight-color: transparent;
     line-height: 1.42857143;
-    font-family: "proxima-nova",sans-serif;
+    font-family: "proxima-nova", "Montserrat",sans-serif;
     color: #555555;
     font-size: 16px;
     box-sizing: border-box;
@@ -201,7 +334,7 @@ ul {
     -webkit-tap-highlight-color: transparent;
     font-size: 14px;
     line-height: 1.42857143;
-    font-family: "proxima-nova",sans-serif;
+    font-family: "proxima-nova", "Montserrat",sans-serif;
     box-sizing: border-box;
     background-color: transparent;
     color: #2c6bac;
@@ -226,10 +359,16 @@ ul {
     color: #3A6FA2;
     font-weight: 400;
     font-style: normal;
+    margin-top: 15px;
+    margin-bottom: 15px;
 }
 
 /* ************************************************   Menu bar   ********************************************** */
 /* Adapted from the "Simple, CSS only, responsive menu" at https://www.sliderrevolution.com/resources/css-menu/ */
+
+#site-nav-wrapper {
+    margin-left: -15px;
+}
 
 #site-nav .container {
     display: inline-block;
@@ -269,7 +408,7 @@ ul {
     list-style: none;
     position: relative;
     text-align: left;
-    font-size: 14px;
+    font-size: 12px;
     margin: 0 0 0px;
     padding-inline-start: 0px;
 }
@@ -420,7 +559,7 @@ ul {
     -webkit-text-size-adjust: 100%;
     -webkit-tap-highlight-color: transparent;
     line-height: 1.42857143;
-    font-family: "proxima-nova",sans-serif;
+    font-family: "proxima-nova", "Montserrat",sans-serif;
     font-size: 18px;
     box-sizing: border-box;
     display: block;
@@ -454,7 +593,7 @@ ul {
         -webkit-text-size-adjust: 100%;
     -webkit-tap-highlight-color: transparent;
     line-height: 1.42857143;
-    font-family: "proxima-nova",sans-serif;
+    font-family: "proxima-nova", "Montserrat",sans-serif;
     font-size: 18px;
     color: #717171;
     box-sizing: border-box;
@@ -469,7 +608,7 @@ ul {
         -webkit-text-size-adjust: 100%;
     -webkit-tap-highlight-color: transparent;
     line-height: 1.42857143;
-    font-family: "proxima-nova",sans-serif;
+    font-family: "proxima-nova", "Montserrat",sans-serif;
     color: #717171;
     list-style: none;
     font-size: 14px;
@@ -488,7 +627,7 @@ ul {
         -webkit-text-size-adjust: 100%;
     -webkit-tap-highlight-color: transparent;
     line-height: 1.42857143;
-    font-family: "proxima-nova",sans-serif;
+    font-family: "proxima-nova", "Montserrat",sans-serif;
     list-style: none;
     font-size: 14px;
     box-sizing: border-box;
@@ -529,10 +668,10 @@ ul {
 }
 
 #breadcrumb li .active {
-        -webkit-text-size-adjust: 100%;
+    -webkit-text-size-adjust: 100%;
     -webkit-tap-highlight-color: transparent;
     line-height: 1.42857143;
-    font-family: "proxima-nova",sans-serif;
+    font-family: "proxima-nova", "Montserrat",sans-serif;
     list-style: none;
     font-size: 14px;
     box-sizing: border-box;
