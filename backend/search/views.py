@@ -38,6 +38,7 @@ def search_grants(request):
     awardee_organization = request.GET.get('awardee_organization', None)
     start_date = request.GET.get('start_date', None)
     end_date = request.GET.get('end_date', None)
+    org_state = request.GET.get('org_state', None)
 
     query = {
         'size': size,
@@ -97,6 +98,15 @@ def search_grants(request):
             query['query']['bool']['must'].append(
                 {"range": {"end_date": {"lte": end_date}}
             })
+
+    if org_state:
+        query['query']['bool']['must'].append(
+            {
+                'match': {
+                    'awardee_organization.state': org_state
+                }
+            }
+        )
       
     client = OpenSearch(
         hosts = [{'host': settings.OPENSEARCH_URL, 'port': 443}],
