@@ -26,7 +26,116 @@
   font-family: ui-rounded;
   text-align: center;
 }
-  
+
+#site-footer {
+    margin-left: calc(50% - 50vw);
+    width: 100vw;
+    -webkit-text-size-adjust: 100%;
+    -webkit-tap-highlight-color: transparent;
+    font-size: 14px;
+    line-height: 1.42857143;
+    font-family: "proxima-nova",sans-serif;
+    box-sizing: border-box;
+    hyphens: manual;
+    background: #093552;
+    color: #FFF;
+    padding: 40px 30px 30px;
+}
+
+#icon-table {
+    margin-left: 30px;
+    width: 100%;
+}
+
+#icon-table .text {
+    margin-left: 10px;
+}
+
+#icon-table a {
+    color: rgb(166,183,200);
+}
+
+#icon-table a:visited {
+    color: rgb(166,183,200);
+}
+
+.cic-icon {
+    width: 40px;
+    padding: 10px;
+    float: left;
+    color: rgb(166,183,200);
+}
+
+.cic-icon a {
+    color: rgb(166,183,200);
+}
+
+.cic-icon a:visited {
+    color: rgb(166,183,200);
+}
+
+.cu-foot-link {
+    float: right;
+    padding: 10px;
+}
+
+.sr-only {
+    -webkit-text-size-adjust: 100%;
+    -webkit-tap-highlight-color: transparent;
+    font-size: 14px;
+    line-height: 1.42857143;
+    font-family: "proxima-nova",sans-serif;
+    hyphens: manual;
+    white-space: nowrap;
+    color: #a6b7c8;
+    box-sizing: border-box;
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    padding: 0;
+    margin: -1px;
+    overflow: hidden;
+    clip: rect(0,0,0,0);
+    border: 0;
+}
+
+#cu-footer {
+    -webkit-text-size-adjust: 100%;
+    -webkit-tap-highlight-color: transparent;
+    font-size: 14px;
+    font-family: "proxima-nova",sans-serif;
+    box-sizing: border-box;
+    line-height: 27px;
+    padding: 30px 0;
+    color: #FFF;
+}
+
+#back-to-top-container {
+    -webkit-text-size-adjust: 100%;
+    -webkit-tap-highlight-color: transparent;
+    font-size: 14px;
+    line-height: 1.42857143;
+    font-family: "proxima-nova",sans-serif;
+    background: #093552;
+    box-sizing: border-box;
+    padding-right: 15px;
+    padding-left: 15px;
+    margin-right: auto;
+    margin-left: auto;
+    width: 150px;
+    transition: opacity .2s;
+    position: fixed;
+    bottom: 0;
+    z-index: 5;
+    left: 3;
+    right: 0;
+    opacity: 1;
+}
+
+#back-to-top-container a {
+    color: rgb(166,183,200);
+}
+
 .grants-table {
   width: 100%;
 }
@@ -94,7 +203,7 @@
 }
 
 .showMoreLink {
-  color: cornflowerblue;
+    color: #216497;
 }
 
 /* ******************** General styles to copy the Columbia Sites settings ****************** */
