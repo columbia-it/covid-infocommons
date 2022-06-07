@@ -69,6 +69,7 @@ class GrantsTable extends Component<GrantsTableProps> {
                     {
                         title: "Projects", 
                         field: "title",
+			width: "50%",
                         render: (row: any) => {
                             const detail_url = this.props.url.concat('/grants/'+row.id)
                             return (<div>
@@ -76,10 +77,10 @@ class GrantsTable extends Component<GrantsTableProps> {
                                             { this.get_funder_icon(row.funder_name) }
                                         </div>
                                         <div className="titleLink">
-                                            <Link href={detail_url}>{row.title}</Link>
+                                            <Link underline="hover" href={detail_url}>{row.title}</Link>
                                         </div>
                                         <div className="truncAbstract">
-                                            <p>{ this.truncate(row.abstract, 100) }
+                                            <p>{ this.truncate(row.abstract, 200) }
                                             <a href={ detail_url} className="showMoreLink">SHOW MORE</a></p>
                                         </div>
                                     </div>)

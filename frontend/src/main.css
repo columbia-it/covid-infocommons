@@ -75,7 +75,7 @@
 }
 
 .filter-results-label {
-    font-family: proxima-nova,sans-serif;
+    font-family: "proxima-nova", "Montserrat",sans-serif;
     color: #555555;
 }
 
@@ -84,13 +84,13 @@
 }
 
 .titleLink {
-  font-family: ui-sans-serif;
-  font-size: 18px;
+    font-family: "proxima-nova", "Montserrat",sans-serif;
+    font-size: 18px;
 }
 
 .truncAbstract {
-  font-family: ui-sans-serif;
-  font-size: 16px;
+    font-family: "proxima-nova", "Montserrat",sans-serif;
+    font-size: 14px;
 }
 
 .showMoreLink {
