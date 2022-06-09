@@ -83,7 +83,7 @@ def find_ror_org(name, country = 'United States'):
                 return ro
 
     
-def find_or_create_org(name, country):
+def find_or_create_org(name, country, state = None):
     # ensure capitliazation of the US
     if country.lower() == 'united states' or country.lower() == 'usa' or country.lower() == 'us':
         country = 'United States'
@@ -94,9 +94,14 @@ def find_or_create_org(name, country):
         if ror_org is not None:
             org = find_cic_org_by_ror(ror_org['id'])
             if org is None:
-                org = create_cic_org(org_to_cic_format(ror_org['name'], country, ror_org['id']))
+                # We found an org from ROR, but it doesn't exist in CIC yet
+                if state is None:
+                    state = ror_org['addresses'][0]['state_code']
+                if state.startswith("US-"):
+                    state = state[3:]
+                org = create_cic_org(org_to_cic_format(ror_org['name'], country, state, ror_org['id']))
         else:
-            org = create_cic_org(org_to_cic_format(name, country, None))
+            org = create_cic_org(org_to_cic_format(name, country, state, None))
     return org       
 
 
@@ -113,16 +118,19 @@ def create_cic_org(org_json):
     return r.json()['data']
 
 
-def org_to_cic_format(name, country, ror = None):
+def org_to_cic_format(name, country, state, ror = None):
     org_data = {
         "data": {
             "type": "Organization",
             "attributes": {
-                "name": name,
+                "name": name,                
                 "country": country
         }}}
+    # insert values that might be null only if they exist
     if ror is not None:
         org_data['data']['attributes']['ror'] = ror
+    if state is not None:
+        org_data['data']['attributes']['state'] = state
     return org_data
 
 

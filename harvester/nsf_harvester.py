@@ -53,7 +53,6 @@ def retrieve_nsf_grants(year, month, offset):
 def process_grant(grant):
     logging.info("======================================================================")
     logging.info(f" -- processing grant {grant['id']} -- {grant['title']}")
-
     existing_grant = cic_grants.find_cic_grant(grant['id'])
     if existing_grant is None:        
         logging.debug("   -- not found - creating")
@@ -149,11 +148,18 @@ def nsf_awardee_org(grant):
     if 'awardeeName' not in grant:
         return None
     name = grant['awardeeName']
+
     if 'awardeeCountryCode' not in grant:
         country_code = 'US'
     else:
         country_code = grant['awardeeCountryCode']
-    org = cic_orgs.find_or_create_org(name, country_code)
+
+    if 'awardeeStateCode' not in grant:
+        state_code = None
+    else:
+        state_code = grant['awardeeStateCode']
+        
+    org = cic_orgs.find_or_create_org(name, country_code, state_code)
     org_json = { "type": "Organization",
                  "id": int(org['id']) }
     logging.debug(f" -- attaching organization {org_json}")
