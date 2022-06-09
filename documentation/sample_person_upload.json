@@ -1,0 +1,13 @@
+{
+    "data": {
+        "type": "Person", 
+        "attributes": {
+	    "affiliations": [],
+            "first_name": "Erik J.",
+            "last_name": "Stemmy",
+            "orcid": null,
+            "emails": null,
+            "private_emails": null
+        }
+    }
+}

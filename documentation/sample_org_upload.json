@@ -1,0 +1,14 @@
+{
+    "data": {
+        "type": "Organization", 
+        "attributes": {
+	    "ror": "https://ror.org/00py81415",
+            "name": "Duke University",
+            "address": "2138 Campus Drive",
+            "city": "Durham",
+            "state": "NC",
+            "zip": "27708",
+            "country": "USA"
+        }
+    }
+}

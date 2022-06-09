@@ -1,4 +1,27 @@
 
+header small {
+    -webkit-text-size-adjust: 100%;
+    -webkit-tap-highlight-color: transparent;
+    line-height: 1.42857143;
+    font-family: "proxima-nova","Montserrat",sans-serif;
+    color: #555555;
+    box-sizing: border-box;
+    font-size: 85%;
+}
+
+header h1 {
+    -webkit-text-size-adjust: 100%;
+    -webkit-tap-highlight-color: transparent;
+    box-sizing: border-box;
+    font-family: "proxima-nova","Montserrat",sans-serif;
+    line-height: 1.1;
+    color: #555555;
+    margin: 0.8em 0 0.6em;
+    margin-top: 10px;
+    font-size: 40px;
+    font-weight: normal;
+}
+
 .root {
     margin-top: 20px;
     margin-left: 0px;
@@ -34,7 +57,7 @@
     -webkit-tap-highlight-color: transparent;
     font-size: 14px;
     line-height: 1.42857143;
-    font-family: "proxima-nova",sans-serif;
+    font-family: "proxima-nova","Montserrat",sans-serif;
     box-sizing: border-box;
     hyphens: manual;
     background: #093552;
@@ -84,7 +107,7 @@
     -webkit-tap-highlight-color: transparent;
     font-size: 14px;
     line-height: 1.42857143;
-    font-family: "proxima-nova",sans-serif;
+    font-family: "proxima-nova","Montserrat",sans-serif;
     hyphens: manual;
     white-space: nowrap;
     color: #a6b7c8;
@@ -103,7 +126,7 @@
     -webkit-text-size-adjust: 100%;
     -webkit-tap-highlight-color: transparent;
     font-size: 14px;
-    font-family: "proxima-nova",sans-serif;
+    font-family: "proxima-nova","Montserrat",sans-serif;
     box-sizing: border-box;
     line-height: 27px;
     padding: 30px 0;
@@ -115,7 +138,7 @@
     -webkit-tap-highlight-color: transparent;
     font-size: 14px;
     line-height: 1.42857143;
-    font-family: "proxima-nova",sans-serif;
+    font-family: "proxima-nova","Montserrat",sans-serif;
     background: #093552;
     box-sizing: border-box;
     padding-right: 15px;
@@ -297,7 +320,6 @@ small {
 
 strong {
     font-weight: 600;
-/*    font-weight: bold; */
 }
 
 ul {

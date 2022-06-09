@@ -21,65 +21,60 @@
         <link rel="stylesheet" type="text/css" href="{% static '/search/main.css' %}" />
     </head>
     <body>
-	{% include "cic_header.html" %}
+      {% include "cic_header.html" %}
+      <p/>
         <div>
-            <header>
-                <small>Award Abstract #{{ grant.award_id}}</small>
-                <h1>
-                    <span>{{ grant.title }}</span>
-                </h1>
-            </header>
-            <section>
-                <small>Award Number:</small>
-                <p>{{ grant.award_id }}</p>
-            </section>
-            <section>
-                <small>Award Instrument:</small>
-                <p>Grant</p>
-            </section>
+          <header>
+	    {% if grant.funder.name == 'National Science Foundation' %}
+	    <div style="color: #FFFFFF; background-color: #3C75CF; border-radius: 4px; width: min-content; padding-left: 5px; padding-right: 5px;">
+	      NSF
+	    </div>
+	    {% elif grant.funder.name == 'National Institutes of Health' %}
+	    <div style="color: #FFFFFF; background-color: #777777; border-radius: 4px; width: min-content; padding-left: 5px; padding-right: 5px;">
+	      NIH
+	    </div>
+	    {% endif %}
+            <small>Award Abstract #{{ grant.award_id}}</small>
+            <h1>
+              <span>{{ grant.title }}</span>
+            </h1>
+	    {% if grant.funder.name == 'National Science Foundation' %}
+	    <p><a href="https://www.nsf.gov/awardsearch/showAward?AWD_ID={{ grant.award_id }}">See grant description on NSF site</a></p>
+	    {% elif grant.funder.name == 'National Institutes of Health' %}
+	    <a href="https://reporter.nih.gov/">Search for this grant on NIH site</a>
+	    {% endif %}
+	  </header>
             <section>
                 <small>Program Manager:</small>
+                {% for program_official in grant.program_officials.all %}
                 <p>
-                    {% for program_official in grant.program_officials.all %}
-                    <ul>
-
-                        {% with program_official.first_name|add:" "|add:program_official.last_name as fullname %}
-                        {{ fullname }}
-                        {% endwith %}
-                    </ul>
-                    {% endfor %}
+                  {% with program_official.first_name|add:" "|add:program_official.last_name as fullname %}
+                  {{ fullname }}
+                  {% endwith %}
                 </p>
+		{% endfor %}
             </section>
             <section>
-                <small>Start Date:</small>
+                <small>Active Dates:</small>
                 <p>
-                    <time>{{ grant.start_date }}</time>
-                </p>
-            </section>
-            <section>
-                <small>End Date:</small>
-                <p>
-                    <time>{{ grant.end_date }}</time>
+                    <time>{{ grant.start_date }} -- {{ grant.end_date }}</time>
                 </p>
             </section>
             <section>
                 <small>Awarded Amount to Date:</small>
-                <p>{{ grant.award_amount|currency }}</p>
+                <p>${{ grant.award_amount|intcomma }}</p>
             </section>
             <section>
-                <small>Investigator(s):
-                    <ul>
-                        <p>{{ grant.principal_investigator.first_name|add:" "|add:grant.principal_investigator.last_name}}</p>
-                        {% for other_investigator in grant.other_investigators.all %}
-                            {% with other_investigator.first_name|add:" "|add:other_investigator.last_name as fullname %}
-                            {{ fullname }}
-                            {% endwith %}
-                        {% endfor %}
-                    </ul>
-                </small>
+                <small>Investigator(s):</small>
+                  <p>{{ grant.principal_investigator.first_name|add:" "|add:grant.principal_investigator.last_name}}</p>
+                  {% for other_investigator in grant.other_investigators.all %}
+                  {% with other_investigator.first_name|add:" "|add:other_investigator.last_name as fullname %}
+                  <p>{{ fullname }}</p>
+                  {% endwith %}
+                  {% endfor %}
             </section>
             <section>
-                <small>Sponsor:</small>
+                <small>Sponsoring Organization:</small>
                 <p>
                     {{ grant.awardee_organization.name}}
                     <br>
@@ -91,14 +86,12 @@
                 </p>
             </section>
             <section>
-                <small>Funder Divisions:</small>
-                <p>
-                    {% for funder_division in grant.funder_divisions.all %}
-                    <ul>
-                        {{ funder_division}}
-                    </ul>
-                    {% endfor %}
-                </p>
+              <small>Funder Divisions:</small>
+	      {% for funder_division in grant.funder_divisions %}
+              <p>
+		{{ funder_division }}
+              </p>
+	      {% endfor %}
             </section>
             <section>
                 <small>Abstract:</small>
