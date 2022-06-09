@@ -39,6 +39,8 @@ def search_grants(request):
     start_date = request.GET.get('start_date', None)
     end_date = request.GET.get('end_date', None)
     org_state = request.GET.get('org_state', None)
+    pi_name = request.GET.get('pi_name', None)
+    po_name = request.GET.get('po_name', None)
 
     query = {
         'size': size,
@@ -104,6 +106,38 @@ def search_grants(request):
             {
                 'match': {
                     'awardee_organization.state': org_state
+                }
+            }
+        )
+
+    if pi_name:  
+        if 'match_phrase' in query:
+               query['query']['bool']['must']['match_phrase'].append(
+                   {
+                       'principal_investigator.full_name': pi_name
+                    }
+               )
+        else:
+            query['query']['bool']['must'].append(
+            {
+                'match_phrase': {
+                    'principal_investigator.full_name': pi_name
+                }
+            }
+        )
+
+    if po_name:  
+        if 'match_phrase' in query:
+               query['query']['bool']['must']['match_phrase'].append(
+                   {
+                       'program_officials.full_name': po_name
+                    }
+               )
+        else:
+            query['query']['bool']['must'].append(
+            {
+                'match_phrase': {
+                    'program_officials.full_name': po_name
                 }
             }
         )
