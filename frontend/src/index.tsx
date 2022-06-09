@@ -2,7 +2,7 @@ import ReactDOM from 'react-dom';
 import "./main.css"
 import GrantsTable from './components/GrantTable';
 
-import { GrantsFilter, OrgNameFacet } from './components/GrantsFilter';
+import { GrantsFilter, Facet } from './components/GrantsFilter';
 import { css, jsx, ThemeProvider } from '@emotion/react'
 import Box from '@mui/material/Box';
 import TextField from '@mui/material/TextField';
@@ -37,7 +37,9 @@ interface AppState {
     url: string
     totalCount: number
     pageIndex: number
-    awardee_org_names: OrgNameFacet[]
+    awardee_org_names: Facet[]
+    pi_names: Facet[]
+    po_names: Facet[]
     filter: Filter
 }
 
@@ -46,6 +48,9 @@ interface Filter {
     start_date?: Date
     end_date?: Date
     awardee_organization?: string
+    org_state?: string
+    pi_name?: string
+    po_name?: string
 }
 
 let url = ''
@@ -64,6 +69,8 @@ class App extends Component<any, AppState> {
         totalCount: 0,
         pageIndex: 0,
         awardee_org_names: [],
+        pi_names: [],
+        po_names: [],
         filter: {
         }
     }
@@ -77,6 +84,8 @@ class App extends Component<any, AppState> {
     componentDidMount = () => {
         this.get_grants_data()
         this.get_org_name_facet()
+        this.get_pi_name_facet()    
+        this.get_po_name_facet()
     }
 
     searchHandler = (event:any) => {
@@ -90,6 +99,28 @@ class App extends Component<any, AppState> {
         axios.get(url).then(results => {
             this.setState({ awardee_org_names: results.data.aggregations.patterns.buckets })
         })
+    }
+
+    get_pi_name_facet(): Facet[] {
+        var url = this.state.url.concat('/search/facets?field=principal_investigator.full_name')
+        let pi_facet: Facet[] = [];
+        axios.get(url).then(results => {
+            this.setState({ pi_names: results.data.aggregations.patterns.buckets })
+            pi_facet = results.data.aggregations.patterns.buckets
+
+        })
+        return pi_facet;
+    }
+
+    get_po_name_facet(): Facet[] {
+        var url = this.state.url.concat('/search/facets?field=program_officials.full_name')
+        let po_facet: Facet[] = [];
+        axios.get(url).then(results => {
+            this.setState({ po_names: results.data.aggregations.patterns.buckets })
+            po_facet = results.data.aggregations.patterns.buckets
+
+        })
+        return po_facet;
     }
 
     get_grants_data = (keyword?:string) => {
@@ -191,7 +222,14 @@ class App extends Component<any, AppState> {
         this.get_grants_data()
     }
 
-    filterChangeHandler(fieldName:string, value:any) {
+
+    filterChangeHandler(fieldName?:string, value?:any, reset?:boolean) {
+        if (reset) {
+            this.state.filter = {}
+            this.get_grants_data()
+            return
+        }
+
         var currentFilter = this.state.filter
         if (fieldName == 'funder_division') {
             if (!value || value.length === 0) {
@@ -221,8 +259,30 @@ class App extends Component<any, AppState> {
                 delete currentFilter.end_date;
             }
         }
+        if (fieldName == 'org_state') {
+            if (!value || value.length === 0) {
+                delete currentFilter.org_state;
+            } else {
+                currentFilter['org_state'] = value
+            }
+        }
+        if (fieldName == 'pi_name') {
+            if (!value || value.length === 0) {
+                delete currentFilter.pi_name;
+            } else {
+                currentFilter['pi_name'] = value
+            }
+        }
+        if (fieldName == 'po_name') {
+            if (!value || value.length === 0) {
+                delete currentFilter.po_name;
+            } else {
+                currentFilter['po_name'] = value
+            }
+        }
         console.log(currentFilter)
         this.setState({filter: currentFilter})
+        this.get_grants_data()
     }
 
     removeTime(date:Date) {
@@ -282,6 +342,8 @@ class App extends Component<any, AppState> {
                             <div>
                                 <GrantsFilter
                                     awardee_org_names={ this.state.awardee_org_names }
+                                    pi_names={ this.state.pi_names }
+                                    program_official_names={ this.state.po_names}
                                     filterChangeHandler={ this.filterChangeHandler }
                                 />
                             </div>
