@@ -3,8 +3,7 @@ import json
 import logging
 import requests
 
-#CIC_GRANTS_API = f"{cic_config.CIC_BASE}/v1/grants"
-CIC_GRANTS_API= "http://52.44.240.4/v1/grants"
+CIC_GRANTS_API = f"{cic_config.CIC_BASE}/v1/grants"
 CIC_GRANTS_SEARCH_API = f"{cic_config.CIC_BASE}/search/grants"
 
 def main():

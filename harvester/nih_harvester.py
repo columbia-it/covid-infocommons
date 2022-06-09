@@ -9,7 +9,7 @@ import requests
 NIH_BASE = "https://api.reporter.nih.gov/v1/projects/Search"
 
 STOP_LIMIT = 100000
-SKIP_EXISTING = False
+SKIP_EXISTING = True
 
 # Documentation for NIH grants API: https://api.reporter.nih.gov/?urls.primaryName=V2.0
 
