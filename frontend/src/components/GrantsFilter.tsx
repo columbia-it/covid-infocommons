@@ -45,13 +45,15 @@ interface GrantFilterState {
 }
 
 const nsf_directorates = [
-    'Biological Sciences',
-    'Computer and Information Science and Engineering',
-    'Education and Human Resources',
-    'Engineering',
-    'Geosciences',
-    'Mathematical and Physical Sciences',
-    'Social, Behavioral, and Economic Sciences',
+    'Biological Sciences (BIO)',
+    'Computer and Information Science and Engineering (CISE)',
+    'Education and Human Resources (EHR)',
+    'Engineering (ENG)',
+    'Environmental Research and Education (ERE)',
+    'Geosciences (GEO)',
+    'Mathematical and Physical Sciences (MPS)',
+    'Social, Behavioral, and Economic Sciences (SBE)',
+    'Technology, Innovation and Partnerships (TIP)',
     'Office of the Director'
 ]
 

@@ -80,7 +80,7 @@ class GrantsTable extends Component<GrantsTableProps> {
                                             <Link underline="hover" href={detail_url}>{row.title}</Link>
                                         </div>
                                         <div className="truncAbstract">
-                                            <p>{ this.truncate(row.abstract, 200) }
+                                            <p>{ this.truncate(row.abstract, 250) }
                                             <a href={ detail_url} className="showMoreLink">SHOW MORE</a></p>
                                         </div>
                                     </div>)
