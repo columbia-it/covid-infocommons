@@ -38,12 +38,15 @@ interface AppState {
     totalCount: number
     pageIndex: number
     awardee_org_names: Facet[]
+    funder_divisions: Facet[]
     pi_names: Facet[]
     po_names: Facet[]
     filter: Filter
 }
 
 interface Filter {
+    nsf_division?: string
+    nih_division?: string
     funder_division?: string
     start_date?: Date
     end_date?: Date
@@ -69,6 +72,7 @@ class App extends Component<any, AppState> {
         totalCount: 0,
         pageIndex: 0,
         awardee_org_names: [],
+        funder_divisions: [],
         pi_names: [],
         po_names: [],
         filter: {
@@ -86,6 +90,7 @@ class App extends Component<any, AppState> {
         this.get_org_name_facet()
         this.get_pi_name_facet()    
         this.get_po_name_facet()
+        this.get_funder_division_facet()
     }
 
     searchHandler = (event:any) => {
@@ -98,6 +103,13 @@ class App extends Component<any, AppState> {
         var url = this.state.url.concat('/search/facets?field=awardee_organization.name')
         axios.get(url).then(results => {
             this.setState({ awardee_org_names: results.data.aggregations.patterns.buckets })
+        })
+    }
+
+    get_funder_division_facet() {
+        var url = this.state.url.concat('/search/facets?field=funder_divisions')
+        axios.get(url).then(results => {
+            this.setState({ funder_divisions: results.data.aggregations.patterns.buckets })
         })
     }
 
@@ -229,8 +241,21 @@ class App extends Component<any, AppState> {
             this.get_grants_data()
             return
         }
-
         var currentFilter = this.state.filter
+        if (fieldName == 'nsf_division') {
+            if (!value || value.length === 0) {
+                delete currentFilter.nsf_division;
+            } else {
+                currentFilter['nsf_division'] = value
+            }
+        }
+        if (fieldName == 'nih_division') {
+            if (!value || value.length === 0) {
+                delete currentFilter.nih_division;
+            } else {
+                currentFilter['nih_division'] = value
+            }
+        }
         if (fieldName == 'funder_division') {
             if (!value || value.length === 0) {
                 delete currentFilter.funder_division;
@@ -311,7 +336,8 @@ class App extends Component<any, AppState> {
                             id="outlined-search" 
                             label="Search" 
                             type="search" 
-                            onKeyDown={ this.enterHandler }/>
+                            onKeyDown={ this.enterHandler }
+                            onChange={ this.searchHandler }/>
 
                         <Button
 	                    sx={styles}
@@ -342,6 +368,7 @@ class App extends Component<any, AppState> {
                             <div>
                                 <GrantsFilter
                                     awardee_org_names={ this.state.awardee_org_names }
+                                    funder_divisions={ this.state.funder_divisions }
                                     pi_names={ this.state.pi_names }
                                     program_official_names={ this.state.po_names}
                                     filterChangeHandler={ this.filterChangeHandler }
