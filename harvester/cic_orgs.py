@@ -40,7 +40,7 @@ def find_cic_org(name):
         if response_json['links']['next'] is not None:
             print('.', end='', flush=True)
             response = requests.get(f"{response_json['links']['next']}")
-            response_json = response.json()    
+            response_json = response.json()
             cic_orgs = response_json['data']
         else:
             return None
@@ -97,7 +97,7 @@ def find_or_create_org(name, country, state = None):
                 # We found an org from ROR, but it doesn't exist in CIC yet
                 if state is None:
                     state = ror_org['addresses'][0]['state_code']
-                if state.startswith("US-"):
+                if state is not None and state.startswith("US-"):
                     state = state[3:]
                 org = create_cic_org(org_to_cic_format(ror_org['name'], country, state, ror_org['id']))
         else:

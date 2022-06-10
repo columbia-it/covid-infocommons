@@ -79,7 +79,7 @@ def nih_covid_query_criteria(year,offset):
         },
         "include_fields": [
             "ProjectTitle", "AbstractText", "FiscalYear",
-            "Organization", "OrgCountry", "OrgName",
+            "Organization", "OrgCountry", "OrgState", "OrgName",
             "ProjectNum", "ProjectNumSplit",
             "ContactPiName","PrincipalInvestigators","ProgramOfficers",
             "ProjectStartDate","ProjectEndDate",
@@ -99,7 +99,7 @@ def nih_award_id_criteria(award_id):
         },
         "include_fields": [
             "ProjectTitle", "AbstractText", "FiscalYear",
-            "Organization", "OrgCountry", "OrgName",
+            "Organization", "OrgCountry", "OrgState", "OrgName",
             "ProjectNum", "ProjectNumSplit",
             "ContactPiName","PrincipalInvestigators","ProgramOfficers",
             "ProjectStartDate","ProjectEndDate",
@@ -146,7 +146,7 @@ def nih_to_cic_format(grant):
                     "type": "Funder",
                     "id": 4 # TODO -- this should be looked up!
                 },
-                "awardee_organization": nih_awardee_org(grant['org_name'],grant['org_country']),
+                "awardee_organization": nih_awardee_org(grant['org_name'],grant['org_country'], grant['org_state']),
                 "award_id": grant['project_num'],
                 "title": grant['project_title'],
                 "start_date": nih_to_cic_date(grant['project_start_date']),
@@ -181,12 +181,12 @@ def nih_abstract(text):
     return text
 
 
-def nih_awardee_org(name, country):
+def nih_awardee_org(name, country, state):
     #  {
     #    "type": "Organization",
     #    "id": 24
     #   }    
-    org = cic_orgs.find_or_create_org(name, country)
+    org = cic_orgs.find_or_create_org(name, country, state)
     org_json = { "type": "Organization",
                  "id": int(org['id']) }
     logging.debug(f" -- attaching organization {org_json}")
