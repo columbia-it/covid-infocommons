@@ -17,13 +17,14 @@ from django.contrib import admin
 from django.urls import path, include
 from django.conf import settings
 from django.conf.urls.static import static
-from cic.views import index, detail
+from cic.views import index, detail, pi_detail
 from django.contrib.auth.views import LoginView
 
 urlpatterns = [
     path('admin/', admin.site.urls),
     path('grants/', index, name='index'),
     path('grants/<int:grant_id>', detail),
+    path('grants/pi/<int:pi_id>', pi_detail),
     path('v1/', include('apis.urls')),
     path('survey/', include('pi_survey.urls')),
     path('o/', include('oauth2_provider.urls', namespace='oauth2_provider')),

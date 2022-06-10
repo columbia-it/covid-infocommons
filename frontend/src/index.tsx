@@ -165,15 +165,18 @@ class App extends Component<any, AppState> {
 
             var newArray = results.data.hits.hits.map(function(val:any) {
                 var pi_name = ''
+                var pi_id = ''
                 var funder_name = ''
                 if (val['_source']['principal_investigator'] != null) {
-                    pi_name = val['_source']['principal_investigator']['first_name'] + ' ' + val['_source']['principal_investigator']['last_name']
+                    pi_name = val['_source']['principal_investigator']['full_name']
+                    pi_id = val['_source']['principal_investigator']['id']
                 }
                 return {
                     id: val['_source']['id'],
                     title: val['_source']['title'],
                     award_id: val['_source']['award_id'],
                     pi: pi_name,
+                    pi_id: pi_id,
                     abstract: val['_source']['abstract'],
                     award_amount: val['_source']['award_amount'],
                     funder_name: ('name' in val['_source']['funder']) ? val['_source']['funder']['name'] : ''
@@ -339,11 +342,11 @@ class App extends Component<any, AppState> {
                             onKeyDown={ this.enterHandler }
                             onChange={ this.searchHandler }/>
 
-                        <Button
+                        {/* <Button
 	                    sx={styles}
                             onClick={ this.searchHandler } 
                             className='search-button' 
-                            variant="contained">Search</Button>
+                            variant="contained">Search</Button> */}
                     </form>
                     <br/>
                     <br/>

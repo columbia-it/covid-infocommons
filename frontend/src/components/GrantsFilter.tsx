@@ -208,7 +208,7 @@ class GrantsFilter extends Component<GrantsFilterProps, GrantFilterState> {
                         />
                     </AccordionDetails>
                 </Accordion>
-                <Accordion>
+                {/* <Accordion>
                     <AccordionSummary
                         expandIcon={<ExpandMoreIcon />}
                         aria-controls="panel2a-content"
@@ -237,7 +237,7 @@ class GrantsFilter extends Component<GrantsFilterProps, GrantFilterState> {
                             }
                         />
                     </AccordionDetails>
-                </Accordion>
+                </Accordion> */}
                 <Accordion>
                     <AccordionSummary
                         expandIcon={<ExpandMoreIcon />}

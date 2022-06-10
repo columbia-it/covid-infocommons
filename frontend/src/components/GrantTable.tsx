@@ -88,6 +88,14 @@ class GrantsTable extends Component<GrantsTableProps> {
                     },
                     {
                         title: "Principal Investigator", field: "pi",
+                        render: (row: any) => {
+                            const pi_detail_url = this.props.url.concat('/grants/pi/'+ row.pi_id)
+                            return (
+                                <div>
+                                    <Link underline="hover" href={pi_detail_url}>{row.pi}</Link>
+                                </div>
+                            )
+                        }
                     },
                     {
                         title: "Award Amount", field: "award_amount", render: (row:any) => 
