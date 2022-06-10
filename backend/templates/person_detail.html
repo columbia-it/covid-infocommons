@@ -1,0 +1,46 @@
+{% load static %}
+{% load humanize %}
+{% load my_filters %}
+
+<!DOCTYPE html>
+<html lang="en">
+    {% block content %}
+    <head>
+        <meta charset="UTF-8">
+        <title></title>
+    </head>
+    <body>
+        <div>
+            <h1>
+                {% with person.first_name|add:" "|add:person.last_name as fullname %}
+                    {{ fullname }}
+                {% endwith %}
+            </h1>
+        </div>
+        <div>
+            <section>
+                <small>Institution(s):</small>
+                {% for org in person.affiliations.all %}
+                    <p>org.name</p>
+                {% endfor %}
+            </section>
+            <section>
+                <small>Email:</small>
+                <p>{{ person.emails }}</p>
+            </section>
+            <section>
+                <small>PI's ORCID ID:</small>
+                <p><a href="https://orcid.org/{{ person.orchid}}"></a></p>
+            </section>
+            <section>
+                <small>Awarded COVID Grants:</small>
+                {% for grant in grants %}
+                <ul>
+                    <a href="/grants/{{ grant.id }}">{{ grant.title }}</a>
+                </ul>
+                {% endfor %}
+            </section>
+        </div>
+    </body>
+    {% endblock content %}
+</html>
