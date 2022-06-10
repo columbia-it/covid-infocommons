@@ -35,6 +35,9 @@ def search_grants(request):
     # Get filter/search criteria from request
     keyword = request.GET.get('keyword', None)
     funder_division = request.GET.get('funder_division', None)
+    nsf_division = request.GET.get('nsf_division', None)
+    nih_division = request.GET.get('nih_division', None)
+
     awardee_organization = request.GET.get('awardee_organization', None)
     start_date = request.GET.get('start_date', None)
     end_date = request.GET.get('end_date', None)
@@ -81,6 +84,38 @@ def search_grants(request):
             {
                 'match_phrase': {
                     'funder_divisions': funder_division
+                }
+            }
+        )
+
+    if nih_division:  
+        if 'match_phrase' in query:
+               query['query']['bool']['must']['match_phrase'].append(
+                   {
+                       'funder_divisions': nih_division
+                    }
+               )
+        else:
+            query['query']['bool']['must'].append(
+            {
+                'match_phrase': {
+                    'funder_divisions': nih_division
+                }
+            }
+        )
+
+    if nsf_division:  
+        if 'match_phrase' in query:
+               query['query']['bool']['must']['match_phrase'].append(
+                   {
+                       'funder_divisions': nsf_division
+                    }
+               )
+        else:
+            query['query']['bool']['must'].append(
+            {
+                'match_phrase': {
+                    'funder_divisions': nsf_division
                 }
             }
         )
