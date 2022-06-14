@@ -34,8 +34,12 @@ class GrantsTable extends Component<GrantsTableProps> {
 
     highlightText = (textToHighlight:string ) => {
         return (<Highlighter
-            highlightStyle={{ fontWeight: "bold", padding: 0 }}
-            searchWords={ [this.props.keyword] }
+            highlightStyle={{
+                fontWeight: "bold",
+                padding: 0,
+                backgroundColor: "#FFFFFF"
+            }}
+            searchWords={[this.props.keyword]}
             autoEscape={ true }
             textToHighlight={ textToHighlight }
         />)
