@@ -59,7 +59,15 @@ def search_grants(request):
         query['query']['bool']['must'].append({
             'multi_match': {
                 'query': keyword,
-                'fields': ['title', 'abstract', 'award_id', 'keywords', 'principal_investigator.full_name']
+                'fields': [
+                    'title', 
+                    'abstract', 
+                    'award_id', 
+                    'keywords', 
+                    'principal_investigator.full_name',
+                    'other_investigators.full_name',
+                    'awardee_organization.name'
+                ]
             }
         })
 
