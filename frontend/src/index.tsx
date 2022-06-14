@@ -42,6 +42,7 @@ interface AppState {
     pi_names: Facet[]
     po_names: Facet[]
     filter: Filter
+    keyword: string
 }
 
 interface Filter {
@@ -75,8 +76,8 @@ class App extends Component<any, AppState> {
         funder_divisions: [],
         pi_names: [],
         po_names: [],
-        filter: {
-        }
+        keyword: '',
+        filter: {}
     }
 
     constructor(props:any) {
@@ -96,6 +97,7 @@ class App extends Component<any, AppState> {
     searchHandler = (event:any) => {
         event.preventDefault()
         const keyword = (document.getElementById('outlined-search') as HTMLInputElement).value;
+        this.setState({'keyword': keyword})
         this.get_grants_data(keyword)
     }
 
@@ -358,6 +360,7 @@ class App extends Component<any, AppState> {
                                 url={ this.state.url }
                                 pageChangeHandler={ this.pageChangeHandler }
                                 pageIndex={ this.state.pageIndex }
+                                keyword={ this.state.keyword }
                             />
                 </div>
                 <div className='flex-child'>
