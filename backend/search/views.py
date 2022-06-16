@@ -48,6 +48,12 @@ def search_grants(request):
     query = {
         'size': size,
         'from': start,
+        'sort' : [
+            '_score', 
+            { 
+                'start_date' : 'desc'
+            },
+        ],
         'query': {
             'bool': {
                 'must': []
