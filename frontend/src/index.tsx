@@ -210,9 +210,7 @@ class App extends Component<any, AppState> {
         // Convert grants data to csv
         let grantsCsv = this.state.data.reduce((acc:any, grant:any) => {
             const grant_to_add:Grant = grant
-            console.log(grant_to_add.abstract)
             let abstract = grant_to_add.abstract.replaceAll('"', "'")
-            console.log(abstract)
             acc.push([
                 grant_to_add.id,
                 '"' + grant_to_add.title + '"', 
