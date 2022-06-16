@@ -210,13 +210,14 @@ class App extends Component<any, AppState> {
         // Convert grants data to csv
         let grantsCsv = this.state.data.reduce((acc:any, grant:any) => {
             const grant_to_add:Grant = grant
+            let abstract = grant_to_add.abstract.replaceAll('"', "'")
             acc.push([
                 grant_to_add.id,
-                grant_to_add.title, 
+                '"' + grant_to_add.title + '"', 
                 grant_to_add.award_amount,
                 grant_to_add.award_id,
                 grant_to_add.pi,
-                grant_to_add.abstract,
+                '"' + abstract + '"', 
                 grant_to_add.funder_name
             ]
             .join(','))
