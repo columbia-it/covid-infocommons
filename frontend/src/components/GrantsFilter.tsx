@@ -15,10 +15,6 @@ import {
   } from '@material-ui/pickers';
 import DateFnsUtils from '@date-io/date-fns';
 import regionData from '../data/regions_data.json';
-import { optionGroupUnstyledClasses } from "@mui/base";
-import Select, { SelectChangeEvent } from '@mui/material/Select';
-import { CountryDropdown, RegionDropdown } from 'react-country-region-selector';
-import OutlinedInput from '@mui/material/OutlinedInput';
 
 interface Facet {
     key: string
@@ -27,6 +23,7 @@ interface Facet {
 
 interface GrantsFilterProps {
     awardee_org_names: Facet[]
+    funder_divisions: Facet[]
     pi_names: Facet[]
     program_official_names: Facet[]
     filterChangeHandler: (fieldName?:string, value?:any, reset?:boolean) => void
@@ -39,10 +36,12 @@ interface GrantFilterState {
     isEndDatePickerOpen: boolean
     nsf_directorate?: string | null
     nih_institute?: string | null
+    division?: string | null
     awardee_org?: string | null
     region?: string | null
     pi_name?: string | null
     po_name?: string | null
+    clearSelectedValue: boolean
 }
 
 const nsf_directorates = [
@@ -91,16 +90,18 @@ class GrantsFilter extends Component<GrantsFilterProps, GrantFilterState> {
     constructor(props:GrantsFilterProps) {
         super(props)
         this.state = {
-            //startDate: null,
-            //endDate: null,
+            startDate: null,
+            endDate: null,
             isStartDatePickerOpen: false,
             isEndDatePickerOpen: false,
             nsf_directorate: null,
             nih_institute: null,
+            division: null,
             awardee_org: null,
             region: null,
             pi_name: null,
-            po_name: null
+            po_name: null,
+            clearSelectedValue: false
         }
         this.startDateChangeHandler = this.startDateChangeHandler.bind(this)
         this.endDateChangeHandler = this.endDateChangeHandler.bind(this)
@@ -126,21 +127,15 @@ class GrantsFilter extends Component<GrantsFilterProps, GrantFilterState> {
     }
 
     clearFilter() {
-        console.log('Clearing state');
-        this.setState( {nsf_directorate: null});
-        this.setState( {nih_institute: null})
-        this.setState( {awardee_org: null})
-        this.setState( {region: null})
-        this.setState( {pi_name: null})
-        this.setState( {po_name: null})
-
-        //console.log(this.state.nsf_directorate);
-        //(document.getElementById('nsf_division_selector') as HTMLInputElement).value = '';
-        // (document.getElementById('nih_division_selector') as HTMLInputElement).value = '';
-        // (document.getElementById('org_selector') as HTMLInputElement).value = '';
-        // (document.getElementById('state_selector') as HTMLInputElement).value = '';
-        // (document.getElementById('start-date-picker') as HTMLInputElement).value = '';
-        // (document.getElementById('end-date-picker') as HTMLInputElement).value = '';
+        this.setState( {nsf_directorate: ''} );
+        this.setState( {nih_institute: ''} );
+        this.setState( {division: ''} );
+        this.setState( {awardee_org: ''} )
+        this.setState( {region: ''} )
+        this.setState( {pi_name: ''} )
+        this.setState( {po_name: ''} )
+        this.setState( {startDate: null} )
+        this.setState( {endDate: null} )
         this.props.filterChangeHandler('', '', true)
     }
     render() {
@@ -167,11 +162,15 @@ class GrantsFilter extends Component<GrantsFilterProps, GrantFilterState> {
                             id="nsf_division_selector"
                             value={ this.state.nsf_directorate }
                             options={ nsf_directorates.map((option) => option) }
+                            onInputChange={(event, value) => {
+                                this.setState({nsf_directorate: value})
+                                this.props.filterChangeHandler('nsf_division', value, false)
+                            }}
                             onChange={ (event, value) => {
-                                this.props.filterChangeHandler('funder_division', value)
-                                }
-                            }
-                            clearOnBlur
+                                this.setState({nsf_directorate: value})
+                                this.props.filterChangeHandler('nsf_division', value, false)
+                            }}
+                            clearOnBlur={ false }
                             renderInput={(params) => 
                                 <TextField {...params} 
                                     placeholder="Select NSF Directorate"
@@ -192,11 +191,15 @@ class GrantsFilter extends Component<GrantsFilterProps, GrantFilterState> {
                             id="nih_division_selector"
                             value={ this.state.nih_institute }
                             options={ nih_institues.map((option) => option) }
+                            onInputChange={(event, value) => {
+                                this.setState({nih_institute: value})
+                                this.props.filterChangeHandler('nih_division', value, false)
+                            }}
                             onChange={ (event, value) => {
-                                this.props.filterChangeHandler('funder_division', value)
-                                }
-                            }
-                            clearOnBlur
+                                this.setState({nih_institute: value})
+                                this.props.filterChangeHandler('nih_division', value, false)
+                            }}
+                            clearOnBlur={ false }
                             renderInput={(params) => 
                                 <TextField {...params} 
                                     placeholder="Select NIH Institute/Center"
@@ -205,7 +208,7 @@ class GrantsFilter extends Component<GrantsFilterProps, GrantFilterState> {
                         />
                     </AccordionDetails>
                 </Accordion>
-                <Accordion>
+                {/* <Accordion>
                     <AccordionSummary
                         expandIcon={<ExpandMoreIcon />}
                         aria-controls="panel2a-content"
@@ -214,10 +217,27 @@ class GrantsFilter extends Component<GrantsFilterProps, GrantFilterState> {
                         <Typography sx={{ px: 2 }}>Division</Typography>
                     </AccordionSummary>
                     <AccordionDetails>
-                        <TextField variant='outlined' label='Type division title'>
-                        </TextField>
+                        <Autocomplete
+                            id="division_selector"
+                            value={ this.state.division }
+                            options={ this.props.funder_divisions.map((option) => option.key) }
+                            onInputChange={(event, value) => {
+                                this.setState({division: value})
+                                this.props.filterChangeHandler('funder_division', value, false)
+                            }}
+                            onChange={ (event, value) => {
+                                this.setState({division: value})
+                                this.props.filterChangeHandler('funder_division', value, false)
+                            }}
+                            clearOnBlur={ false }
+                            renderInput={(params) => 
+                                <TextField {...params} 
+                                    placeholder="Type Keyword"
+                                    variant="outlined" />
+                            }
+                        />
                     </AccordionDetails>
-                </Accordion>
+                </Accordion> */}
                 <Accordion>
                     <AccordionSummary
                         expandIcon={<ExpandMoreIcon />}
@@ -231,11 +251,15 @@ class GrantsFilter extends Component<GrantsFilterProps, GrantFilterState> {
                             id="org_selector"
                             value={ this.state.awardee_org }
                             options={ this.props.awardee_org_names.map((option) => option.key) }
+                            onInputChange={(event, value) => {
+                                this.setState({awardee_org: value})
+                                this.props.filterChangeHandler('awardee_organization', value, false)
+                            }}
                             onChange={ (event, value) => {
-                                this.props.filterChangeHandler('awardee_organization', value)
-                                }
-                            }
-                            clearOnBlur
+                                this.setState({awardee_org: value})
+                                this.props.filterChangeHandler('awardee_organization', value, false)
+                            }}
+                            clearOnBlur={ false }
                             renderInput={(params) => 
                                 <TextField {...params} 
                                     placeholder="Type Institution Name"
@@ -252,19 +276,23 @@ class GrantsFilter extends Component<GrantsFilterProps, GrantFilterState> {
                         <Typography sx={{ px: 2 }}>State/Territory</Typography>
                     </AccordionSummary>
                     <AccordionDetails>
-                    <Autocomplete
+                        <Autocomplete
                             id="state_selector"
                             value={ this.state.region }
                             options={ regionData.map((option) => option.shortCode) }
+                            onInputChange={(event, value) => {
+                                this.setState({region: value})
+                                this.props.filterChangeHandler('org_state', value, false)
+                            }}
                             onChange={ (event, value) => {
-                                this.props.filterChangeHandler('org_state', value)
-                                }
-                            }
-                            clearOnBlur
+                                this.setState({region: value})
+                                this.props.filterChangeHandler('org_state', value, false)
+                            }}
+                            clearOnBlur={ false }
                             renderInput={(params) => 
                                 <TextField {...params} 
                                     placeholder="Select State/Territory"
-                                    variant="outlined"/>
+                                    variant="outlined" />
                             }
                         />
                     </AccordionDetails>
@@ -282,11 +310,15 @@ class GrantsFilter extends Component<GrantsFilterProps, GrantFilterState> {
                             id="pi_name_selector"
                             value={ this.state.pi_name }
                             options={ this.props.pi_names.map((option) => option.key) }
+                            onInputChange={(event, value) => {
+                                this.setState({pi_name: value})
+                                this.props.filterChangeHandler('pi_name', value, false)
+                            }}
                             onChange={ (event, value) => {
-                                this.props.filterChangeHandler('pi_name', value)
-                                }
-                            }
-                            clearOnBlur
+                                this.setState({pi_name: value})
+                                this.props.filterChangeHandler('pi_name', value, false)
+                            }}
+                            clearOnBlur={ false }
                             renderInput={(params) => 
                                 <TextField {...params} 
                                     placeholder="Type PI Name"
@@ -308,11 +340,15 @@ class GrantsFilter extends Component<GrantsFilterProps, GrantFilterState> {
                             id="po_name_selector"
                             value={ this.state.po_name }
                             options={ this.props.program_official_names.map((option) => option.key) }
+                            onInputChange={(event, value) => {
+                                this.setState({po_name: value})
+                                this.props.filterChangeHandler('po_name', value, false)
+                            }}
                             onChange={ (event, value) => {
-                                this.props.filterChangeHandler('po_name', value)
-                                }
-                            }
-                            clearOnBlur
+                                this.setState({po_name: value})
+                                this.props.filterChangeHandler('po_name', value, false)
+                            }}
+                            clearOnBlur={ false }
                             renderInput={(params) => 
                                 <TextField {...params} 
                                     placeholder="Type Keywords"
@@ -332,7 +368,6 @@ class GrantsFilter extends Component<GrantsFilterProps, GrantFilterState> {
                     <AccordionDetails>
                         <MuiPickersUtilsProvider utils={DateFnsUtils}>
                             <KeyboardDatePicker
-                                //defaultValue={ null }
                                 disableToolbar={ true }
                                 variant="inline"
                                 format="MM/dd/yyyy"

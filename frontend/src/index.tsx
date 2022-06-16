@@ -38,12 +38,16 @@ interface AppState {
     totalCount: number
     pageIndex: number
     awardee_org_names: Facet[]
+    funder_divisions: Facet[]
     pi_names: Facet[]
     po_names: Facet[]
     filter: Filter
+    keyword: string
 }
 
 interface Filter {
+    nsf_division?: string
+    nih_division?: string
     funder_division?: string
     start_date?: Date
     end_date?: Date
@@ -69,10 +73,11 @@ class App extends Component<any, AppState> {
         totalCount: 0,
         pageIndex: 0,
         awardee_org_names: [],
+        funder_divisions: [],
         pi_names: [],
         po_names: [],
-        filter: {
-        }
+        keyword: '',
+        filter: {}
     }
 
     constructor(props:any) {
@@ -86,11 +91,13 @@ class App extends Component<any, AppState> {
         this.get_org_name_facet()
         this.get_pi_name_facet()    
         this.get_po_name_facet()
+        this.get_funder_division_facet()
     }
 
     searchHandler = (event:any) => {
         event.preventDefault()
         const keyword = (document.getElementById('outlined-search') as HTMLInputElement).value;
+        this.setState({'keyword': keyword})
         this.get_grants_data(keyword)
     }
 
@@ -98,6 +105,13 @@ class App extends Component<any, AppState> {
         var url = this.state.url.concat('/search/facets?field=awardee_organization.name')
         axios.get(url).then(results => {
             this.setState({ awardee_org_names: results.data.aggregations.patterns.buckets })
+        })
+    }
+
+    get_funder_division_facet() {
+        var url = this.state.url.concat('/search/facets?field=funder_divisions')
+        axios.get(url).then(results => {
+            this.setState({ funder_divisions: results.data.aggregations.patterns.buckets })
         })
     }
 
@@ -153,15 +167,18 @@ class App extends Component<any, AppState> {
 
             var newArray = results.data.hits.hits.map(function(val:any) {
                 var pi_name = ''
+                var pi_id = ''
                 var funder_name = ''
                 if (val['_source']['principal_investigator'] != null) {
-                    pi_name = val['_source']['principal_investigator']['first_name'] + ' ' + val['_source']['principal_investigator']['last_name']
+                    pi_name = val['_source']['principal_investigator']['full_name']
+                    pi_id = val['_source']['principal_investigator']['id']
                 }
                 return {
                     id: val['_source']['id'],
                     title: val['_source']['title'],
                     award_id: val['_source']['award_id'],
                     pi: pi_name,
+                    pi_id: pi_id,
                     abstract: val['_source']['abstract'],
                     award_amount: val['_source']['award_amount'],
                     funder_name: ('name' in val['_source']['funder']) ? val['_source']['funder']['name'] : ''
@@ -229,8 +246,21 @@ class App extends Component<any, AppState> {
             this.get_grants_data()
             return
         }
-
         var currentFilter = this.state.filter
+        if (fieldName == 'nsf_division') {
+            if (!value || value.length === 0) {
+                delete currentFilter.nsf_division;
+            } else {
+                currentFilter['nsf_division'] = value
+            }
+        }
+        if (fieldName == 'nih_division') {
+            if (!value || value.length === 0) {
+                delete currentFilter.nih_division;
+            } else {
+                currentFilter['nih_division'] = value
+            }
+        }
         if (fieldName == 'funder_division') {
             if (!value || value.length === 0) {
                 delete currentFilter.funder_division;
@@ -311,13 +341,14 @@ class App extends Component<any, AppState> {
                             id="outlined-search" 
                             label="Search" 
                             type="search" 
-                            onKeyDown={ this.enterHandler }/>
+                            onKeyDown={ this.enterHandler }
+                            onChange={ this.searchHandler }/>
 
-                        <Button
+                        {/* <Button
 	                    sx={styles}
                             onClick={ this.searchHandler } 
                             className='search-button' 
-                            variant="contained">Search</Button>
+                            variant="contained">Search</Button> */}
                     </form>
                     <br/>
                     <br/>
@@ -329,6 +360,7 @@ class App extends Component<any, AppState> {
                                 url={ this.state.url }
                                 pageChangeHandler={ this.pageChangeHandler }
                                 pageIndex={ this.state.pageIndex }
+                                keyword={ this.state.keyword }
                             />
                 </div>
                 <div className='flex-child'>
@@ -342,6 +374,7 @@ class App extends Component<any, AppState> {
                             <div>
                                 <GrantsFilter
                                     awardee_org_names={ this.state.awardee_org_names }
+                                    funder_divisions={ this.state.funder_divisions }
                                     pi_names={ this.state.pi_names }
                                     program_official_names={ this.state.po_names}
                                     filterChangeHandler={ this.filterChangeHandler }
