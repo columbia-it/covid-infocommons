@@ -68,10 +68,10 @@ def find_cic_grant(grant_id):
     return None
 
 
-# Find the first page of grants
-def find_cic_grants():
+# Find a page of grants
+def find_cic_grants(page = 1):
     logging.debug(" -- Reading grants from CIC API")
-    response = requests.get(CIC_GRANTS_API)
+    response = requests.get(f"{CIC_GRANTS_API}?page%5Bnumber%5D={page}")
     response_json = response.json()
     grants = response_json['data']
     return grants
