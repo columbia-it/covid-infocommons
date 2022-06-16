@@ -39,9 +39,9 @@
               <span>{{ grant.title }}</span>
             </h1>
 	    {% if grant.funder.name == 'National Science Foundation' %}
-	    <p><a href="https://www.nsf.gov/awardsearch/showAward?AWD_ID={{ grant.award_id }}">See grant description on NSF site</a></p>
+	    <p><a target="_blank" href="https://www.nsf.gov/awardsearch/showAward?AWD_ID={{ grant.award_id }}">See grant description on NSF site</a></p>
 	    {% elif grant.funder.name == 'National Institutes of Health' %}
-	    <a href="https://reporter.nih.gov/">Search for this grant on NIH site</a>
+	    <a target="_blank" href="https://reporter.nih.gov/">Search for this grant on NIH site</a>
 	    {% endif %}
 	  </header>
             <section>
@@ -61,7 +61,7 @@
                 </p>
             </section>
             <section>
-                <small>Awarded Amount to Date:</small>
+                <small>Awarded Amount:</small>
                 <p>${{ grant.award_amount|intcomma }}</p>
             </section>
             <section>
@@ -74,7 +74,7 @@
                   {% endfor %}
             </section>
             <section>
-                <small>Sponsoring Organization:</small>
+                <small>Awardee Organization:</small>
                 <p>
                     {{ grant.awardee_organization.name}}
                     <br>
@@ -86,7 +86,11 @@
                 </p>
             </section>
             <section>
+	      {% if grant.funder.name == 'National Institutes of Health' %}
+	      <small>Funding IC:</small>
+	      {% else %}
               <small>Funder Divisions:</small>
+	      {% endif %}
 	      {% for funder_division in grant.funder_divisions %}
               <p>
 		{{ funder_division }}

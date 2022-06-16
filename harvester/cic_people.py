@@ -12,12 +12,12 @@ def main():
     print(f"Find in CIC: {find_cic_person('Shreeram','Akilesh')}")
 
     
-def find_or_create_person(first, last):
+def find_or_create_person(first, last, email = '', link = ''):
     # see if person exists
     person = find_cic_person(first, last)
 
     if person is None:
-        person = create_cic_person(person_name_to_cic_format(first, last))
+        person = create_cic_person(person_name_to_cic_format(first, last, email, link))
 
     return person
                   
@@ -35,13 +35,15 @@ def create_cic_person(person_json):
     return r.json()['data']
 
 
-def person_name_to_cic_format(first, last):
+def person_name_to_cic_format(first, last, email = '', link = ''):
     person_data = {
         "data": {
             "type": "Person",
             "attributes": {
                 "first_name": first,
-                "last_name": last
+                "last_name": last,
+                "emails": email,
+                "private_emails": link
         }}}
     return person_data
 

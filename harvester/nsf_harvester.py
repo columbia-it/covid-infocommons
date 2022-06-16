@@ -8,8 +8,68 @@ import requests
 
 
 NSF_GRANT_REQUEST = "https://api.nsf.gov/services/v1/awards.json?keyword=covid+covid-19+corid-19+corvid-19+coronavirus+sars2+%22SARS-CoV-2%22&printFields=abstractText,agency,awardAgencyCode,awardee,awardeeAddress,awardeeCity,awardeeCountryCode,awardeeCounty,awardeeDistrictCode,awardeeName,awardeeStateCode,awardeeZipCode,cfdaNumber,coPDPI,date,dunsNumber,estimatedTotalAmt,expDate,fundAgencyCode,fundProgramName,fundsObligatedAmt,id,offset,parentDunsNumber,pdPIName,perfAddress,perfCity,perfCountryCode,perfCounty,perfDistrictCode,perfLocation,perfStateCode,perfZipCode,piEmail,piFirstName,piLastName,piMiddeInitial,piPhone,poEmail,poName,poPhone,primaryProgram,projectOutComesReport,publicationConference,publicationResearch,rpp,startDate,title,transType"
+
+NSF_SINGLE_GRANT_REQUEST = "https://api.nsf.gov/services/v1/awards.json?printFields=abstractText,agency,awardAgencyCode,awardee,awardeeAddress,awardeeCity,awardeeCountryCode,awardeeCounty,awardeeDistrictCode,awardeeName,awardeeStateCode,awardeeZipCode,cfdaNumber,coPDPI,date,dunsNumber,estimatedTotalAmt,expDate,fundAgencyCode,fundProgramName,fundsObligatedAmt,id,offset,parentDunsNumber,pdPIName,perfAddress,perfCity,perfCountryCode,perfCounty,perfDistrictCode,perfLocation,perfStateCode,perfZipCode,piEmail,piFirstName,piLastName,piMiddeInitial,piPhone,poEmail,poName,poPhone,primaryProgram,projectOutComesReport,publicationConference,publicationResearch,rpp,startDate,title,transType&id="
+
 SKIP_EXISTING = True
 
+DIRECTORATES = [
+'Biological Sciences (BIO)',
+'Computer and Information Science and Engineering (CISE)',
+'Education and Human Resources (EHR)',
+'Engineering (ENG)',
+'Environmental Research and Education (ERE)',
+'Geosciences (GEO)',
+'Mathematical and Physical Sciences (MPS)',
+'Social, Behavioral, and Economic Sciences (SBE)',
+'Technology, Innovation and Partnerships (TIP)',
+'Office of the Director'
+]
+
+DIVISION_TO_DIRECTORATE = {
+    'Science of Science': 'Social, Behavioral, and Economic Sciences (SBE)',
+    'Tribal College & Univers Prog': 'Education and Human Resources (EHR)',
+    'CONDENSED MATTER & MAT THEORY': 'Mathematical and Physical Sciences (MPS)',
+    'SoO-Science Of Organizations': 'Social, Behavioral, and Economic Sciences (SBE)',
+    'Plant Genome Research Resource': 'Biological Sciences (BIO)',
+    'ERI-Eng. Research Initiation': 'Engineering (ENG)',
+    'TOPOLOGY': 'Mathematical and Physical Sciences (MPS)',
+    'AIB-Acctble Institutions&Behav': 'Social, Behavioral, and Economic Sciences (SBE)',
+    'SHIPBOARD SCIENTIFIC SUPP EQUI': 'Geosciences (GEO)',
+    'CDS&E-MSS': 'Mathematical and Physical Sciences (MPS)',
+    'CA-HDR: Convergence Accelerato': 'Technology, Innovation and Partnerships (TIP)',
+    'BIOSENS-Biosensing': 'Engineering (ENG)',
+    'Comm & Information Foundations': 'Computer and Information Science and Engineering (CISE)',
+    'Cultural Anthropology': 'Social, Behavioral, and Economic Sciences (SBE)',
+    'Data Cyberinfrastructure': 'Computer and Information Science and Engineering (CISE)',
+    'Decision, Risk & Mgmt Sci': 'Engineering (ENG)',
+    'Discovery Research K-12': 'Education and Human Resources (EHR)',
+    'Ecology of Infectious Diseases': 'Biological Sciences (BIO)',
+    'FD-Fluid Dynamics': 'Engineering (ENG)',
+    'I-Corps': 'Technology, Innovation and Partnerships (TIP)',
+    'Info Integration & Informatics': 'Computer and Information Science and Engineering (CISE)',
+    'MATHEMATICAL BIOLOGY': 'Mathematical and Physical Sciences (MPS)',
+    'Nanoscale Interactions Program': 'Engineering (ENG)',
+    'Sociology': 'Social, Behavioral, and Economic Sciences (SBE)',
+    'CIS-Civil Infrastructure Syst': 'Engineering (ENG)',
+    'Secure &Trustworthy Cyberspace': 'Computer and Information Science and Engineering (CISE)',
+    'EPSCoR RII Track-4: Res Fellow': 'Office of the Director',
+    'SBIR Phase II': 'Technology, Innovation and Partnerships (TIP)',
+    'Software & Hardware Foundation': 'Computer and Information Science and Engineering (CISE)',
+    'PHYSICS OF LIVING SYSTEMS': 'Mathematical and Physical Sciences (MPS)',
+    'Systems and Synthetic Biology': 'Biological Sciences (BIO)',
+    'STATISTICS': 'Mathematical and Physical Sciences (MPS)',
+    'SBIR Phase I': 'Technology, Innovation and Partnerships (TIP)',
+    'Genetic Mechanisms': 'Biological Sciences (BIO)',
+    'STTR Phase I': 'Technology, Innovation and Partnerships (TIP)',
+    'Robert Noyce Scholarship Pgm': 'Education and Human Resources (EHR)',
+    'Fairness in Artificial Intelli': 'Computer and Information Science and Engineering (CISE)',
+    'HCC-Human-Centered Computing': 'Computer and Information Science and Engineering (CISE)',
+    'RSCH EXPER FOR UNDERGRAD SITES': 'Computer and Information Science and Engineering (CISE)',
+    'Law & Science': 'Social, Behavioral, and Economic Sciences (SBE)',
+    'OCEANOGRAPHIC INSTRUMENTATION': 'Geosciences (GEO)',
+    'zzzzzz': 'zzzzzz'
+}
 
 def main():    
     max_year = date.today().year + 1
@@ -30,7 +90,18 @@ def main():
                 for g in grants:
                     process_grant(g)
                 imported_count += len(grants)
-        
+
+                
+def retrieve_single_nsf_grant(grant_id):
+    nsf_url = f"{NSF_SINGLE_GRANT_REQUEST}{grant_id}"
+
+    logging.info("Reading from NSF API")
+    logging.info(f"REQUEST = {nsf_url}")
+
+    response = requests.get(nsf_url)
+    response_json = response.json()    
+    grant = response_json['response']['award'][0]
+    return grant
         
 def retrieve_nsf_grants(year, month, offset):
     if month < 10:
@@ -74,11 +145,11 @@ def nsf_to_cic_format(grant):
         "data": {
             "type": "Grant", 
             "attributes": {
-                "funder_divisions": [ nsf_division(grant) ],
+                "funder_divisions": nsf_divisions(grant),
                 "program_reference_codes": [],
                 "keywords": [],
                 "program_officials": nsf_program_official(grant),
-                "other_investigators": [ ],
+                "other_investigators": nsf_other_investigators(grant),
                 "principal_investigator": nsf_principal_investigator(grant),
                 "funder": {
                     "type": "Funder",
@@ -97,10 +168,19 @@ def nsf_to_cic_format(grant):
     return grant_data
 
 
-def nsf_division(grant):
+def nsf_divisions(grant):
+    divisions = []
     if 'fundProgramName' not in grant:
-        return None
-    return grant['fundProgramName']
+        return divisions
+
+    divisions.append(grant['fundProgramName'])
+
+    # if the program name is in the lookup table, add the directorate name
+    directorate = DIVISION_TO_DIRECTORATE[grant['fundProgramName']]
+    if directorate is not None:
+        divisions.insert(0,directorate)
+    
+    return divisions
 
 
 def nsf_program_official(grant):
@@ -138,6 +218,28 @@ def nsf_principal_investigator(grant):
         return None
     return { "type": "Person",
              "id": int(person['id']) }
+
+
+def nsf_other_investigators(grant):
+    # TODO -- incorporate the email into any person that is created
+    # Turn the person into a reference like
+    #  {
+    #    "type": "Person",
+    #    "id": "1"
+    #  }
+
+    other_investigators = []
+    
+    # NSF just puts the full name in a single field
+    for fullname in grant['coPDPI']:
+        fullsplit = fullname.rsplit(" ", 1)
+        first = fullsplit[0]
+        last = fullsplit[1]
+        person = cic_people.find_or_create_person(first,last)
+        if person is not None:
+            other_investigators.append( { "type": "Person",
+                                          "id": int(person['id']) } )
+    return other_investigators
 
 
 def nsf_awardee_org(grant):
