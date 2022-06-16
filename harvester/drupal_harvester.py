@@ -13,8 +13,8 @@ SKIP_EXISTING = True
 
 def main():    
     grants = read_grants()
-    print(f"found {len(data)} grants")
-    total = len(data)
+    print(f"found {len(grants)} grants")
+    total = len(grants)
     processed = 0
     for grant in grants:
         process(grant)
