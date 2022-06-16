@@ -11,7 +11,7 @@ NSF_GRANT_REQUEST = "https://api.nsf.gov/services/v1/awards.json?keyword=covid+c
 
 NSF_SINGLE_GRANT_REQUEST = "https://api.nsf.gov/services/v1/awards.json?printFields=abstractText,agency,awardAgencyCode,awardee,awardeeAddress,awardeeCity,awardeeCountryCode,awardeeCounty,awardeeDistrictCode,awardeeName,awardeeStateCode,awardeeZipCode,cfdaNumber,coPDPI,date,dunsNumber,estimatedTotalAmt,expDate,fundAgencyCode,fundProgramName,fundsObligatedAmt,id,offset,parentDunsNumber,pdPIName,perfAddress,perfCity,perfCountryCode,perfCounty,perfDistrictCode,perfLocation,perfStateCode,perfZipCode,piEmail,piFirstName,piLastName,piMiddeInitial,piPhone,poEmail,poName,poPhone,primaryProgram,projectOutComesReport,publicationConference,publicationResearch,rpp,startDate,title,transType&id="
 
-SKIP_EXISTING = False
+SKIP_EXISTING = True
 
 DIRECTORATES = [
 'Biological Sciences (BIO)',
@@ -75,23 +75,6 @@ def main():
     max_year = date.today().year + 1
     imported_count = 0
 
-    ########## for testing directorate
-    # import specific grants and print them out
-
-    # CIC
-    grant = retrieve_single_nsf_grant(2028999)
-    print(grant)
-
-    # DataONE
-    grant = retrieve_single_nsf_grant(1430508)    
-    print(grant)
-    print("")
-    print(nsf_to_cic_format(grant))
-    process_grant(grant)
-
-    return
-    #########################
-    
     # The NSF API will only return a max of 3000 grants per request, and the default page size is 25
     # So we request one month at a time, and step through each page
     for year in range(max_year, 2005, -1):

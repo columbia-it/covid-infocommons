@@ -5,6 +5,7 @@ import cic_people
 import json
 import logging
 import requests
+import nsf_harvester
 
 # Drupal Harvester -- Import grants and people from the CIC Drupal system
 
@@ -37,19 +38,19 @@ def drupal_to_cic_format(grant):
             "type": "Grant", 
             "attributes": {
                 "funder_divisions": drupal_divisions(grant),
-                "program_reference_codes": #[],
-                "keywords": #[],
-                "program_officials": #nsf_program_official(grant),
+                "program_reference_codes": grant['programrefcodes'],
+                "keywords": [],
+                "program_officials": drupal_program_official(grant),
                 "other_investigators": drupal_other_investigators(grant),
-                "principal_investigator": #nsf_principal_investigator(grant),
+                "principal_investigator": drupal_principal_investigator(grant),
                 "funder": {
                     "type": "Funder",
                     "id": 3 # TODO -- this should be looked up!
                 },
-                "awardee_organization": #nsf_awardee_org(grant),
+                "awardee_organization": drupal_awardee_org(grant),
                 "award_id": grant['id'],
                 "title": grant['title'],
-                "start_date": grant['date'],
+                "start_date": grant['startdate'],
                 "end_date": grant['expdate'],
                 "award_amount": grant['fundsobligatedamt'],
                 "abstract": grant['abstracttext']
@@ -57,6 +58,7 @@ def drupal_to_cic_format(grant):
         }
     }
     return grant_data
+
 
 DRUPAL_DIRECTORATE = {
 'BIO - Directorate for Biological Sciences': 'Biological Sciences (BIO)',
@@ -68,26 +70,90 @@ DRUPAL_DIRECTORATE = {
 'MPS - Mathematical and Physical Sciences': 'Mathematical and Physical Sciences (MPS)',
 'SBE - Social, Behavioral, and Economic Sciences': 'Social, Behavioral, and Economic Sciences (SBE)',
 'TIP - Technology, Innovation and Partnerships': 'Technology, Innovation and Partnerships (TIP)',
-'OD - Office of the Director''Office of the Director'
+'OD - Office of the Director': 'Office of the Director'
 }
 
 def drupal_divisions(grant):
     divisions = []
 
     if 'directorate' in grant:
-        divisions.append(DRUPAL_DIRECTORATE[grant['directorate']])
+        if len(grant['directorate']) > 0:
+            divisions.append(DRUPAL_DIRECTORATE[grant['directorate']])
     
-    if 'fundProgramName' not in grant:
-        return divisions
-
-    divisions.append(grant['fundProgramName'])
-
     # if the program name is in the lookup table, add the directorate name
-    directorate = DIVISION_TO_DIRECTORATE[grant['fundProgramName']]
-    if directorate is not None:
-        divisions.insert(0,directorate)
+    if len(divisions) == 0 and 'fundprogramname' in grant:        
+        directorate = nsf_harvester.DIVISION_TO_DIRECTORATE[grant['fundprogramname'][0]]
+        if directorate is not None:
+            divisions.insert(0,directorate)
+
+    divisions.append(grant['nsf_org'])
+    divisions.append(grant['fundprogramname'])
     
     return divisions
+
+
+def drupal_awardee_org(grant):
+    #  {
+    #    "type": "Organization",
+    #    "id": 24
+    #   }
+    if 'awardeename' not in grant:
+        return None
+    name = grant['awardeename']
+
+    if 'awardeecountrycode' not in grant:
+        country_code = 'US'
+    else:
+        country_code = grant['awardeecountrycode']
+
+    if 'awardeestatecode' not in grant:
+        state_code = None
+    else:
+        state_code = grant['awardeestatecode']
+        
+    org = cic_orgs.find_or_create_org(name, country_code, state_code)
+    org_json = { "type": "Organization",
+                 "id": int(org['id']) }
+    logging.debug(f" -- attaching organization {org_json}")
+    return org_json
+
+
+def drupal_program_official(grant):
+    # TODO -- incorporate the grant['poEmail'] into any person that is created
+    # Turn the person into a reference like
+    #  {
+    #    "type": "Person",
+    #    "id": "1"
+    #  }
+    if 'poname' not in grant:
+        return []
+    name = grant['poname']
+    last_space = name.rfind(" ")
+    last = name[last_space+1:]
+    first = name[:last_space]
+    person = cic_people.find_or_create_person(first,last)
+    if person is None:
+        return []
+    return [ { "type": "Person",
+               "id": int(person['id']) } ]
+
+
+def drupal_principal_investigator(grant):
+    # TODO -- incorporate the email into any person that is created
+    # Turn the person into a reference like
+    #  {
+    #    "type": "Person",
+    #    "id": "1"
+    #  }
+
+    fullsplit = grant['pdpiname'].rsplit(" ", 1)
+    first = fullsplit[0]
+    last = fullsplit[1]
+    person = cic_people.find_or_create_person(first, last, grant['piemail'], grant['pilink'])
+    if person is None:
+        return None
+    return { "type": "Person",
+             "id": int(person['id']) }
 
 
 def drupal_other_investigators(grant):
