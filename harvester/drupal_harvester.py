@@ -9,26 +9,48 @@ import nsf_harvester
 
 # Drupal Harvester -- Import grants and people from the CIC Drupal system
 
-
-SKIP_EXISTING = False
+SKIP_EXISTING = True
 
 def main():    
     grants = read_grants()
+    print(f"found {len(data)} grants")
+    total = len(data)
+    processed = 0
     for grant in grants:
         process(grant)
-        exit
+        processed += 1
+        if processed % 10 == 0:
+            print(f"{processed}/{total}")
+
 
 def process(grant):
-    print(grant)
-    drupal_to_cic_format(grant)
-    # For each person, make a cic person
+    logging.info("======================================================================")
+    logging.info(f" -- processing grant {grant['id']} -- {grant['title']}")
+    existing_grant = cic_grants.find_cic_grant(grant['id'])
+    if existing_grant is None:        
+        logging.debug("   -- not found - creating")
+        grant_json =  drupal_to_cic_format(grant)
+        print(" pushing ")
+        print(grant_json)
+        response_code = cic_grants.create_cic_grant(grant_json)
+    else:
+        if SKIP_EXISTING:
+            logging.debug("  -- found existing grant! skipping due to SKIP_EXISTING setting")
+            return
+        logging.debug("   -- found existing grant! updating")
+        grant_json = drupal_to_cic_format(grant)
+        response_code = cic_grants.update_cic_grant(grant_json, grant['id'])
+        
+    logging.info(f"    -- {response_code}")
+
+
+
 
 def read_grants():
     f = open('/home/ubuntu/cu_nsf_awards.json')
     # returns JSON object as 
     # a dictionary
     data = json.load(f)
-    print(f"found {len(data)} grants")
     return data
     
     
@@ -75,19 +97,22 @@ DRUPAL_DIRECTORATE = {
 
 def drupal_divisions(grant):
     divisions = []
-
     if 'directorate' in grant:
         if len(grant['directorate']) > 0:
             divisions.append(DRUPAL_DIRECTORATE[grant['directorate']])
     
     # if the program name is in the lookup table, add the directorate name
-    if len(divisions) == 0 and 'fundprogramname' in grant:        
-        directorate = nsf_harvester.DIVISION_TO_DIRECTORATE[grant['fundprogramname'][0]]
-        if directorate is not None:
-            divisions.insert(0,directorate)
+    if len(divisions) == 0 and 'fundprogramname' in grant:
+        if grant['fundprogramname'][0] in nsf_harvester.DIVISION_TO_DIRECTORATE:
+            directorate = nsf_harvester.DIVISION_TO_DIRECTORATE[grant['fundprogramname'][0]]
+            if directorate is not None:
+                divisions.insert(0,directorate)
 
-    divisions.append(grant['nsf_org'])
-    divisions.append(grant['fundprogramname'])
+    if 'nsf_org' in grant and grant['nsf_org']:
+        divisions.append(grant['nsf_org'])
+
+    if 'fundprogramname' in grant:
+        divisions.append(grant['fundprogramname'][0])
     
     return divisions
 
@@ -128,6 +153,8 @@ def drupal_program_official(grant):
     if 'poname' not in grant:
         return []
     name = grant['poname']
+    if not name:
+        return []
     last_space = name.rfind(" ")
     last = name[last_space+1:]
     first = name[:last_space]
