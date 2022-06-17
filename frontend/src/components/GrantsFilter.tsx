@@ -26,6 +26,7 @@ interface GrantsFilterProps {
     funder_divisions: Facet[]
     pi_names: Facet[]
     program_official_names: Facet[]
+    funder_names: Facet[]
     filterChangeHandler: (fieldName?:string, value?:any, reset?:boolean) => void
 }
 
@@ -42,6 +43,7 @@ interface GrantFilterState {
     pi_name?: string | null
     po_name?: string | null
     clearSelectedValue: boolean
+    funder_name?: string | null
 }
 
 const nsf_directorates = [
@@ -94,6 +96,7 @@ class GrantsFilter extends Component<GrantsFilterProps, GrantFilterState> {
             endDate: null,
             isStartDatePickerOpen: false,
             isEndDatePickerOpen: false,
+            funder_name: null,
             nsf_directorate: null,
             nih_institute: null,
             division: null,
@@ -127,6 +130,7 @@ class GrantsFilter extends Component<GrantsFilterProps, GrantFilterState> {
     }
 
     clearFilter() {
+        this.setState( {funder_name: ''} )
         this.setState( {nsf_directorate: ''} );
         this.setState( {nih_institute: ''} );
         this.setState( {division: ''} );
@@ -150,6 +154,36 @@ class GrantsFilter extends Component<GrantsFilterProps, GrantFilterState> {
                 </Button>
             </div>
             <div>
+            <Accordion>
+                    <AccordionSummary
+                        expandIcon={<ExpandMoreIcon />}
+                        aria-controls="panel3a-content"
+                        id="panel3a-header"
+                    >
+                        <Typography sx={{ px: 2 }}>Funder</Typography>
+                    </AccordionSummary>
+                    <AccordionDetails>
+                        <Autocomplete
+                            id="funder_selector"
+                            value={ this.state.funder_name }
+                            options={ this.props.funder_names.map((option) => option.key) }
+                            onInputChange={(event, value) => {
+                                this.setState({funder_name: value})
+                                this.props.filterChangeHandler('funder_name', value, false)
+                            }}
+                            onChange={ (event, value) => {
+                                this.setState({funder_name: value})
+                                this.props.filterChangeHandler('funder_name', value, false)
+                            }}
+                            clearOnBlur={ false }
+                            renderInput={(params) => 
+                                <TextField {...params} 
+                                    placeholder="Select Funder"
+                                    variant="outlined" />
+                            }
+                        />
+                    </AccordionDetails>
+                </Accordion>
                 <Accordion>
                     <AccordionSummary
                         expandIcon={<ExpandMoreIcon />}

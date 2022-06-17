@@ -44,6 +44,8 @@ def search_grants(request):
     org_state = request.GET.get('org_state', None)
     pi_name = request.GET.get('pi_name', None)
     po_name = request.GET.get('po_name', None)
+    funder_name = request.GET.get('funder_name', None)
+
 
     query = {
         'size': size,
@@ -187,6 +189,22 @@ def search_grants(request):
             {
                 'match_phrase': {
                     'program_officials.full_name': po_name
+                }
+            }
+        )
+
+    if funder_name:  
+        if 'match_phrase' in query:
+               query['query']['bool']['must']['match_phrase'].append(
+                   {
+                       'funder.name': funder_name
+                    }
+               )
+        else:
+            query['query']['bool']['must'].append(
+            {
+                'match_phrase': {
+                    'funder.name': funder_name
                 }
             }
         )
