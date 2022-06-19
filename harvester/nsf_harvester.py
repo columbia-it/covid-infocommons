@@ -71,7 +71,7 @@ DIVISION_TO_DIRECTORATE = {
     'zzzzzz': 'zzzzzz'
 }
 
-def main():    
+def main():
     max_year = date.today().year + 1
     imported_count = 0
 
