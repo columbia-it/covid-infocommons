@@ -4,43 +4,80 @@
 
 <!DOCTYPE html>
 <html lang="en">
-    {% block content %}
-    <head>
-        <meta charset="UTF-8">
-        <title></title>
-    </head>
-    <body>
-        <div>
-            <h1>
-                {% with person.first_name|add:" "|add:person.last_name as fullname %}
-                    {{ fullname }}
-                {% endwith %}
-            </h1>
-        </div>
-        <div>
-            <section>
-                <small>Institution(s):</small>
-                {% for org in person.affiliations.all %}
-                    <p>org.name</p>
-                {% endfor %}
-            </section>
-            <section>
-                <small>Email:</small>
-                <p>{{ person.emails }}</p>
-            </section>
-            <section>
-                <small>PI's ORCID ID:</small>
-                <p><a href="https://orcid.org/{{ person.orchid}}"></a></p>
-            </section>
-            <section>
-                <small>Awarded COVID Grants:</small>
-                {% for grant in grants %}
-                <ul>
-                    <a href="/grants/{{ grant.id }}">{{ grant.title }}</a>
-                </ul>
-                {% endfor %}
-            </section>
-        </div>
-    </body>
-    {% endblock content %}
+  {% block content %}
+  <head>
+    <meta charset="UTF-8">
+      <title>
+	{% with person.first_name|add:" "|add:person.last_name as fullname %}
+        CIC - {{ fullname }}
+        {% endwith %}
+      </title>
+      
+      <!-- Use the Google fonts as a backup for Adobe fonts -->	
+      <link rel="preconnect" href="https://fonts.googleapis.com" />		   
+      <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+      <link href="https://fonts.googleapis.com/css2?family=Cinzel&display=swap" rel="stylesheet" />
+      <link href="https://fonts.googleapis.com/css2?family=Montserrat&display=swap" rel="stylesheet" />
+      
+      <!-- Include FontAwesome for icons -->
+      <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/font-awesome/4.4.0/css/font-awesome.min.css" />
+	
+      <link rel="stylesheet" type="text/css" href="{% static '/search/main.css' %}" />
+  </head>
+  <body>
+    
+    {% include "cic_header.html" %}
+    <p/>
+
+    <div>
+      <h1>
+        {% with person.first_name|add:" "|add:person.last_name as fullname %}
+        {{ fullname }}
+        {% endwith %}
+      </h1>
+    </div>
+    
+    <div>
+      <!-- TODO determine how to test for presence of the affiliations object -->
+      {% if person.affiliations == 'TODO add a real test' %}
+      <section>
+        <small>Institution:</small>
+        {% for org in person.affiliations.all %}
+        <p>org.name</p>
+        {% endfor %}
+      </section>
+      {% endif %}
+
+      {% if person.emails is not None %}
+      <section>
+        <small>Email:</small>
+        <p>{{ person.emails }}</p>
+      </section>
+      {% endif %}
+
+      {% if person.orcid is not None %}
+      <section>
+        <small>ORCID ID:</small>
+        <p><a href="https://orcid.org/{{ person.orcid }}"></a></p>
+      </section>
+      {% endif %}
+
+      {% if grants %}
+      <section>
+        <small>Awarded COVID Grants:</small>
+        {% for grant in grants %}
+        <ul>
+          <a href="/grants/{{ grant.id }}">{{ grant.title }}</a>
+        </ul>
+        {% endfor %}
+      </section>
+      {% endif %}
+      
+    </div>
+    <p/>
+    
+    {% include "cic_footer.html" %}
+    
+  </body>
+  {% endblock content %}
 </html>
