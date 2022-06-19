@@ -16,6 +16,8 @@ def find_or_create_person(first, last, email = '', link = ''):
     # see if person exists
     person = find_cic_person(first, last)
 
+    if not email:
+        email = ''
     if person is None:
         person = create_cic_person(person_name_to_cic_format(first, last, email, link))
 

@@ -90,7 +90,9 @@ DRUPAL_DIRECTORATE = {
 'ERE - Environmental Research and Education': 'Environmental Research and Education (ERE)',
 'GEO - Directorate for Geosciences': 'Geosciences (GEO)',
 'MPS - Mathematical and Physical Sciences': 'Mathematical and Physical Sciences (MPS)',
+'MPS - Directorate for Mathematical and Physical Sciences': 'Mathematical and Physical Sciences (MPS)',
 'SBE - Social, Behavioral, and Economic Sciences': 'Social, Behavioral, and Economic Sciences (SBE)',
+'SBE - Directorate for Social, Behavioral, and Economic Sciences': 'Social, Behavioral, and Economic Sciences (SBE)',
 'TIP - Technology, Innovation and Partnerships': 'Technology, Innovation and Partnerships (TIP)',
 'OD - Office of the Director': 'Office of the Director'
 }
@@ -108,12 +110,10 @@ def drupal_divisions(grant):
             if directorate is not None:
                 divisions.insert(0,directorate)
 
-    if 'nsf_org' in grant and grant['nsf_org']:
-        divisions.append(grant['nsf_org'])
+    # TODO -- uncomment these! after ticket 164
+#    if 'nsf_org' in grant and grant['nsf_org']:
+#        divisions.append(grant['nsf_org'])
 
-    if 'fundprogramname' in grant:
-        divisions.append(grant['fundprogramname'][0])
-    
     return divisions
 
 
