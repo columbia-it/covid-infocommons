@@ -1,4 +1,5 @@
 from datetime import date, datetime
+from pyquery import PyQuery 
 import cic_grants
 import cic_orgs
 import cic_people
@@ -10,6 +11,8 @@ import requests
 NSF_GRANT_REQUEST = "https://api.nsf.gov/services/v1/awards.json?keyword=covid+covid-19+corid-19+corvid-19+coronavirus+sars2+%22SARS-CoV-2%22&printFields=abstractText,agency,awardAgencyCode,awardee,awardeeAddress,awardeeCity,awardeeCountryCode,awardeeCounty,awardeeDistrictCode,awardeeName,awardeeStateCode,awardeeZipCode,cfdaNumber,coPDPI,date,dunsNumber,estimatedTotalAmt,expDate,fundAgencyCode,fundProgramName,fundsObligatedAmt,id,offset,parentDunsNumber,pdPIName,perfAddress,perfCity,perfCountryCode,perfCounty,perfDistrictCode,perfLocation,perfStateCode,perfZipCode,piEmail,piFirstName,piLastName,piMiddeInitial,piPhone,poEmail,poName,poPhone,primaryProgram,projectOutComesReport,publicationConference,publicationResearch,rpp,startDate,title,transType"
 
 NSF_SINGLE_GRANT_REQUEST = "https://api.nsf.gov/services/v1/awards.json?printFields=abstractText,agency,awardAgencyCode,awardee,awardeeAddress,awardeeCity,awardeeCountryCode,awardeeCounty,awardeeDistrictCode,awardeeName,awardeeStateCode,awardeeZipCode,cfdaNumber,coPDPI,date,dunsNumber,estimatedTotalAmt,expDate,fundAgencyCode,fundProgramName,fundsObligatedAmt,id,offset,parentDunsNumber,pdPIName,perfAddress,perfCity,perfCountryCode,perfCounty,perfDistrictCode,perfLocation,perfStateCode,perfZipCode,piEmail,piFirstName,piLastName,piMiddeInitial,piPhone,poEmail,poName,poPhone,primaryProgram,projectOutComesReport,publicationConference,publicationResearch,rpp,startDate,title,transType&id="
+
+NSF_AWARD_PAGE = "https://www.nsf.gov/awardsearch/showAward?AWD_ID="
 
 SKIP_EXISTING = True
 
@@ -25,6 +28,18 @@ DIRECTORATES = [
 'Technology, Innovation and Partnerships (TIP)',
 'Office of the Director'
 ]
+
+DIRECTORATE_ABBREVIATIONS = {
+    'Direct For Biological Sciences': 'Biological Sciences (BIO)',
+    'Direct For Social, Behav & Economic Scie': 'Social, Behavioral, and Economic Sciences (SBE)',
+    'Direct For Computer & Info Scie & Enginr': 'Computer and Information Science and Engineering (CISE)',
+    'Directorate For Engineering': 'Engineering (ENG)',
+    'Direct For Mathematical & Physical Scien': 'Mathematical and Physical Sciences (MPS)',
+    'Direct For Education and Human Resources': 'Education and Human Resources (EHR)',
+    'Directorate For Geosciences': 'Geosciences (GEO)',
+    'Dir for Tech, Innovation, & Partnerships': 'Technology, Innovation and Partnerships (TIP)',
+    'Office Of The Director': 'Office Of The Director'
+}
 
 DIVISION_TO_DIRECTORATE = {
     'Science of Science': 'Social, Behavioral, and Economic Sciences (SBE)',
@@ -175,9 +190,13 @@ def nsf_divisions(grant):
 
     divisions.append(grant['fundProgramName'])
 
-    # if the program name is in the lookup table, add the directorate name
-    directorate = DIVISION_TO_DIRECTORATE[grant['fundProgramName']]
-    if directorate is not None:
+    # add the directorate name, preferring our local lookup table
+    if grant['fundProgramName'] in DIVISION_TO_DIRECTORATE:
+        directorate = DIVISION_TO_DIRECTORATE[grant['fundProgramName']]
+        divisions.insert(0,directorate)
+    else:
+        # scrape it from the NSF award page
+        directorate = scrape_directorate(grant['id'])
         divisions.insert(0,directorate)
     
     return divisions
@@ -231,6 +250,9 @@ def nsf_other_investigators(grant):
     other_investigators = []
     
     # NSF just puts the full name in a single field
+    if 'coPDPI' not in grant:
+        return []
+    
     for fullname in grant['coPDPI']:
         fullsplit = fullname.rsplit(" ", 1)
         first = fullsplit[0]
@@ -279,7 +301,26 @@ def nsf_award_amount(grant):
         return 0
     else:
         return grant['estimatedTotalAmt']
-    
 
+    
+def scrape_directorate(award_id):
+    nsf_url = f"{NSF_AWARD_PAGE}{award_id}"
+
+    logging.info("Reading from NSF website")
+    logging.info(f"REQUEST = {nsf_url}")
+
+    pq = PyQuery(nsf_url)
+    ds = pq("tbody")("span")[7].text
+    if ds is None:
+        logging.error(f"Unable to find directorate string for grant {award_id}")
+        return "Unknown"
+    ds = ds.replace(u'\xa0', u'')
+    if ds in DIRECTORATE_ABBREVIATIONS:
+        return DIRECTORATE_ABBREVIATIONS[ds]
+    else:
+        print(f" Unknown directorate string |{ds}|")
+        return "Unknown"
+    
+    
 if __name__ == "__main__":
     main()

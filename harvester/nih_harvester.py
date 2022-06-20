@@ -268,11 +268,51 @@ def nih_keywords(s):
         keys = [i for i in keys if i]
         return keys
 
+IC_MAPPING = {
+    'National Cancer Institute': 'National Cancer Institute (NCI)',
+    'National Eye Institute': 'National Eye Institute (NEI)',
+    'National Heart Lung and Blood Institute': 'National Heart Lung and Blood Institute (NHLBI)',
+    'National Human Genome Research Institute': 'National Human Genome Research Institute (NHGRI)',
+    'National Institute on Aging': 'National Institute on Aging (NIA)',
+    'National Institute on Alcohol Abuse and Alcoholism': 'National Institute on Alcohol Abuse and Alcoholism (NIAAA)',
+    'National Institute of Allergy and Infectious Diseases': 'National Institute of Allergy and Infectious Diseases (NIAID)',
+    'National Institute of Arthritis and Musculoskeletal and Skin Diseases': 'National Institute of Arthritis and Musculoskeletal and Skin Diseases (NIAMS)',
+    'National Institute of Biomedical Imaging and Bioengineering': 'National Institute of Biomedical Imaging and Bioengineering (NIBIB)',
+    'Eunice Kennedy Shriver National Institute of Child Health and Human Development': 'Eunice Kennedy Shriver National Institute of Child Health and Human Development (NICHD)',
+    'National Institute on Deafness and Other Communication Disorders': 'National Institute on Deafness and Other Communication Disorders (NIDCD)',
+    'National Institute of Dental and Craniofacial Research': 'National Institute of Dental and Craniofacial Research (NIDCR)',
+    'National Institute of Diabetes and Digestive and Kidney Diseases': 'National Institute of Diabetes and Digestive and Kidney Diseases (NIDDK)',
+    'National Institute on Drug Abuse': 'National Institute on Drug Abuse (NIDA)',
+    'National Institute of Environmental Health Sciences': 'National Institute of Environmental Health Sciences (NIEHS)',
+    'National Institute of General Medical Sciences': 'National Institute of General Medical Sciences (NIGMS)',
+    'National Institute of Mental Health': 'National Institute of Mental Health (NIMH)',
+    'National Institute on Minority Health and Health Disparities': 'National Institute on Minority Health and Health Disparities (NIMHD)',
+    'National Institute of Neurological Disorders and Stroke': 'National Institute of Neurological Disorders and Stroke (NINDS)',
+    'National Institute of Nursing Research': 'National Institute of Nursing Research (NINR)',
+    'National Library of Medicine': 'National Library of Medicine (NLM)',
+    'NIH Clinical Center': 'NIH Clinical Center (CC)',
+    'Center for Information Technology': 'Center for Information Technology (CIT)',
+    'Center for Scientific Review': 'Center for Scientific Review (CSR)',
+    'Fogarty International Center': 'Fogarty International Center (FIC)',
+    'National Center for Advancing Translational Sciences': 'National Center for Advancing Translational Sciences (NCATS)',
+    'National Center for Complementary and Integrative Health': 'National Center for Complementary and Integrative Health (NCCIH)',
+    'NIH Office of the Director': 'NIH Office of the Director'
+}
+
+# All divisions from NIH will be an Institute or Center, since they are from the "funding_ics" field
 def nih_funding_divisions(ics):
     result = []
     for ic in ics:
-        result.append(replace_commas(ic['name']))
-    return result[0]
+        ic_raw_name = replace_commas(ic['name'])
+        if ic_raw_name in IC_MAPPING:          
+            result.append(IC_MAPPING[ic_raw_name])
+        else:
+            print(f"Unknown IC |{ic_raw_name}|")
+            logging.error(f"Unknown IC |{ic_raw_name}|")
+    # TODO 164 -- once the divisions field is longer, add more results instead of just the first
+    if len(result) > 1:
+        result = result[0:1]
+    return result
 
 
 def replace_commas(s):
