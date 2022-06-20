@@ -277,6 +277,7 @@ IC_MAPPING = {
     'National Institute on Alcohol Abuse and Alcoholism': 'National Institute on Alcohol Abuse and Alcoholism (NIAAA)',
     'National Institute of Allergy and Infectious Diseases': 'National Institute of Allergy and Infectious Diseases (NIAID)',
     'National Institute of Arthritis and Musculoskeletal and Skin Diseases': 'National Institute of Arthritis and Musculoskeletal and Skin Diseases (NIAMS)',
+    'National Institute of Arthritits and Musculoskeletal and Skin Diseases': 'National Institute of Arthritis and Musculoskeletal and Skin Diseases (NIAMS)',
     'National Institute of Biomedical Imaging and Bioengineering': 'National Institute of Biomedical Imaging and Bioengineering (NIBIB)',
     'Eunice Kennedy Shriver National Institute of Child Health and Human Development': 'Eunice Kennedy Shriver National Institute of Child Health and Human Development (NICHD)',
     'National Institute on Deafness and Other Communication Disorders': 'National Institute on Deafness and Other Communication Disorders (NIDCD)',
@@ -294,8 +295,10 @@ IC_MAPPING = {
     'Center for Information Technology': 'Center for Information Technology (CIT)',
     'Center for Scientific Review': 'Center for Scientific Review (CSR)',
     'Fogarty International Center': 'Fogarty International Center (FIC)',
+    'John E. Fogarty International Center for Advanced Study in the Health Sciences': 'Fogarty International Center (FIC)',
     'National Center for Advancing Translational Sciences': 'National Center for Advancing Translational Sciences (NCATS)',
     'National Center for Complementary and Integrative Health': 'National Center for Complementary and Integrative Health (NCCIH)',
+    'National Center for Complementary and Intergrative Health': 'National Center for Complementary and Integrative Health (NCCIH)',
     'NIH Office of the Director': 'NIH Office of the Director'
 }
 
