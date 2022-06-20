@@ -62,7 +62,7 @@ const nsf_directorates = [
 const nih_institues = [
     'National Cancer Institute (NCI)',
     'National Eye Institute (NEI)',
-    'National Heart, Lung, and Blood Institute (NHLBI)',
+    'National Heart Lung and Blood Institute (NHLBI)',
     'National Human Genome Research Institute (NHGRI)',
     'National Institute on Aging (NIA)',
     'National Institute on Alcohol Abuse and Alcoholism (NIAAA)',
@@ -86,8 +86,10 @@ const nih_institues = [
     'Center for Scientific Review (CSR)',
     'Fogarty International Center (FIC)',
     'National Center for Advancing Translational Sciences (NCATS)',
-    'National Center for Complementary and Integrative Health (NCCIH)'
+    'National Center for Complementary and Integrative Health (NCCIH)',
+    'NIH Office of the Director'
 ]
+
 class GrantsFilter extends Component<GrantsFilterProps, GrantFilterState> {
     constructor(props:GrantsFilterProps) {
         super(props)
