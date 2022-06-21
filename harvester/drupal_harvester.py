@@ -110,6 +110,10 @@ def drupal_divisions(grant):
             if directorate is not None:
                 divisions.insert(0,directorate)
 
+    if len(divisions) == 0:
+        directorate = nsf_harvester.scrape_directorate(grant['id'])
+        divisions.insert(0,directorate)
+        
     # TODO -- uncomment these! after ticket 164
 #    if 'nsf_org' in grant and grant['nsf_org']:
 #        divisions.append(grant['nsf_org'])
