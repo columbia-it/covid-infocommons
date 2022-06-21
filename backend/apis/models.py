@@ -70,7 +70,7 @@ class Grant(models.Model):
     title = models.TextField(blank=True, null=True)
     funder = models.ForeignKey(Funder, on_delete=models.CASCADE, db_column='funder', null=True, blank=True)
 
-    funder_divisions = ListCharField(base_field=models.CharField(max_length=200, null=True, blank=True), max_length=100, default=list, blank=True)
+    funder_divisions = ListCharField(base_field=models.CharField(max_length=255, null=True, blank=True), max_length=2000, default=list, blank=True)
     program_reference_codes = ListCharField(base_field=models.CharField(max_length=200, null=True, blank=True), max_length=1000, default=list, blank=True)
     program_officials = models.ManyToManyField(Person, blank=True)
     start_date = models.DateField( null=True, blank=True)
