@@ -12,7 +12,7 @@ def get_facet_by_field(request) :
     )
 
     query = {
-        "size": 10,
+        "size": 20,
         "aggs" : {
             "patterns" : {
                 "terms" : { "field" : "{}.keyword".format(field_name) }
