@@ -181,12 +181,14 @@ class App extends Component<any, AppState> {
             this.setState({ totalCount: results.data.hits.total.value })
 
             var newArray = results.data.hits.hits.map(function(val:any) {
-                var pi_name = ''
-                var pi_id = ''
-                var funder_name = ''
+                let pi_name = ''
+                let pi_id = ''
+                let funder_name = ''
+                let pi_private_emails = ''
                 if (val['_source']['principal_investigator'] != null) {
                     pi_name = val['_source']['principal_investigator']['full_name']
                     pi_id = val['_source']['principal_investigator']['id']
+                    pi_private_emails = val['_source']['principal_investigator']['private_emails']
                 }
                 return {
                     id: val['_source']['id'],
@@ -194,6 +196,7 @@ class App extends Component<any, AppState> {
                     award_id: val['_source']['award_id'],
                     pi: pi_name,
                     pi_id: pi_id,
+                    pi_private_emails: pi_private_emails,
                     abstract: val['_source']['abstract'],
                     award_amount: val['_source']['award_amount'],
                     funder_name: ('name' in val['_source']['funder']) ? val['_source']['funder']['name'] : ''
