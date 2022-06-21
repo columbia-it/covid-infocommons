@@ -374,6 +374,18 @@ class App extends Component<any, AppState> {
                             variant="contained">Search</Button> */}
                     </form>
                     <br/>
+                    <div className='flex-container'>
+                        <div className='results-row'>
+                            Showing <span style={{fontWeight: 'bold', color: '#000000'}}>{ this.state.totalCount }</span> results.
+                        </div>
+                        <div className='download-csv'>
+                            <Button sx={styles}
+	                            onClick={ this.exportToCsv } 
+                                className='download-button' 
+                                variant="contained"
+                                endIcon={ <DownloadIcon /> }>Download Results as CSV</Button>
+                        </div>
+                    </div>    
                     <br/>
                     <div className='flex-container'>
                         <div className='flex-child'>
@@ -387,13 +399,13 @@ class App extends Component<any, AppState> {
                             />
                 </div>
                 <div className='flex-child'>
-                <div className='download-csv'>
+                {/* <div className='download-csv'>
                 <Button sx={styles}
 	                onClick={ this.exportToCsv } 
                         className='download-button' 
                         variant="contained"
-            endIcon={ <DownloadIcon /> }>Download Results as CSV</Button>
-                            </div>
+            endIcon={ <DownloadIcon /> }>Download Results as CSV</Button> 
+                        </div>*/}
                             <div>
                                 <GrantsFilter
                                     awardee_org_names={ this.state.awardee_org_names }
