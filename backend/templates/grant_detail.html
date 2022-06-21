@@ -7,7 +7,7 @@
     {% block content %}
     <head>
         <meta charset="UTF-8">
-        <title>{{ grant.title }}</title>
+        <title>CIC - {{ grant.title }}</title>
 
         <!-- Use the Google fonts as a backup for Adobe fonts -->	
 	<link rel="preconnect" href="https://fonts.googleapis.com" />		   
@@ -87,15 +87,70 @@
             </section>
             <section>
 	      {% if grant.funder.name == 'National Institutes of Health' %}
-	      <small>Funding IC:</small>
+  	        <small>Funding ICs:</small>
+	        {% for funder_division in grant.funder_divisions %}
+                <p>
+		  {{ funder_division }}
+                </p>
+	        {% endfor %}		
+	      {% elif grant.funder_divisions|first == 'Biological Sciences (BIO)' %}
+		<small>Directorate</small>
+		<p>
+		  {{ grant.funder_divisions|first }}
+		</p>
+	      {% elif grant.funder_divisions|first == 'Computer and Information Science and Engineering (CISE)' %}
+		<small>Directorate</small>
+		<p>
+		  {{ grant.funder_divisions|first }}
+		</p>
+	      {% elif grant.funder_divisions|first == 'Education and Human Resources (EHR)' %}
+		<small>Directorate</small>
+		<p>
+		  {{ grant.funder_divisions|first }}
+		</p>
+	      {% elif grant.funder_divisions|first == 'Engineering (ENG)' %}
+		<small>Directorate</small>
+		<p>
+		  {{ grant.funder_divisions|first }}
+		</p>
+	      {% elif grant.funder_divisions|first == 'Environmental Research and Education (ERE)' %}
+		<small>Directorate</small>
+		<p>
+		  {{ grant.funder_divisions|first }}
+		</p>
+	      {% elif grant.funder_divisions|first == 'Geosciences (GEO)' %}
+		<small>Directorate</small>
+		<p>
+		  {{ grant.funder_divisions|first }}
+		</p>
+	      {% elif grant.funder_divisions|first == 'Mathematical and Physical Sciences (MPS)' %}
+		<small>Directorate</small>
+		<p>
+		  {{ grant.funder_divisions|first }}
+		</p>
+	      {% elif grant.funder_divisions|first == 'Social, Behavioral, and Economic Sciences (SBE)' %}
+		<small>Directorate</small>
+		<p>
+		  {{ grant.funder_divisions|first }}
+		</p>
+	      {% elif grant.funder_divisions|first == 'Technology, Innovation and Partnerships (TIP)' %}
+		<small>Directorate</small>
+		<p>
+		  {{ grant.funder_divisions|first }}
+		</p>
+	      {% elif grant.funder_divisions|first == 'Office of the Director' %}
+		<small>Directorate</small>
+		<p>
+		  {{ grant.funder_divisions|first }}
+		</p>		
 	      {% else %}
-              <small>Funder Divisions:</small>
+                <small>Funder Divisions:</small>
+		{% for funder_division in grant.funder_divisions %}
+                <p>
+		  {{ funder_division }}
+                </p>
+	        {% endfor %}
 	      {% endif %}
-	      {% for funder_division in grant.funder_divisions %}
-              <p>
-		{{ funder_division }}
-              </p>
-	      {% endfor %}
             </section>
             <section>
                 <small>Abstract:</small>
