@@ -61,6 +61,9 @@ def find_cic_org_by_ror(ror_id):
 
         
 def find_ror_org(name, country = 'United States'):
+    if name is None:
+        return None
+    
     name = name.lower()
     query_name = name.replace("&", "").replace("?","").replace("/"," ") # don't confuse the ROR API
     country = country.lower()

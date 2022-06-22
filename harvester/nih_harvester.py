@@ -5,11 +5,18 @@ import cic_people
 import json
 import logging
 import requests
+import time
 
 NIH_BASE = "https://api.reporter.nih.gov/v1/projects/Search"
 
-STOP_LIMIT = 100000
+# Keywords are very limited for NIH, since they do not allow us an actual keyword search,
+# we are filtering to grants that contain these terms, so we don't want a lot of false positives.
+TARGET_SUBJECT_KEYWORDS = [ 'covid', 'coronavirus', 'sars-cov', 'mers-cov', 'cytokine storm', 'cytokine release syndrome' ]
+
 SKIP_EXISTING = True
+
+# of seconds to wait between successive API calls
+NIH_API_DELAY = 5
 
 # Documentation for NIH grants API: https://api.reporter.nih.gov/?urls.primaryName=V2.0
 
@@ -25,22 +32,42 @@ def main():
     print("NIH Harvester")
     
     # The NIH API will only return a max of 500 grants per request, and the default page size is 25 
-    # So we request one month at a time, and step through each page
+    # So we request one year at a time, and step through each page
     for year in range(max_year, 2019, -1):
         print(f'==================== Imported so far: {imported_count} ==========================')
         print(f'==================== Retrieving {year} ======================')
-            
-        for offset in range(0, 5000, 25):
-            grants = retrieve_nih_grants(year, offset)                
+
+        # grants that are funded by the COVID programs
+        for offset in range(0, 5000, 25):            
+            grants = retrieve_covid_grants(year, offset)                
             if grants is None or len(grants) == 0:
+                time.sleep(NIH_API_DELAY) 
                 break
             print("")
             print(f"Received {len(grants)} grants, offset {offset}")
             for g in grants:
                 process_grant(g)
             imported_count += len(grants)
-            if imported_count >= STOP_LIMIT:
-                return
+            time.sleep(NIH_API_DELAY) 
+
+        # grants that explicitly mention COVID
+        offset = 0
+        processed_count = 0
+        grants = retrieve_subject_grants(year,offset)
+        while grants is not None and len(grants) > 0:
+            processed_count += len(grants)
+            print(f" ==== Found {len(grants)} grants, total = {processed_count}, imported = {imported_count}")
+            for g in grants:
+                title = g['project_title']
+                abstract = g['abstract_text']
+                ta = f"{title} {abstract}".lower()
+                if any(keyword in ta for keyword in TARGET_SUBJECT_KEYWORDS):
+                    print(f"{g['project_num']} -- {g['project_title']}")
+                    imported_count += 1
+                    process_grant(g)
+            time.sleep(NIH_API_DELAY) 
+            offset += 25
+            grants = retrieve_subject_grants(year,offset)
 
                 
 def retrieve_nih_grant(award_id):
@@ -53,8 +80,25 @@ def retrieve_nih_grant(award_id):
     logging.info(f"retrieved grant {grants[0]}")
     return grants[0]
     
+def retrieve_subject_grants(year,offset):
+    # Since NIH doesn't allow us to query directly by subject, we query for everything
+    # and then filter the results.
+    logging.info("Reading grants from NIH API")
+    criteria = nih_all_grants_criteria(year, offset)
+    
+    response = requests.post(url = NIH_BASE,
+                             data = json.dumps(criteria),
+                             headers={"Content-Type":"application/vnd.api+json"})
+    if response.status_code >= 300:
+        logging.error(f"{response} {response.text}")
+        print(f"ERROR {response} {response.text}")
+        return []
+    response_json = response.json()
+    grants = response_json['results']
+    return grants
+    
 
-def retrieve_nih_grants(year, offset):
+def retrieve_covid_grants(year, offset):
     logging.info("Reading grants from NIH API")
     criteria = nih_covid_query_criteria(year, offset)
     
@@ -109,6 +153,27 @@ def nih_award_id_criteria(award_id):
         "limit":25
     }
     return c
+
+
+def nih_all_grants_criteria(year,offset):
+    c =  {
+        "criteria":
+        {
+            "fiscal_years":[ year ],            
+        },
+        "include_fields": [
+            "ProjectTitle", "AbstractText", "FiscalYear",
+            "Organization", "OrgCountry", "OrgState", "OrgName",
+            "ProjectNum", "ProjectNumSplit",
+            "ContactPiName","PrincipalInvestigators","ProgramOfficers",
+            "ProjectStartDate","ProjectEndDate",
+            "AwardAmount", "AgencyIcFundings", "PrefTerms",
+        ],
+        "offset": offset,
+        "limit":25
+    }
+    return c
+
 
 
 def process_grant(grant):
@@ -247,9 +312,18 @@ def nih_program_officials(grant_officials):
     #    "type": "Person",
     #    "id": "1"
     #  }
-    first = grant_officials[0]['first_name']
-    if len(grant_officials[0]['middle_name']) > 0:
-        first += ' ' + grant_officials[0]['middle_name']
+    if grant_officials is None or len(grant_officials) == 0:
+        return []
+
+    if 'first_name' not in grant_officials[0]:
+        first = ''
+    else:
+        first = grant_officials[0]['first_name']
+
+    if 'middle_name' in grant_officials[0]:
+        if len(grant_officials[0]['middle_name']) > 0:
+            first += ' ' + grant_officials[0]['middle_name']
+            
     last = grant_officials[0]['last_name']
 
     person = cic_people.find_or_create_person(first,last)
@@ -265,8 +339,11 @@ def nih_keywords(s):
     else:
         s = s[0:1999] # some NIH grants have a staggering amount of keywords
         keys = s.split(';')
-        keys = [i for i in keys if i]
-        return keys
+        result = []
+        for key in keys:
+            if key is not None and len(key) > 0:                
+                result.append(key.replace(',', ' '))
+        return result
 
 IC_MAPPING = {
     'National Cancer Institute': 'National Cancer Institute (NCI)',
@@ -305,6 +382,9 @@ IC_MAPPING = {
 # All divisions from NIH will be an Institute or Center, since they are from the "funding_ics" field
 def nih_funding_divisions(ics):
     result = []
+    if ics is None:
+        return result
+    
     for ic in ics:
         ic_raw_name = replace_commas(ic['name'])
         if ic_raw_name in IC_MAPPING:          
@@ -314,7 +394,7 @@ def nih_funding_divisions(ics):
             logging.error(f"Unknown IC |{ic_raw_name}|")
     # TODO 164 -- once the divisions field is longer, add more results instead of just the first
     if len(result) > 1:
-        result = result[0:1]
+        result = result[0:5]
     return result
 
 
@@ -328,7 +408,7 @@ def nih_to_cic_date(d):
     iso = d[0:t_index]
     return iso
 
-    
+
 
 if __name__ == "__main__":
     main()
