@@ -48,28 +48,18 @@ class FunderDivisionListField(serializers.Field):
         """
         Replace , with \t in the data (if any) during de-serialization
         """
-        print('FunderDivisionListField.to_internal_value()')
-        print('Incoming data = ')
-        print(data)
         for i in range(len(data)):
             if ',' in data[i]:
                 data[i] = data[i].replace(',', '\t')
-        print('Outgoing data = ')
-        print(data)
         return data
 
     def to_representation(self, value):
         """
         Replace \t with , in the value (if any) during serialization
         """
-        print('FunderDivisionListField.to_representation()')
-        print('Incoming value = ')
-        print(value)
         for i in range(len(value)):
             if '\t' in value[i]:
                 value[i] = value[i].replace('\t', ',')
-        print('Outgoing value = ')
-        print(value)
         return value
 
 
