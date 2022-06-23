@@ -35,7 +35,8 @@ class OrganizationViewSet(ModelViewSet):
     )
 
     filterset_fields = {
-        'ror': usual_rels + text_rels
+        'ror': usual_rels + text_rels,
+        'name': usual_rels + text_rels
     }
 
 class AssetViewSet(ModelViewSet):
