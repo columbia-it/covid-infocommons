@@ -398,7 +398,7 @@ def nih_funding_divisions(ics):
             logging.error(f"Unknown IC |{ic_raw_name}|")
     # TODO 164 -- once the divisions field is longer, add more results instead of just the first
     if len(result) > 1:
-        result = result[0:4]
+        result = result[0:1]
     return result
 
 
@@ -416,5 +416,6 @@ def nih_to_cic_date(d):
 
 if __name__ == "__main__":
     main()
-    #g=retrieve_nih_grant('75N92021C00018-P00002-9999-1')
+    #g=retrieve_nih_grant('1R13AI170179-01')
     #process_grant(g)
+    #print(nih_to_cic_format(g))
