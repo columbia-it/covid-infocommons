@@ -25,7 +25,7 @@ def find_cic_orgs():
     orgs = response_json['data']
     return orgs
 
-    
+
 def find_cic_org(name):
     # TODO 127 --- update to use search instead of cycling through all
     logging.info(f" -- find {name} from {CIC_ORGS_API}")
@@ -87,6 +87,9 @@ def find_ror_org(name, country = 'United States'):
 
     
 def find_or_create_org(name, country, state = None):
+    if name is None or len(name) == 0:
+        return None
+    
     # ensure capitliazation of the US
     if country.lower() == 'united states' or country.lower() == 'usa' or country.lower() == 'us':
         country = 'United States'

@@ -178,8 +178,7 @@ def nih_all_grants_criteria(year,offset):
 
 def process_grant(grant):
     logging.info("======================================================================")
-    logging.info(f" -- processing grant {grant['project_num']} -- {grant['project_title']}")
-    logging.debug(grant)
+    logging.info(f" -- processing grant {grant['project_num']} -- {grant['project_title']}")    
     
     existing_grant = cic_grants.find_cic_grant(grant['project_num'])
     if existing_grant is None:        
@@ -250,8 +249,13 @@ def nih_awardee_org(name, country, state):
     #  {
     #    "type": "Organization",
     #    "id": 24
-    #   }    
+    #   }
+    if name is None:
+        return None
+    
     org = cic_orgs.find_or_create_org(name, country, state)
+    if org is None:
+        return None
     org_json = { "type": "Organization",
                  "id": int(org['id']) }
     logging.debug(f" -- attaching organization {org_json}")
@@ -394,7 +398,7 @@ def nih_funding_divisions(ics):
             logging.error(f"Unknown IC |{ic_raw_name}|")
     # TODO 164 -- once the divisions field is longer, add more results instead of just the first
     if len(result) > 1:
-        result = result[0:5]
+        result = result[0:4]
     return result
 
 
@@ -412,4 +416,5 @@ def nih_to_cic_date(d):
 
 if __name__ == "__main__":
     main()
-    
+    #g=retrieve_nih_grant('75N92021C00018-P00002-9999-1')
+    #process_grant(g)

@@ -61,7 +61,7 @@ def find_cic_people():
 
 def find_cic_person(first, last):
     logging.debug(f" -- Looking for existing person {first} {last}")
-    response = requests.get(f"{CIC_PEOPLE_API}?filter[last_name={last}")
+    response = requests.get(f"{CIC_PEOPLE_API}?filter[last_name]={last}")
     response_json = response.json()
     if response.status_code >= 300 or 'data' not in response_json:
         return None
