@@ -17,7 +17,7 @@ def get_facet_by_field(request) :
             "patterns" : {
                 "terms" : { 
                     "field" : "{}.keyword".format(field_name),
-                    "size": 20
+                    "size": 10000
                 }
             }
         }
