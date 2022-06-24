@@ -5,6 +5,7 @@ import cic_people
 import json
 import logging
 import requests
+import sys
 import time
 
 NIH_BASE = "https://api.reporter.nih.gov/v1/projects/Search"
@@ -20,8 +21,11 @@ NIH_API_DELAY = 5
 
 # Documentation for NIH grants API: https://api.reporter.nih.gov/?urls.primaryName=V2.0
 
-def main():    
-    max_year = date.today().year + 1
+def main(start_year = None, start_offset = 0):
+
+    if start_year is None:
+        start_year = date.today().year + 1
+        
     imported_count = 0
 
     # process a single grant for debugging purposes
@@ -33,12 +37,10 @@ def main():
     
     # The NIH API will only return a max of 500 grants per request, and the default page size is 25 
     # So we request one year at a time, and step through each page
-    for year in range(max_year, 2019, -1):
-        print(f'==================== Imported so far: {imported_count} ==========================')
-        print(f'==================== Retrieving {year} ======================')
-
+    for year in range(start_year, 2019, -1):
         # grants that are funded by the COVID programs
-        for offset in range(0, 5000, 25):            
+        for offset in range(start_offset, 5000, 25):
+            print(f"========= COVID program grants {year} offset {offset}", flush = True)
             grants = retrieve_covid_grants(year, offset)                
             if grants is None or len(grants) == 0:
                 time.sleep(NIH_API_DELAY) 
@@ -50,19 +52,19 @@ def main():
             imported_count += len(grants)
             time.sleep(NIH_API_DELAY) 
 
+    for year in range(start_year, 2019, -1):
         # grants that explicitly mention COVID
-        offset = 0
+        offset = start_offset
         processed_count = 0
         grants = retrieve_subject_grants(year,offset)
         while grants is not None and len(grants) > 0:
+            print(f"========= Keyword grants {year} offset {offset}", flush = True)
             processed_count += len(grants)
-            print(f" ==== Found {len(grants)} grants, total = {processed_count}, imported = {imported_count}")
             for g in grants:
                 title = g['project_title']
                 abstract = g['abstract_text']
                 ta = f"{title} {abstract}".lower()
                 if any(keyword in ta for keyword in TARGET_SUBJECT_KEYWORDS):
-                    print(f"{g['project_num']} -- {g['project_title']}")
                     imported_count += 1
                     process_grant(g)
             time.sleep(NIH_API_DELAY) 
@@ -407,6 +409,9 @@ def replace_commas(s):
     
 
 def nih_to_cic_date(d):
+    if d is None:
+        return None
+    
     # ISO formatted as 2020-09-01T12:09:00Z, we strip the time for CIC
     t_index = d.index('T')
     iso = d[0:t_index]
@@ -415,7 +420,15 @@ def nih_to_cic_date(d):
 
 
 if __name__ == "__main__":
-    main()
+    print(sys.argv)
+    start_year = None
+    start_offset = 0
+    if len(sys.argv) > 1:
+        start_year = int(sys.argv[1])
+    if len(sys.argv) > 2:
+        start_offset = int(sys.argv[2])
+    print(f"Processing NIH grants starting at year {start_year}, offset {start_offset}")
+    main(start_year, start_offset)
     #g=retrieve_nih_grant('1R13AI170179-01')
     #process_grant(g)
     #print(nih_to_cic_format(g))

@@ -2,10 +2,15 @@ import cic_config
 import json
 import logging
 import requests
+import sys
 
 CIC_ORGS_API = f"{cic_config.CIC_BASE}/v1/organizations"
 ROR_API = "https://api.ror.org/organizations"
 
+# names_seen is a cache of the names that we know are in CIC. This speeds the lookup process,
+# since we do not have a way to search by name, and we otherwise must process each existing org
+# to find a match.
+names_seen = []
 
 def main():
     print("CIC org demo")
@@ -15,6 +20,30 @@ def main():
     print(f"Find in ROR: {find_ror_org('Duke University')}")
     print(f"Find in ROR: {find_ror_org('Duke UniVERsity')}")
     print(f"find_or_create: {find_or_create_org('CROW Canyon Archaeological Center', 'United States')}")
+
+
+def name_in_cic(name):
+    if len(names_seen) == 0:
+        init_names_seen()
+        
+    return name in names_seen
+
+
+def init_names_seen():
+    logging.info(f" -- initializaing names_seen")
+    response = requests.get(f"{CIC_ORGS_API}")
+    response_json = response.json()    
+    cic_orgs = response_json['data']
+    while(len(cic_orgs) > 0):
+        for co in cic_orgs:
+            names_seen.append(co['attributes']['name'])
+        if response_json['links']['next'] is not None:
+            print('.', end='', flush=True)
+            response = requests.get(f"{response_json['links']['next']}")
+            response_json = response.json()
+            cic_orgs = response_json['data']
+        else:
+            return None
 
 
 # Find the first page of orgs
@@ -27,6 +56,10 @@ def find_cic_orgs():
 
 
 def find_cic_org(name):
+    if not name_in_cic(name):
+        # There is no point in doing the search if we know the name doesn't exist
+        return None
+    
     # TODO 127 --- update to use search instead of cycling through all
     logging.info(f" -- find {name} from {CIC_ORGS_API}")
     response = requests.get(f"{CIC_ORGS_API}")
@@ -106,8 +139,10 @@ def find_or_create_org(name, country, state = None):
                 if state is not None and state.startswith("US-"):
                     state = state[3:]
                 org = create_cic_org(org_to_cic_format(ror_org['name'], country, state, ror_org['id']))
+                names_seen.append(ror_org['name'])
         else:
             org = create_cic_org(org_to_cic_format(name, country, state, None))
+            names_seen.append(name)
     return org       
 
 
