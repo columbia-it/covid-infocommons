@@ -8,7 +8,7 @@ import logging
 import requests
 
 
-NSF_GRANT_REQUEST = "https://api.nsf.gov/services/v1/awards.json?keyword=covid+covid-19+corid-19+corvid-19+coronavirus+sars2+%22SARS-CoV-2%22&printFields=abstractText,agency,awardAgencyCode,awardee,awardeeAddress,awardeeCity,awardeeCountryCode,awardeeCounty,awardeeDistrictCode,awardeeName,awardeeStateCode,awardeeZipCode,cfdaNumber,coPDPI,date,dunsNumber,estimatedTotalAmt,expDate,fundAgencyCode,fundProgramName,fundsObligatedAmt,id,offset,parentDunsNumber,pdPIName,perfAddress,perfCity,perfCountryCode,perfCounty,perfDistrictCode,perfLocation,perfStateCode,perfZipCode,piEmail,piFirstName,piLastName,piMiddeInitial,piPhone,poEmail,poName,poPhone,primaryProgram,projectOutComesReport,publicationConference,publicationResearch,rpp,startDate,title,transType"
+NSF_GRANT_REQUEST = "https://api.nsf.gov/services/v1/awards.json?keyword=covid+%22covid-19%22+%22corid-19%22+%22corvid-19%22+coronavirus+sars2+%22SARS-CoV-2%22&printFields=abstractText,agency,awardAgencyCode,awardee,awardeeAddress,awardeeCity,awardeeCountryCode,awardeeCounty,awardeeDistrictCode,awardeeName,awardeeStateCode,awardeeZipCode,cfdaNumber,coPDPI,date,dunsNumber,estimatedTotalAmt,expDate,fundAgencyCode,fundProgramName,fundsObligatedAmt,id,offset,parentDunsNumber,pdPIName,perfAddress,perfCity,perfCountryCode,perfCounty,perfDistrictCode,perfLocation,perfStateCode,perfZipCode,piEmail,piFirstName,piLastName,piMiddeInitial,piPhone,poEmail,poName,poPhone,primaryProgram,projectOutComesReport,publicationConference,publicationResearch,rpp,startDate,title,transType"
 
 NSF_SINGLE_GRANT_REQUEST = "https://api.nsf.gov/services/v1/awards.json?printFields=abstractText,agency,awardAgencyCode,awardee,awardeeAddress,awardeeCity,awardeeCountryCode,awardeeCounty,awardeeDistrictCode,awardeeName,awardeeStateCode,awardeeZipCode,cfdaNumber,coPDPI,date,dunsNumber,estimatedTotalAmt,expDate,fundAgencyCode,fundProgramName,fundsObligatedAmt,id,offset,parentDunsNumber,pdPIName,perfAddress,perfCity,perfCountryCode,perfCounty,perfDistrictCode,perfLocation,perfStateCode,perfZipCode,piEmail,piFirstName,piLastName,piMiddeInitial,piPhone,poEmail,poName,poPhone,primaryProgram,projectOutComesReport,publicationConference,publicationResearch,rpp,startDate,title,transType&id="
 
@@ -255,8 +255,12 @@ def nsf_other_investigators(grant):
     
     for fullname in grant['coPDPI']:
         fullsplit = fullname.rsplit(" ", 1)
-        first = fullsplit[0]
-        last = fullsplit[1]
+        if len(fullsplit) > 1:
+            first = fullsplit[0]
+            last = fullsplit[1]
+        else:
+            first = ''
+            last = fullname
         person = cic_people.find_or_create_person(first,last)
         if person is not None:
             other_investigators.append( { "type": "Person",
@@ -310,7 +314,11 @@ def scrape_directorate(award_id):
     logging.info(f"REQUEST = {nsf_url}")
 
     pq = PyQuery(nsf_url)
-    ds = pq("tbody")("span")[7].text
+    ds = None
+    try:
+        ds = pq("tbody")("span")[7].text
+    except IndexError:
+        logging.error(f"Unable to parse page for award {award_id}")
     if ds is None:
         logging.error(f"Unable to find directorate string for grant {award_id}")
         return "Unknown"
