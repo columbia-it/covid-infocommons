@@ -387,7 +387,7 @@ class GrantsFilter extends Component<GrantsFilterProps, GrantFilterState> {
                             clearOnBlur={ false }
                             renderInput={(params) => 
                                 <TextField {...params} 
-                                    placeholder="Type Keywords"
+                                    placeholder="Type Program Officer/Official name"
                                     variant="outlined" />
                             }
                         />
