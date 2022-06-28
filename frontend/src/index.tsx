@@ -78,7 +78,7 @@ class App extends Component<any, AppState> {
         funder_divisions: [],
         pi_names: [],
         po_names: [],
-        keyword: '',
+        keyword: (window as any)['query'],
         filter: {},
         funder_names: []
     }
@@ -366,7 +366,8 @@ class App extends Component<any, AppState> {
                         <TextField
                             id="outlined-search" 
                             label="Search" 
-                            type="search" 
+                            type="search"
+                            value={ this.state.keyword }
                             onKeyDown={ this.enterHandler }
                             onChange={ this.searchHandler }/>
 

@@ -4,7 +4,7 @@ from apis.models import Grant, Person
 
 def index(request):
     """Home view callable, for the home page."""
-    return render(request, 'index.html')
+    return render(request, 'index.html', {'query': request.GET.get('query', '')})
 
 
 def detail(request, grant_id):
