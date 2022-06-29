@@ -78,7 +78,7 @@ class App extends Component<any, AppState> {
         funder_divisions: [],
         pi_names: [],
         po_names: [],
-        keyword: (window as any)['query'],
+        keyword: (window as any)['keywords'],
         filter: {},
         funder_names: []
     }
