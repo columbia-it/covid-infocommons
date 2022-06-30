@@ -52,24 +52,25 @@ def main(start_year = None, start_offset = 0):
             imported_count += len(grants)
             time.sleep(NIH_API_DELAY) 
 
-    for year in range(start_year, 2019, -1):
-        # grants that explicitly mention COVID
-        offset = start_offset
-        processed_count = 0
-        grants = retrieve_subject_grants(year,offset)
-        while grants is not None and len(grants) > 0:
-            print(f"========= Keyword grants {year} offset {offset}", flush = True)
-            processed_count += len(grants)
-            for g in grants:
-                title = g['project_title']
-                abstract = g['abstract_text']
-                ta = f"{title} {abstract}".lower()
-                if any(keyword in ta for keyword in TARGET_SUBJECT_KEYWORDS):
-                    imported_count += 1
-                    process_grant(g)
-            time.sleep(NIH_API_DELAY) 
-            offset += 25
-            grants = retrieve_subject_grants(year,offset)
+    for year in range(start_year, 2018, -1):
+        for month in range(1,13):
+            # grants that explicitly mention COVID
+            offset = start_offset
+            processed_count = 0
+            grants = retrieve_subject_grants(year, month, offset)
+            while grants is not None and len(grants) > 0:
+                print(f"========= Keyword grants {year}-{month} offset {offset}", flush = True)
+                processed_count += len(grants)
+                for g in grants:
+                    title = g['project_title']
+                    abstract = g['abstract_text']
+                    ta = f"{title} {abstract}".lower()
+                    if any(keyword in ta for keyword in TARGET_SUBJECT_KEYWORDS):
+                        imported_count += 1
+                        process_grant(g)
+                time.sleep(NIH_API_DELAY) 
+                offset += 25
+                grants = retrieve_subject_grants(year, month, offset)
 
                 
 def retrieve_nih_grant(award_id):
@@ -82,12 +83,11 @@ def retrieve_nih_grant(award_id):
     logging.info(f"retrieved grant {grants[0]}")
     return grants[0]
     
-def retrieve_subject_grants(year,offset):
+def retrieve_subject_grants(year, month, offset):
     # Since NIH doesn't allow us to query directly by subject, we query for everything
     # and then filter the results.
     logging.info("Reading grants from NIH API")
-    criteria = nih_all_grants_criteria(year, offset)
-    
+    criteria = nih_all_grants_criteria(year, month, offset)
     response = requests.post(url = NIH_BASE,
                              data = json.dumps(criteria),
                              headers={"Content-Type":"application/vnd.api+json"})
@@ -101,6 +101,9 @@ def retrieve_subject_grants(year,offset):
     
 
 def retrieve_covid_grants(year, offset):
+    # TODO -- remove this after initial import -- just skipping the covid list for now
+    return []
+    
     logging.info("Reading grants from NIH API")
     criteria = nih_covid_query_criteria(year, offset)
     
@@ -157,11 +160,32 @@ def nih_award_id_criteria(award_id):
     return c
 
 
-def nih_all_grants_criteria(year,offset):
+def nih_all_grants_criteria(year, month, offset):
+    #            "fiscal_years":[ year ],            
+
+    if month < 10:
+        month_str = f"0{month}"
+    else:
+        month_str = f"{month}"
+
+    to_month = month + 1
+    to_year = year
+    if to_month == 13:
+        to_year = year + 1
+        to_month = 1
+
+    if to_month < 10:
+        to_month_str = f"0{to_month}"
+    else:
+        to_month_str = f"{to_month}"
+
+    from_date = f"{year}-{month_str}-01"
+    to_date = f"{to_year}-{to_month_str}-01"
+    
     c =  {
         "criteria":
         {
-            "fiscal_years":[ year ],            
+            "project_start_date": { "from_date": from_date, "to_date": to_date }
         },
         "include_fields": [
             "ProjectTitle", "AbstractText", "FiscalYear",
@@ -399,8 +423,8 @@ def nih_funding_divisions(ics):
             print(f"Unknown IC |{ic_raw_name}|")
             logging.error(f"Unknown IC |{ic_raw_name}|")
     # TODO 164 -- once the divisions field is longer, add more results instead of just the first
-    if len(result) > 1:
-        result = result[0:1]
+    #if len(result) > 1:
+    #    result = result[0:5]
     return result
 
 
@@ -428,7 +452,11 @@ if __name__ == "__main__":
     if len(sys.argv) > 2:
         start_offset = int(sys.argv[2])
     print(f"Processing NIH grants starting at year {start_year}, offset {start_offset}")
+
+    start_year = 2021
+    
     main(start_year, start_offset)
+    
     #g=retrieve_nih_grant('1R13AI170179-01')
     #process_grant(g)
     #print(nih_to_cic_format(g))
