@@ -1,4 +1,29 @@
 
+/* simplify the screen for mobile */
+@media only screen and (max-width: 700px) { 
+    #site-nav {
+	display: none !important;
+    }
+
+    .download-csv {
+	display: none !important;
+    }
+
+    .flex-child:first-child {
+	width: 100% !important;
+	float: left;
+	clear: both;
+    }
+
+    .flex-child:not(:first-child)  {
+	display: none !important;
+    }
+
+    #back-to-top-container {
+	display: none !important;
+    }
+}
+
 header small {
     -webkit-text-size-adjust: 100%;
     -webkit-tap-highlight-color: transparent;
@@ -166,10 +191,6 @@ header h1 {
   width: 100%;
 }
 
-.search-button {
-  width: 12%;
-}
-
 .download-csv {
   text-align: center;
   padding-bottom: 10px;
@@ -215,6 +236,7 @@ header h1 {
 .filter-results-label {
     font-family: "proxima-nova", "Montserrat",sans-serif;
     color: #555555;
+    padding-right: 10px;
 }
 
 .filter-accordion {
@@ -399,6 +421,7 @@ ul {
     margin-left: -15px;
 }
 
+
 #site-nav .container {
     display: inline-block;
 }
@@ -534,7 +557,7 @@ ul {
 } 
 
 
-/* Mobile menu */
+/* Mobile menu that doesn't work properly...  */
 @media only screen and (max-width: 600px) {
   .decor {
     padding: 3px;
