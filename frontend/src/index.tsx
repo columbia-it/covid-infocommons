@@ -354,7 +354,7 @@ class App extends Component<any, AppState> {
             <Box
                 sx={{
                     width: '100%',
-                    '& .MuiTextField-root': { width: '85%' },
+                    '& .MuiTextField-root': { width: '100%' },
                 }}
                 component="form"
                 noValidate
@@ -403,13 +403,6 @@ class App extends Component<any, AppState> {
                             />
                 </div>
                 <div className='flex-child'>
-                {/* <div className='download-csv'>
-                <Button sx={styles}
-	                onClick={ this.exportToCsv } 
-                        className='download-button' 
-                        variant="contained"
-            endIcon={ <DownloadIcon /> }>Download Results as CSV</Button> 
-                        </div>*/}
                             <div>
                                 <GrantsFilter
                                     awardee_org_names={ this.state.awardee_org_names }
