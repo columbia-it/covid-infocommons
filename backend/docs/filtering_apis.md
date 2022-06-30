@@ -1,11 +1,13 @@
 
 Many of the APIs will allow a "filter" to select a single known item by an identifier other than the CIC ID.
 
-Organizations by ROR:
+Organizations:
 - filter by a single ROR
   `/v1/organizations?filter[ror]=https://ror.org/008rp3t36`
 - filter by multiple RORs 
   `/v1/organizations?filter[ror.in]=https://ror.org/008rp3t36,https://ror.org/05skzv947`
+- filter by oranization name:
+  `/v1/organizations?filter[name]=Columbia+University`
 
 People:
 - filter by single ORCID
