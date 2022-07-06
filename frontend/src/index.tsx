@@ -287,10 +287,11 @@ class App extends Component<any, AppState> {
                     abstract = grant_to_add.abstract.replaceAll('"', "'")
                 }
                 let awardee_org = grant_to_add.awardee_org
-                if (grant_to_add.awardee_org.indexOf(',') > -1) {
-                    awardee_org = grant_to_add.awardee_org.replaceAll(',', '')
+                if (awardee_org) {
+                    if (grant_to_add.awardee_org.indexOf(',') > -1) {
+                        awardee_org = grant_to_add.awardee_org.replaceAll(',', '')
+                    }
                 }
-
                 acc.push([
                     grant_to_add.funder_name,
                     grant_to_add.award_id,
