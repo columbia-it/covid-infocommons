@@ -30,6 +30,7 @@ interface Grant {
     award_id: string
     pi: string
     funder_name: string
+    awardee_org: string
 }
 
 interface AppState {
@@ -152,6 +153,59 @@ class App extends Component<any, AppState> {
         return funder_facet;
     }
 
+    getDataPromise() {
+        var params: { [key: string]: any } = {};
+        params.from = 0
+        params.size = 1000
+        let keyword = (document.getElementById('outlined-search') as HTMLInputElement).value;
+        if (keyword && keyword.length > 0) {
+            params.keyword = keyword
+        }
+        let property: keyof typeof this.state.filter
+        for (property in this.state.filter) {
+            if (this.state.filter[property]) {
+                params[property] = this.state.filter[property]
+            }
+        }
+        return axios({
+                url: url + '/search/grants',
+                method: 'get',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                params: params
+            })
+           .then(res => {
+               var newArray = res.data.hits.hits.map(function(val:any) {
+                   let pi_name = ''
+                   let pi_id = ''
+                   let funder_name = ''
+                   let pi_private_emails = ''
+                   if (val['_source']['principal_investigator'] != null) {
+                       pi_name = val['_source']['principal_investigator']['full_name']
+                       pi_id = val['_source']['principal_investigator']['id']
+                       pi_private_emails = val['_source']['principal_investigator']['private_emails']
+                    }
+                    return {
+                        id: val['_source']['id'],
+                        title: val['_source']['title'],
+                        award_id: val['_source']['award_id'],
+                        pi: pi_name,
+                        pi_id: pi_id,
+                        pi_private_emails: pi_private_emails,
+                        abstract: val['_source']['abstract'],
+                        award_amount: val['_source']['award_amount'],
+                        funder_name: ('name' in val['_source']['funder']) ? val['_source']['funder']['name'] : '',
+                        awardee_org: val['_source']['awardee_organization']['name']
+                    }
+                })
+                return newArray
+           })
+           .catch (err => {
+               console.error(err)
+            })
+        }
+
     get_grants_data = (keyword?:string) => {
         var url = this.state.url.concat('/search/grants')
         var params: { [key: string]: any } = {};
@@ -162,7 +216,6 @@ class App extends Component<any, AppState> {
             from = (this.state.pageIndex * 20) + 1
         } 
         params.from = from
-
         if (!keyword) {
             keyword = (document.getElementById('outlined-search') as HTMLInputElement).value;
         }
@@ -199,7 +252,8 @@ class App extends Component<any, AppState> {
                     pi_private_emails: pi_private_emails,
                     abstract: val['_source']['abstract'],
                     award_amount: val['_source']['award_amount'],
-                    funder_name: ('name' in val['_source']['funder']) ? val['_source']['funder']['name'] : ''
+                    funder_name: ('name' in val['_source']['funder']) ? val['_source']['funder']['name'] : '',
+                    awardee_org: val['_source']['awardee_organization']['name']
                 }
             })
             this.setState({ data: newArray })
@@ -219,29 +273,39 @@ class App extends Component<any, AppState> {
         a.dispatchEvent(clickEvt)
         a.remove()
     }
-      
 
     exportToCsv = (event:any) => {
         event.preventDefault()
         // Headers for each column
-        let headers = ['Id,Title,Award_Amount,Award_ID,PI,Abstract,Funder']
+        let headers = ['Funder, Award ID, Award Amount, Title, PI Name, Awardee Organization, Abstract, CIC ID']
         // Convert grants data to csv
-        let grantsCsv = this.state.data.reduce((acc:any, grant:any) => {
-            const grant_to_add:Grant = grant
-            let abstract = grant_to_add.abstract.replaceAll('"', "'")
-            acc.push([
-                grant_to_add.id,
-                '"' + grant_to_add.title + '"', 
-                grant_to_add.award_amount,
-                grant_to_add.award_id,
-                grant_to_add.pi,
-                '"' + abstract + '"', 
-                grant_to_add.funder_name
-            ]
-            .join(','))
-            return acc
-        }, [])
-        this.downloadFile([...headers, ...grantsCsv].join('\n'), 'grants.csv', 'text/csv')
+        this.getDataPromise().then(res => {
+            let grantsCsv = res.reduce((acc:any, grant:any) => {
+                let grant_to_add:Grant = grant
+                let abstract = grant_to_add.abstract
+                if (abstract) {
+                    abstract = grant_to_add.abstract.replaceAll('"', "'")
+                }
+                let awardee_org = grant_to_add.awardee_org
+                if (grant_to_add.awardee_org.indexOf(',') > -1) {
+                    awardee_org = grant_to_add.awardee_org.replaceAll(',', '')
+                }
+
+                acc.push([
+                    grant_to_add.funder_name,
+                    grant_to_add.award_id,
+                    grant_to_add.award_amount,
+                    '"' + grant_to_add.title + '"', 
+                    grant_to_add.pi,
+                    awardee_org,
+                    '"' + abstract + '"', 
+                    grant_to_add.id
+                ]
+                .join(','))
+                return acc
+            }, [])
+            this.downloadFile([...headers, ...grantsCsv].join('\n'), 'grants.csv', 'text/csv')    
+        })
     }
 
     enterHandler = (e:any) => {
