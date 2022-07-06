@@ -288,8 +288,14 @@ class App extends Component<any, AppState> {
                 }
                 let awardee_org = grant_to_add.awardee_org
                 if (awardee_org) {
-                    if (grant_to_add.awardee_org.indexOf(',') > -1) {
+                    if (awardee_org.indexOf(',') > -1) {
                         awardee_org = grant_to_add.awardee_org.replaceAll(',', '')
+                    }
+                }
+                let pi_name = grant_to_add.pi
+                if (pi_name) {
+                    if (pi_name.indexOf(',') > -1) {
+                        pi_name = grant_to_add.pi.replaceAll(',', '')
                     }
                 }
                 acc.push([
@@ -297,7 +303,7 @@ class App extends Component<any, AppState> {
                     grant_to_add.award_id,
                     grant_to_add.award_amount,
                     '"' + grant_to_add.title + '"', 
-                    grant_to_add.pi,
+                    pi_name,
                     awardee_org,
                     '"' + abstract + '"', 
                     grant_to_add.id
