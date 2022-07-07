@@ -83,6 +83,7 @@
             </section>
             <section>
                 <small>Awardee Organization:</small>
+				{% if grant.awardee_organization %}
                 <p>
                     {{ grant.awardee_organization.name}}
                     <br>
@@ -92,6 +93,7 @@
                         {{ address }}
                     {% endwith %}
                 </p>
+				{% endif %}
             </section>
             <section>
 	      {% if grant.funder.name == 'National Institutes of Health' %}
