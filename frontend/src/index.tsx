@@ -1,13 +1,10 @@
 import ReactDOM from 'react-dom';
 import "./main.css"
 import GrantsTable from './components/GrantTable';
-
 import { GrantsFilter, Facet } from './components/GrantsFilter';
-import { css, jsx, ThemeProvider } from '@emotion/react'
 import Box from '@mui/material/Box';
 import TextField from '@mui/material/TextField';
 import Button from '@mui/material/Button';
-import { createTheme } from '@mui/material/styles';
 import React, { Component } from "react";
 import axios from "axios";
 import DownloadIcon from '@mui/icons-material/Download';
@@ -18,7 +15,8 @@ const styles = {
 	color: "#FFFFFF",
 	backgroundColor: "#2C6BAC",
 	minWidth: "max-content",
-	whiteSpace: "nowrap"
+	whiteSpace: "nowrap",
+    textTransform: "none"
     },
 };
 
@@ -453,12 +451,12 @@ class App extends Component<any, AppState> {
                         <div className='results-row'>
                             Showing <span style={{fontWeight: 'bold', color: '#000000'}}>{ this.state.totalCount }</span> results.
                         </div>
-                        <div className='download-csv'>
+                        <div className='download-csv'>                            
                             <Button sx={styles}
 	                            onClick={ this.exportToCsv } 
                                 className='download-button' 
                                 variant="contained"
-                                endIcon={ <DownloadIcon /> }>Download Results as CSV</Button>
+                                endIcon={ <DownloadIcon /> }>Download Results as CSV (up to 1,000 awards)</Button>
                         </div>
                     </div>    
                     <br/>
