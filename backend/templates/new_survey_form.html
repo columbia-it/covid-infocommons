@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title></title>
+</head>
+<body>
+<form method="POST" action=".">
+    {% block content %}
+    {% csrf_token %}
+    <div>
+        COVID Information Commons PI Survey
+    </div>
+    <div>
+        Congratulations on your COVID-19 related research award! 
+        <br>
+        <br>
+        ⭐ Please fill out this form multiple times for each NSF or NIH individual award you have received ⭐
+        <br>
+        <br>
+        The COVID Information Commons (CIC) website, funded by the National Science Foundation (NSF #2028999 and 2139391) compiles information about COVID-19 related awards and research output from U.S. NSF, NIH and HHS grants. A key objective of this website is to enrich the standard public award information available regarding your research, and enhance opportunities for collaboration. 
+        <br>
+        <br>
+        As a COVID-19 research awardee, we invite you to provide voluntary contributions of additional, applicable public information about your project, beyond the award abstract, which you would like to make openly available via the COVID Information Commons website (
+            <a href="https://covidinfocommons.net">https://covidinfocommons.net</a>
+        ) in our PI Database.
+        <br>
+        <br>
+        You can always make changes to the information you provided by filling out the form again. Please email any questions to 
+        <a href="mailto:info@covidinfocommons.net">info@covidinfocommons.net</a>
+        . Thank you!
+        <br>
+        <br>
+        Note: You must have a Google account in order to complete this form as we are collecting documents (a photo) from each submission. 
+    </div>
+    <div>
+        <span>Other institutional email address(es) in addition to email address provided above (optional)</span>
+    </div>
+    <div>
+        <label for="f_name">Your first name:</label>
+        <input type="text" id="f_name" name="first_name" required/>
+        <label for="l_name">Your last name:</label>
+        <input type="text" id="l_name" name="last_name"/>
+    </div>
+    <input type="submit" value="Submit" />
+    <input type="submit" value="Cancel" name="cancel_create"/>
+
+</form>
+{% endblock %}
+</body>
+</html>

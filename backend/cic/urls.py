@@ -14,6 +14,7 @@ Including another URLconf
     2. Add a URL to urlpatterns:  path('blog/', include('blog.urls'))
 """
 from django.contrib import admin
+from pi_survey import urls as survey_urls
 from django.urls import path, include
 from django.conf import settings
 from django.conf.urls.static import static
@@ -28,5 +29,5 @@ urlpatterns = [
     path('v1/', include('apis.urls')),
     path('survey/', include('pi_survey.urls')),
     path('o/', include('oauth2_provider.urls', namespace='oauth2_provider')),
-    path('search/', include('search.urls'))
+    path('search/', include('search.urls')),
 ] + static(settings.STATIC_URL, document_root=settings.STATIC_ROOT)
