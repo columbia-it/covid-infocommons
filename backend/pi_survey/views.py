@@ -15,4 +15,4 @@ def index(request):
     else:
         form = PISurveyform()
 
-    return render(request, 'survey_form.html', {'form': form})
+    return render(request, 'survey_form.html', {})

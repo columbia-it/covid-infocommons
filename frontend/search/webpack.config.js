@@ -1,7 +1,7 @@
 const path = require("path");
 const HtmlWebpackPlugin = require("html-webpack-plugin");
 
-const static_dir = path.resolve("../").concat("/backend/search/static/search")
+const static_dir = path.resolve("../../").concat("/backend/search/static/search")
 
 const MiniCssExtractPlugin = require("mini-css-extract-plugin");
 

@@ -5,5 +5,5 @@ from .views import index
 router = routers.DefaultRouter(trailing_slash=False)
 
 urlpatterns = [
-    path('', index),
+    path('create/', index),
 ]
