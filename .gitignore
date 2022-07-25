@@ -48,9 +48,11 @@ cice-dev-*.json
 
 # node modules
 frontend/node_modules/
+frontend/survey/node_modules/
 
 #static assets
 static/*
 backend/static/
 backend/search/static/
 backend/cic/static
+backend/pi_survey/static/
