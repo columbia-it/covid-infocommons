@@ -1,0 +1,17 @@
+.name-input {
+    width: 50%
+}
+
+.required-text {
+    color: red;
+}
+
+.name-container {
+    padding: 16px; 
+    display: flex; 
+    justify-content: flex-start;
+}
+
+.name-child {
+    flex: 1;
+}  
