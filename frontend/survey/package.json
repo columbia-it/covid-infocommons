@@ -31,7 +31,7 @@
     "style-loader": "^3.3.1",
     "ts-loader": "^9.2.7",
     "webpack": "^5.70.0",
-    "webpack-cli": "^4.9.2",
+    "webpack-cli": "^4.10.0",
     "webpack-dev-server": "^4.7.4"
   },
   "dependencies": {
@@ -44,6 +44,8 @@
     "@mui/material": "^5.5.0",
     "@types/react-table": "^7.7.9",
     "axios": "^0.26.1",
+    "dotenv-webpack": "^8.0.0",
+    "formik": "^2.2.9",
     "material-table": "^1.69.3",
     "react": "^17.0.2",
     "react-data-table-component": "^7.4.7",

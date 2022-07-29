@@ -15,3 +15,7 @@
 .name-child {
     flex: 1;
 }  
+
+.survey-form-heading {
+    text-align: center;
+}
