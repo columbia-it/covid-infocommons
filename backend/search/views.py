@@ -62,7 +62,12 @@ def search_grants(request):
         ],
         'query': {
             'bool': {
-                'must': []
+                'must': [],
+                'filter': {
+                    'term': {
+                        'approved': True
+                    }
+                }
             }
         }
     }
