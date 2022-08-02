@@ -14,6 +14,7 @@ class Organization(models.Model):
     state = models.CharField(max_length=1000, blank=True)
     zip = models.CharField(max_length=1000, blank=True)
     country = models.CharField(max_length=1000, blank=True)
+    approved = models.BooleanField(default=True)
 
     def __str__(self):
         return self.name
@@ -30,6 +31,7 @@ class Funder(models.Model):
     id = models.BigAutoField(primary_key=True)
     ror = models.CharField(max_length=255, null=True, blank=True)
     name = models.CharField(max_length=255, null=True, blank=True)
+    approved = models.BooleanField(default=True)
 
     def __str__(self):
         return self.name
@@ -52,6 +54,7 @@ class Person(models.Model):
     keywords = ListCharField(base_field=models.CharField(max_length=1000, null=True, blank=True), max_length=100, null=True, blank=True)
 
     affiliations = models.ManyToManyField(Organization, blank=True)
+    approved = models.BooleanField(default=True)
 
     def __str__(self):
         return '{first_name} {last_name}'.format(first_name=self.first_name, last_name=self.last_name)
@@ -81,6 +84,7 @@ class Grant(models.Model):
     awardee_organization = models.ForeignKey(Organization, on_delete=models.CASCADE, null=True, blank=True)
     abstract = models.TextField(null=True, blank=True)
     keywords = ListCharField(base_field=models.CharField(max_length=255, null=True, blank=True), max_length=2000, null=True, blank=True)
+    approved = models.BooleanField(default=True)
 
     def __str__(self):
         return self.title
@@ -104,6 +108,7 @@ class Publication(models.Model):
     language = models.CharField(max_length=255, blank=True, null=True)
     publication_date = models.DateField(null=True, blank=True)
     publication_type = models.CharField(max_length=255, blank=True, null=True)
+    approved = models.BooleanField(default=True)
 
     def __str__(self):
         return self.title
@@ -126,6 +131,7 @@ class Dataset(models.Model):
     grants = models.ManyToManyField(Grant, blank=True)
     publications = models.ManyToManyField(Publication, blank=True)
     mime_type = models.CharField(max_length=255, blank=True, null=True)
+    approved = models.BooleanField(default=True)
 
     def __str__(self):
         return self.title
@@ -152,6 +158,7 @@ class Asset(models.Model):
     keywords = ListCharField(base_field=models.CharField(max_length=255, null=True, blank=True), max_length=100, null=True, blank=True)
     mime_type = models.CharField(max_length=1000, blank=True, null=True)
     checksum = models.CharField(max_length=1000, blank=True, null=True)
+    approved = models.BooleanField(default=True)
 
     def __str__(self):
         return str(self.id)

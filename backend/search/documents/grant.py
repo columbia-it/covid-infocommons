@@ -1,3 +1,5 @@
+from gettext import install
+import json
 from operator import concat
 from django_opensearch_dsl import Document, fields
 from django_opensearch_dsl.registries import registry
@@ -18,6 +20,7 @@ class GrantDocument(Document):
             'state': fields.KeywordField(),
             'zip': fields.KeywordField(),
             'country': fields.KeywordField(),
+            'approved': fields.BooleanField()
         }
 
     @staticmethod
@@ -32,6 +35,7 @@ class GrantDocument(Document):
             'private_emails': fields.KeywordField(),
             'keywords': fields.KeywordField(),
             'full_name': fields.KeywordField(),
+            'approved': fields.BooleanField(),
             'affiliations': fields.NestedField(properties = {
                 'id': fields.IntegerField(),
                 'ror': fields.KeywordField(),
@@ -40,14 +44,16 @@ class GrantDocument(Document):
                 'city': fields.KeywordField(),
                 'state': fields.KeywordField(),
                 'zip': fields.KeywordField(),
-                'country': fields.KeywordField()
+                'country': fields.KeywordField(),
+                'approved': fields.BooleanField()
             })
         }
 
     funder = fields.ObjectField(properties={
         'id': fields.KeywordField(),
         'ror': fields.KeywordField(),
-        'name': fields.KeywordField()
+        'name': fields.KeywordField(),
+        'approved': fields.BooleanField()
     })
 
     funder_divisions = fields.ListField(fields.KeywordField())
@@ -75,7 +81,8 @@ class GrantDocument(Document):
              'start_date',
              'end_date',
              'award_amount',
-             'abstract'
+             'abstract',
+             'approved'
          ]
 
     def prepare_other_investigators(self, instance):
@@ -92,7 +99,8 @@ class GrantDocument(Document):
                         'city': affiliation.city,
                         'state': affiliation.state,
                         'zip': affiliation.zip,
-                        'country': affiliation.country
+                        'country': affiliation.country,
+                        'approved': affiliation.approved
                     })
             return affiliations
 
@@ -110,7 +118,8 @@ class GrantDocument(Document):
                         'emails': person.emails,
                         'private_emails': person.private_emails,
                         'keywords': person.keywords,
-                        'affiliations': prepare_affiliations(self, person)
+                        'affiliations': prepare_affiliations(self, person),
+                        'approved': person.approved
                     }
                 )
         return people
@@ -129,7 +138,8 @@ class GrantDocument(Document):
                         'city': affiliation.city,
                         'state': affiliation.state,
                         'zip': affiliation.zip,
-                        'country': affiliation.country
+                        'country': affiliation.country,
+                        'approved': affiliation.approved
                     })
             return affiliations
 
@@ -147,13 +157,14 @@ class GrantDocument(Document):
                         'emails': person.emails,
                         'private_emails': person.private_emails,
                         'keywords': person.keywords,
-                        'affiliations': prepare_affiliations(self, person)
+                        'affiliations': prepare_affiliations(self, person),
+                        'approved': person.approved
                     }
                 )
         return people
 
     def prepare_principal_investigator(self, instance):
-
+        #pi = {}
         def prepare_affiliations(self, instance): 
             affiliations = []
             if instance.affiliations.all().count() > 0:
@@ -166,18 +177,23 @@ class GrantDocument(Document):
                         'city': affiliation.city,
                         'state': affiliation.state,
                         'zip': affiliation.zip,
-                        'country': affiliation.country
+                        'country': affiliation.country,
+                        'approved': affiliation.approved
                     })
             return affiliations
 
-        return {
-            'id': instance.principal_investigator.id,
-            'first_name': instance.principal_investigator.first_name,
-            'last_name': instance.principal_investigator.last_name,
-            'full_name': instance.principal_investigator.first_name + ' ' + instance.principal_investigator.last_name,
-            'orcid': instance.principal_investigator.orcid,
-            'emails': instance.principal_investigator.emails,
-            'private_emails': instance.principal_investigator.private_emails,
-            'keywords': instance.principal_investigator.keywords,
-            'affiliations': prepare_affiliations(self, instance.principal_investigator)
-        }
+        if instance.principal_investigator:
+            return {
+                'id': instance.principal_investigator.id,
+                'first_name': instance.principal_investigator.first_name,
+                'last_name': instance.principal_investigator.last_name,
+                'full_name': instance.principal_investigator.first_name + ' ' + instance.principal_investigator.last_name,
+                'orcid': instance.principal_investigator.orcid,
+                'emails': instance.principal_investigator.emails,
+                'private_emails': instance.principal_investigator.private_emails,
+                'keywords': instance.principal_investigator.keywords,
+                'affiliations': prepare_affiliations(self, instance.principal_investigator),
+                'approved': instance.principal_investigator.approved
+            }
+        else:
+            return None
