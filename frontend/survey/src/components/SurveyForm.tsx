@@ -8,16 +8,12 @@ import FormControl from '@mui/material/FormControl';
 import FormLabel from '@mui/material/FormLabel';
 import Stack from '@mui/material/Stack';
 import axios from "axios";
-import qs from "qs";
 
 import {
-    Typography,
     Paper,
     Button,
     TextField
   } from '@material-ui/core';
-import { Label } from "@material-ui/icons";
-import { fontFamily } from "@mui/system";
 
 const styles = {
     // See MUI Button CSS classes at https://mui.com/material-ui/api/button/
@@ -44,8 +40,17 @@ interface SurveyFormData {
     last_name: string
     orcid: string
     emails: string
+    other_emails: string
     award_id: string
     grant_kw: string
+    funder: string
+    dois: string
+    grant_add_kw: string
+}
+
+enum Funder {
+    NSF,
+    NIH
 }
 
 let url = ''
@@ -105,14 +110,32 @@ class SurveyForm extends Component <any, FormState> {
         }
     }
 
+    get_funder_name(value: string) {
+        for (var enumMember in Funder) {
+            var isValueProperty = Number(enumMember) >= 0
+            if (isValueProperty && (enumMember == value)) {
+                console.log('Returning Funder = ')
+                console.log(Funder[enumMember])
+                return Funder[enumMember]
+            }
+        }
+        return ''
+    }
+
     handleSubmit(values:SurveyFormData) {
+        console.log('handleSubmit')
+        console.log(values.funder)
         var payload = {
             first_name: values.first_name,
             last_name: values.last_name,
             orcid: values.orcid,
             emails: values.emails,
+            other_emails: values.other_emails,
             award_id: values.award_id,
-            grant_kw: values.grant_kw
+            grant_kw: values.grant_kw,
+            funder: values.funder,
+            dois: values.dois,
+            grant_add_kw: values.grant_add_kw
         }
         var headers = {
             'Content-Type': 'application/json'
@@ -168,172 +191,244 @@ class SurveyForm extends Component <any, FormState> {
                         last_name: '',
                         orcid: '',
                         emails: '',
+                        other_emails: '',
                         award_id: '',
-                        grant_kw: ''
+                        grant_kw: '',
+                        dois: '',
+                        funder: Funder.NSF.toString(),
+                        grant_add_kw: ''
                     }}
-                    onSubmit={((values)=>{
-                        console.log(values)
+                    onSubmit={((values)=>{                        
                         var form_values:SurveyFormData = {
                             "first_name": values.first_name,
                             "last_name": values.last_name,
                             "orcid": values.orcid,
                             "emails": values.emails,
+                            "other_emails": values.other_emails,
                             "award_id": values.award_id,
-                            "grant_kw": values.grant_kw
+                            "grant_kw": values.grant_kw,
+                            "funder": this.get_funder_name(values.funder),
+                            "dois": values.dois,
+                            "grant_add_kw": values.grant_add_kw
                         }
+                        console.log(form_values['funder'])
                         this.handleSubmit(form_values)
                     })}
                 >
-                    {({ handleSubmit, values, handleChange, handleReset }) => {
+                    {({ handleSubmit, values, handleChange, handleReset, setFieldValue }) => {
                         return (
                         <form onSubmit={handleSubmit}>
-                        <div>
-                            <Paper className="name-container">
-                                <div className="name-child">
-                                <FormControl>
-                                    <FormLabel id="fname_label">
-                                        Your first name <span className="required-text">*</span>
-                                    </FormLabel>
-                                    <TextField 
-                                        id="first_name" 
-                                        variant="standard" 
-                                        required 
-                                        value={ values.first_name }
-                                        onChange={ handleChange }
-                                        error={ this.state.award_id_error }
-                                        helperText={ this.state.award_id_error_msg }
-                                    />
+                            <div>
+                                <Paper className="name-container">
+                                    <div className="name-child">
+                                        <FormControl>
+                                            <FormLabel id="fname_label" className="label">
+                                                Your first name <span className="required-text">*</span>
+                                            </FormLabel>
+                                            
+                                            <TextField 
+                                                id="first_name" 
+                                                variant="outlined" 
+                                                required 
+                                                value={ values.first_name }
+                                                onChange={ handleChange }
+                                                error={ this.state.award_id_error }
+                                                helperText={ this.state.award_id_error_msg }
+                                            />
+                                            <br/>
+                                            <br/>
+                                        </FormControl>
+                                    </div>
+                                    <div className="name-child">
+                                        <FormControl>
+                                            <FormLabel id="lname-label" className="label">
+                                                Your last name <span className="required-text">*</span>
+                                            </FormLabel>
+                                            <TextField 
+                                                id="last_name" 
+                                                variant="outlined" 
+                                                required 
+                                                value={ values.last_name }
+                                                onChange={ handleChange }
+                                            />
+                                            <br/>
+                                            <br/>
+                                        </FormControl>
+                                    </div>
+                                </Paper>    
+                                <br/> 
+                            </div>
+                            <br/>
+                            <div>
+                                <Paper style={{ padding: 16 }}>
+                                    <FormControl className="name-input">
+                                        <FormLabel id="emails-label" className="label">
+                                            Your email address(es) <span className="required-text">*</span>
+                                        </FormLabel>
+                                        <TextField 
+                                            id="emails" 
+                                            variant="outlined" 
+                                            required 
+                                            value={ values.emails }
+                                            onChange={ handleChange }
+                                        />
+                                    </FormControl>
                                     <br/>
                                     <br/>
-                                </FormControl>
-                                </div>
-                                <div className="name-child">
-                                <FormControl>
-                                    <FormLabel id="lname-label">
-                                        Your last name <span className="required-text">*</span>
-                                    </FormLabel>
-                                    <TextField 
-                                        id="last_name" 
-                                        variant="standard" 
-                                        required 
-                                        value={ values.last_name }
-                                        onChange={ handleChange }
-                                    />
-                                <br/>
-                                <br/>
-                                </FormControl>
-                                </div>
-                                <div className="name-child">
-                                </div>
-                            </Paper>    
-                            <br/> 
-                            <Paper style={{ padding: 16 }}>
-                            <FormControl className="name-input">
-                                <FormLabel id="emails-label">
-                                    Other institutional email address(es) in addition to email address provided above (optional)
-                                </FormLabel>
-                                <TextField 
-                                    id="emails" 
-                                    variant="standard" 
-                                    required 
-                                    value={ values.emails }
-                                    onChange={ handleChange }
-                                />
-                            </FormControl>
-                                <br/>
-                                <br/>
-                            </Paper> 
-                            <Paper style={{ padding: 16 }}>
-                            <FormControl className="name-input">
-                                <FormLabel id="orcid-label">
-                                    Your ORCID iD (type NA if you do not have an ORCID)<span className="required-text">*</span>
-                                </FormLabel>
-                                <TextField 
-                                    id="orcid" 
-                                    variant="standard" 
-                                    required 
-                                    value={ values.orcid }
-                                    onChange={ handleChange }
-                                    error={ this.state.award_id_error }
-                                    helperText={ this.state.award_id_error_msg }
-                                />
-                            </FormControl>
-                                <br/>
-                                <br/>
-                            </Paper> 
+                                    <FormControl className="name-input">
+                                        <FormLabel id="other-emails-label" className="label">
+                                            Other institutional email address(es) in addition to email address provided above (optional)
+                                        </FormLabel>
+                                        <TextField 
+                                            id="other-emails" 
+                                            variant="outlined" 
+                                            value={ values.other_emails }
+                                            onChange={ handleChange }
+                                        />
+                                    </FormControl>
+                                    <br/>
+                                </Paper> 
+                            </div>
                             <br/>
-                            <Paper style={{ padding: 16 }}>
-                            <FormControl className="name-input">
-                                <FormLabel id="award-id-label">
-                                    COVID-19 Research Award Number <span className="required-text">*</span>
-                                </FormLabel>
-                                <TextField 
-                                    id="award_id" 
-                                    variant="standard" 
-                                    required 
-                                    value={ values.award_id }
-                                    onChange={ handleChange }
-                                />
-                            </FormControl>
-                                <br/>
-                                <br/>
-                            </Paper>
+                            <div>
+                                <Paper style={{ padding: 16 }}>
+                                    <FormControl className="name-input">
+                                        <FormLabel id="orcid-label" className="label">
+                                            Your ORCID iD (type NA if you do not have an ORCID)<span className="required-text">*</span>
+                                        </FormLabel>
+                                        <TextField 
+                                            id="orcid" 
+                                            variant="outlined" 
+                                            required 
+                                            value={ values.orcid }
+                                            onChange={ handleChange }
+                                            error={ this.state.award_id_error }
+                                            helperText={ this.state.award_id_error_msg }
+                                        />
+                                    </FormControl>
+                                    <br/>
+                                    <br/>
+                                </Paper> 
+                            </div>
                             <br/>
-                            <Paper style={{ padding: 16 }}>
-                            <FormControl>
-                                <FormLabel id="funder-label">COVID-19 Funding Agency <span className="required-text">*</span></FormLabel>
-                                <RadioGroup
-                                    aria-labelledby="demo-radio-buttons-group-label"
-                                    defaultValue="female"
-                                    name="funder-group"
-                                >
-                                    <FormControlLabel 
-                                        value="NSF" 
-                                        control={<Radio />} 
-                                        label="NSF" />
-                                    <FormControlLabel 
-                                        value="NIH" 
-                                        control={<Radio />} 
-                                        label="NIH" />
-                                </RadioGroup>
-                            </FormControl>
-                            </Paper>
+                            <div>
+                                <Paper style={{ padding: 16 }}>
+                                    <FormControl className="name-input">
+                                        <FormLabel id="award-id-label" className="label">
+                                            COVID-19 Research Award Number <span className="required-text">*</span>
+                                        </FormLabel>
+                                        <TextField 
+                                            id="award_id" 
+                                            variant="outlined" 
+                                            required 
+                                            value={ values.award_id }
+                                            onChange={ handleChange }
+                                        />
+                                    </FormControl>
+                                    <br/>
+                                    <br/>
+                                </Paper>
+                            </div>
+                            <br/>
+                            <div>
+                                <Paper style={{ padding: 16 }}>
+                                    <FormControl>
+                                        <FormLabel id="funder-label">COVID-19 Funding Agency <span className="required-text">*</span></FormLabel>             
+                                            <RadioGroup
+                                                aria-labelledby="funder-group-label"
+                                                defaultValue="NSF"
+                                                name="funder"
+                                                onChange={ handleChange }
+                                                value={ values.funder.toString() }
+                                                // onChange={(event) => {
+                                                //     setFieldValue(values.funder.toString(), event.currentTarget.value)
+                                                // }}
+                                            >
+                                            <FormControlLabel 
+                                                value={ Funder.NSF.toString() } 
+                                                control={<Radio />} 
+                                                label="NSF" />
+                                            <FormControlLabel 
+                                                value="NIH" 
+                                                control={<Radio />} 
+                                                label="NIH" />
+                                        </RadioGroup>
+                                    </FormControl>
+                                </Paper>
+                            </div>
                             <br/>
                             <br/>
-                            <Paper style={{ padding: 16 }}>
-                            <FormControl className="name-input">
-                                <FormLabel id="grant-kw-label">
-                                    Please provide suggested keywords for your award, as applicable.
-                                </FormLabel>
-                                <TextField 
-                                    id="grant_kw" 
-                                    variant="standard" 
-                                    value={ values.grant_kw }
-                                    onChange={ handleChange }
-                                />
-                            </FormControl>
-                                <br/>
-                                <br/>
-                            </Paper>
+                            <div>
+                                <Paper style={{ padding: 16 }}>
+                                    <FormControl className="name-input">
+                                        <FormLabel id="grant-kw-label" className="label">
+                                            Please provide suggested keywords for your award, as applicable.
+                                        </FormLabel>
+                                        <TextField 
+                                            id="grant_kw" 
+                                            variant="outlined" 
+                                            value={ values.grant_kw }
+                                            onChange={ handleChange }
+                                        />
+                                    </FormControl>
+                                    <br/>
+                                    <br/>
+                                </Paper>
+                            </div>
                             <br/>
                             <br/>
-                            <Stack spacing={20} direction="row">
-                                <Button variant="contained" 
-                                    style={{
-                                        backgroundColor: "#2C6BAC",
-                                        color: "#FFFFFF"
-                                    }}
-                                    type='submit'
-                                >
-                                    Submit
-                                </Button>
-                                <Button variant="text" onClick={ handleReset }>
-                                    Clear form
-                                </Button>
-                            </Stack>
+                            <div>
+                                <Paper style={{ padding: 16 }}>
+                                    <FormControl className="name-input">
+                                        <FormLabel id="dois-label" className="label">
+                                            Please list DOIs for any of your published research associated with your COVID award. This can include articles, data sets, software packages, etc.                                        
+                                        </FormLabel>
+                                        <TextField 
+                                            id="dois" 
+                                            variant="outlined" 
+                                            value={ values.dois }
+                                            onChange={ handleChange }
+                                        />
+                                    </FormControl>
+                                    <br/>
+                                    <br/>
+                                </Paper>
+                            </div>
+                            <div>
+                                <Paper style={{ padding: 16 }}>
+                                    <FormControl className="name-input">
+                                        <FormLabel id="grant-add-kw-label" className="label">
+                                            Please list any areas of scientific expertise your project could benefit from or is seeking, as keywords.
+                                        </FormLabel>
+                                        <TextField 
+                                            id="grant_add_kw" 
+                                            variant="outlined" 
+                                            value={ values.grant_add_kw }
+                                            onChange={ handleChange }
+                                        />
+                                    </FormControl>
+                                    <br/>
+                                    <br/>
+                                </Paper>
+                            </div>
+                            <div>
+                                <Stack spacing={20} direction="row">
+                                    <Button variant="contained" 
+                                        style={{
+                                            backgroundColor: "#2C6BAC",
+                                            color: "#FFFFFF"
+                                        }}
+                                        type='submit'
+                                    >
+                                        Submit
+                                    </Button>
+                                    <Button variant="text" onClick={ handleReset }>
+                                        Clear form
+                                    </Button>
+                                </Stack>
+                            </div>
                             <br/>
                             <br/>
-                        </div>
                         </form>
                     )}}
                 </Formik>
