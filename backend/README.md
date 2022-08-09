@@ -16,7 +16,7 @@ Frameworks/Libraries used include:
 Clone the repository:
 ```sh
 $ git clone https://github.com/columbia-it/covid-infocommons.git
-$ cd covid-infocommons
+$ cd covid-infocommons/backend
 ```
 Create a virtual environment to install dependencies in and activate it:
 ```sh
