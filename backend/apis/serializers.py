@@ -27,7 +27,7 @@ class PersonSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Person
-        fields = ('id', 'affiliations', 'first_name', 'last_name', 'orcid', 'emails', 'private_emails', 'keywords')
+        fields = ('id', 'affiliations', 'first_name', 'last_name', 'orcid', 'emails', 'private_emails', 'keywords', 'approved', 'desired_collaboration', 'comments')
         depth = 2
 
 
@@ -40,7 +40,7 @@ class CreatePersonSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Person
-        fields = ('id', 'affiliations', 'first_name', 'last_name', 'orcid', 'emails', 'private_emails', 'keywords')
+        fields = ('id', 'affiliations', 'first_name', 'last_name', 'orcid', 'emails', 'private_emails', 'keywords', 'approved', 'desired_collaboration', 'comments')
 
 
 class FunderDivisionListField(serializers.Field):
@@ -71,7 +71,7 @@ class GrantSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Grant
-        fields = ('id', 'award_id', 'title', 'funder', 'funder_divisions', 'program_reference_codes', 'program_officials', 'start_date', 'end_date', 'award_amount', 'principal_investigator', 'other_investigators', 'awardee_organization', 'abstract', 'keywords')
+        fields = ('id', 'award_id', 'title', 'funder', 'funder_divisions', 'program_reference_codes', 'program_officials', 'start_date', 'end_date', 'award_amount', 'principal_investigator', 'other_investigators', 'awardee_organization', 'abstract', 'keywords', 'approved')
         depth = 2
 
 
@@ -83,7 +83,7 @@ class CreateGrantSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Grant
-        fields = ('id', 'award_id', 'title', 'funder', 'funder_divisions', 'program_reference_codes', 'program_officials', 'start_date', 'end_date', 'award_amount', 'principal_investigator', 'other_investigators', 'awardee_organization', 'abstract', 'keywords')
+        fields = ('id', 'award_id', 'title', 'funder', 'funder_divisions', 'program_reference_codes', 'program_officials', 'start_date', 'end_date', 'award_amount', 'principal_investigator', 'other_investigators', 'awardee_organization', 'abstract', 'keywords', 'approved')
 
     
 class PublicationSerializer(serializers.ModelSerializer):
@@ -124,7 +124,7 @@ class AssetSerializer(serializers.ModelSerializer):
     
     class Meta:
         model = Asset
-        fields = ('id', 'doi', 'filename', 'download_path', 'size', 'author', 'grant', 'publication', 'dataset', 'organization', 'keywords', 'mime_type', 'checksum')
+        fields = ('id', 'doi', 'filename', 'download_path', 'size', 'author', 'grant', 'publication', 'dataset', 'organization', 'keywords', 'mime_type', 'checksum', 'approved')
         depth = 1
 
 
@@ -134,4 +134,4 @@ class CreateAssetSerializer(serializers.ModelSerializer):
     
     class Meta:
         model = Asset
-        fields = ('id', 'doi', 'filename', 'download_path', 'size', 'author', 'grant', 'publication', 'dataset', 'organization', 'keywords', 'mime_type', 'checksum')
+        fields = ('id', 'doi', 'filename', 'download_path', 'size', 'author', 'grant', 'publication', 'dataset', 'organization', 'keywords', 'mime_type', 'checksum', 'approved')

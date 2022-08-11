@@ -30,58 +30,54 @@ def submitForm(request):
                 emails = emails + ',' + other_emails
             # Set orcid to None if NA
             orcid = data.get('orcid', None)
+            websites = data.get('websites', None)
             if orcid and orcid == 'NA':
                 orcid = None
+            comments = data.get('person_comments', None)
+            if comments:
+                if data['additional_comments']:
+                    comments = comments + ' , ' + data.get('additional_comments', None)
             person = Person(
                 first_name = data.get('first_name', None),
                 last_name = data.get('last_name', None),
                 orcid = orcid,
                 emails = emails,
+                websites = websites,
+                keywords = data.get('person_kw', None),
+                desired_collaboration = data.get('desired_collaboration', None),
+                comments = comments,
+                approved = False
             )
-            # person.save()
-            print('Saving person')
-            print(person)
+            person.save()
 
-            # Get Grant related data and save Grant
+            # Save Grant
             award_id = data.get('award_id', None)
             funder = data.get('funder', None)
             grant_keywords = data.get('grant_kw', None)
             grant_additional_keywords = data.get('grant_add_kw', None)
-            print('Grant Keywords = ')
-            print(grant_keywords)
-            print('Grant Additional Keywords = ')
-            print(grant_additional_keywords)
             if grant_additional_keywords:
-                grant_keywords.join(',').join(grant_additional_keywords)
+                keywords = grant_keywords + grant_additional_keywords
+            funder_obj = None
             if funder:
                 funder_obj = Funder.objects.get(name=funder)
-                print('found funder')
-            print(funder_obj)
             grant = Grant(
                 award_id = award_id,
                 funder = funder_obj,
-                keywords = grant_keywords,
+                keywords = keywords,
                 approved = False
             )
-            print('Saving grant = ')
-            print(grant_keywords)
             grant.save()
+            # Save publication
             dois = data.get('dois', None)
-            print('dois')
-            print(dois)
             if dois:
                 if ',' in dois:
-                    print('found commas in dois')
                     doi_list = dois.split(',')
                     for doi in doi_list:
                         p = Publication(doi=doi)
-                        print('Saving Publication')
-                        #p.save()
+                        p.save()
                 else:
                     p = Publication(doi=dois)
-                    #p.save()
-                    print('Saving Publication')
-                    print(p)
+                    p.save()
 
         except Exception as e:
             print(e)

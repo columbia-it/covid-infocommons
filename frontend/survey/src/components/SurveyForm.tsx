@@ -46,6 +46,11 @@ interface SurveyFormData {
     funder: string
     dois: string
     grant_add_kw: string
+    websites: string
+    person_kw: string
+    desired_collaboration: string
+    person_comments: string
+    additional_comments: string
 }
 
 enum Funder {
@@ -79,7 +84,6 @@ class SurveyForm extends Component <any, FormState> {
     }
 
     firstNameChangeHandler(event: React.ChangeEvent<HTMLInputElement>) {
-        console.log(event.target.value)
         if (!event.target.value) {
             this.setState({"first_name_error_msg": "This is a required field"})
             this.setState({"first_name_error": true})
@@ -114,17 +118,17 @@ class SurveyForm extends Component <any, FormState> {
         for (var enumMember in Funder) {
             var isValueProperty = Number(enumMember) >= 0
             if (isValueProperty && (enumMember == value)) {
-                console.log('Returning Funder = ')
-                console.log(Funder[enumMember])
                 return Funder[enumMember]
             }
         }
         return ''
     }
 
+    handleReset() {
+
+    }
+
     handleSubmit(values:SurveyFormData) {
-        console.log('handleSubmit')
-        console.log(values.funder)
         var payload = {
             first_name: values.first_name,
             last_name: values.last_name,
@@ -135,23 +139,24 @@ class SurveyForm extends Component <any, FormState> {
             grant_kw: values.grant_kw,
             funder: values.funder,
             dois: values.dois,
-            grant_add_kw: values.grant_add_kw
+            grant_add_kw: values.grant_add_kw,
+            websites: values.websites,
+            person_kw: values.person_kw,
+            desired_collaboration: values.desired_collaboration,
+            person_comments: values.person_comments,
+            additional_comments: values.additional_comments
         }
         var headers = {
             'Content-Type': 'application/json'
         }
-        console.log(headers)
 
         axios.post("http://127.0.0.1:8000/survey/submit", payload, {
             headers: headers
           })
           .then((response) => {
-            console.log("Form submitted successfully!!")
-            console.log(response)
-            
+            this.handleReset()
           })
           .catch((error) => {
-            console.log("Error!!")
             console.log(error)
           })
     }
@@ -196,9 +201,14 @@ class SurveyForm extends Component <any, FormState> {
                         grant_kw: '',
                         dois: '',
                         funder: Funder.NSF.toString(),
-                        grant_add_kw: ''
+                        grant_add_kw: '',
+                        websites: '',
+                        person_kw: '',
+                        desired_collaboration: '',
+                        person_comments: '',
+                        additional_comments: ''
                     }}
-                    onSubmit={((values)=>{                        
+                    onSubmit={(values, { resetForm }) => {
                         var form_values:SurveyFormData = {
                             "first_name": values.first_name,
                             "last_name": values.last_name,
@@ -209,15 +219,20 @@ class SurveyForm extends Component <any, FormState> {
                             "grant_kw": values.grant_kw,
                             "funder": this.get_funder_name(values.funder),
                             "dois": values.dois,
-                            "grant_add_kw": values.grant_add_kw
+                            "grant_add_kw": values.grant_add_kw,
+                            "websites": values.websites,
+                            "person_kw": values.person_kw,
+                            "desired_collaboration": values.desired_collaboration,
+                            "person_comments": values.person_comments,
+                            "additional_comments": values.additional_comments
                         }
-                        console.log(form_values['funder'])
                         this.handleSubmit(form_values)
-                    })}
+                        resetForm({});
+                    }}
                 >
                     {({ handleSubmit, values, handleChange, handleReset, setFieldValue }) => {
                         return (
-                        <form onSubmit={handleSubmit}>
+                        <form onSubmit={(handleSubmit)}>
                             <div>
                                 <Paper className="name-container">
                                     <div className="name-child">
@@ -280,10 +295,10 @@ class SurveyForm extends Component <any, FormState> {
                                             Other institutional email address(es) in addition to email address provided above (optional)
                                         </FormLabel>
                                         <TextField 
-                                            id="other-emails" 
+                                            id="other_emails" 
                                             variant="outlined" 
-                                            value={ values.other_emails }
                                             onChange={ handleChange }
+                                            value={ values.other_emails }
                                         />
                                     </FormControl>
                                     <br/>
@@ -411,6 +426,101 @@ class SurveyForm extends Component <any, FormState> {
                                     <br/>
                                 </Paper>
                             </div>
+                            <div>
+                                <Paper style={{ padding: 16 }}>
+                                    <FormControl className="name-input">
+                                        <FormLabel id="websites-label" className="label">
+                                            Please list URLs of any of your professional websites associated with this award.
+                                        </FormLabel>
+                                        <TextField 
+                                            id="websites" 
+                                            variant="outlined" 
+                                            value={ values.websites }
+                                            onChange={ handleChange }
+                                        />
+                                    </FormControl>
+                                    <br/>
+                                    <br/>
+                                </Paper>
+                            </div>
+                            <br/>
+                            <br/>
+                            <div>
+                                <Paper style={{ padding: 16 }}>
+                                    <FormControl className="name-input">
+                                        <FormLabel id="person-kw-label" className="label">
+                                            Please list your areas of scientific expertise as keywords.
+                                        </FormLabel>
+                                        <TextField 
+                                            id="person_kw" 
+                                            variant="outlined" 
+                                            onChange={ handleChange }
+                                            value={ values.person_kw }
+                                        />
+                                    </FormControl>
+                                    <br/>
+                                    <br/>
+                                </Paper>
+                            </div>
+                            <br/>
+                            <br/>
+                            <div>
+                                <Paper style={{ padding: 16 }}>
+                                    <FormControl className="name-input">
+                                        <FormLabel id="desired-collaboration-label" className="label">
+                                            If applicable, please further specify any collaboration opportunities you are interested in pursuing as related to this award, for instance "looking for predictive analytics experts for collaboration" or "can offer assistance with xxx".
+                                        </FormLabel>
+                                        <TextField 
+                                            id="desired_collaboration" 
+                                            variant="outlined" 
+                                            onChange={ handleChange }
+                                            value={ values.desired_collaboration }
+                                        />
+                                    </FormControl>
+                                    <br/>
+                                    <br/>
+                                </Paper>
+                            </div>
+                            <br/>
+                            <br/>
+                            <div>
+                                <Paper style={{ padding: 16 }}>
+                                    <FormControl className="name-input">
+                                        <FormLabel id="person-comments-label" className="label">
+                                            Where would you like to connect with other COVID-19 researchers? (e.g. Slack, listserv, Google Group, etc.)
+                                        </FormLabel>
+                                        <TextField 
+                                            id="person_comments" 
+                                            variant="outlined" 
+                                            onChange={ handleChange }
+                                            value={ values.person_comments }
+                                        />
+                                    </FormControl>
+                                    <br/>
+                                    <br/>
+                                </Paper>
+                            </div>
+                            <br/>
+                            <br/>
+                            <div>
+                                <Paper style={{ padding: 16 }}>
+                                    <FormControl className="name-input">
+                                        <FormLabel id="add-comments-label" className="label">
+                                            Additional comments
+                                        </FormLabel>
+                                        <TextField 
+                                            id="additional_comments" 
+                                            variant="outlined" 
+                                            onChange={ handleChange }
+                                            value={ values.additional_comments }
+                                        />
+                                    </FormControl>
+                                    <br/>
+                                    <br/>
+                                </Paper>
+                            </div>
+                            <br/>
+                            <br/>
                             <div>
                                 <Stack spacing={20} direction="row">
                                     <Button variant="contained" 
