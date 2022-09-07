@@ -22,7 +22,7 @@ def submitForm(request):
     if request.method == 'POST':
         try:
             data = json.loads(request.body)
-            # Get Person related data and save Person
+            # Save Person
             # Combine emails and other emails into emails
             emails = data.get('emails', None)
             other_emails = data.get('other_emails', None)
@@ -67,6 +67,7 @@ def submitForm(request):
                 approved = False
             )
             grant.save()
+
             # Save publication
             dois = data.get('dois', None)
             if dois:
@@ -82,5 +83,3 @@ def submitForm(request):
         except Exception as e:
             print(e)
     return HttpResponse('')
-
-

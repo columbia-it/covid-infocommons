@@ -150,7 +150,7 @@ class SurveyForm extends Component <any, FormState> {
             'Content-Type': 'application/json'
         }
 
-        axios.post("http://127.0.0.1:8000/survey/submit", payload, {
+        axios.post(url + "/survey/submit", payload, {
             headers: headers
           })
           .then((response) => {
