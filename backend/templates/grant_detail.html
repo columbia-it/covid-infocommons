@@ -82,18 +82,15 @@
                   {% endfor %}
             </section>
             <section>
+	      {% if grant.awardee_organization %}
                 <small>Awardee Organization:</small>
-				<p>
-				{% if grant.awardee_organization %}
-                    {{ grant.awardee_organization.name}}
-                    <br>
-                    {{ grant.awardee_organization.address}}
-                    <br>
-                    {% with grant.awardee_organization.city|add:" "|add:grant.awardee_organization.state|add:" "|add:grant.awardee_organization.zip as address %}
-                        {{ address }}
-                    {% endwith %}
-				{% endif %}
-				</p>
+		<p>
+                  {{ grant.awardee_organization.name }} <br />
+                  {% with grant.awardee_organization.city|add:" "|add:state|add:" "|add:grant.awardee_organization.zip as address %}
+                  {{ address }}
+                  {% endwith %}
+		</p>
+		{% endif %}		
             </section>
             <section>
 	      {% if grant.funder.name == 'National Institutes of Health' %}

@@ -21,10 +21,10 @@ NIH_API_DELAY = 5
 
 # Documentation for NIH grants API: https://api.reporter.nih.gov/?urls.primaryName=V2.0
 
-def main(start_year = None, start_offset = 0):
+def main(max_year = None, start_offset = 0):
 
-    if start_year is None:
-        start_year = date.today().year + 1
+    if max_year is None:
+        max_year = date.today().year + 1
         
     imported_count = 0
 
@@ -37,7 +37,7 @@ def main(start_year = None, start_offset = 0):
     
     # The NIH API will only return a max of 500 grants per request, and the default page size is 25 
     # So we request one year at a time, and step through each page
-    for year in range(start_year, 2019, -1):
+    for year in range(max_year, 2020, -1):
         # grants that are funded by the COVID programs
         for offset in range(start_offset, 5000, 25):
             print(f"========= COVID program grants {year} offset {offset}", flush = True)
@@ -52,7 +52,7 @@ def main(start_year = None, start_offset = 0):
             imported_count += len(grants)
             time.sleep(NIH_API_DELAY) 
 
-    for year in range(start_year, 2018, -1):
+    for year in range(max_year, 2020, -1):
         for month in range(1,13):
             # grants that explicitly mention COVID
             offset = start_offset
@@ -445,17 +445,15 @@ def nih_to_cic_date(d):
 
 if __name__ == "__main__":
     print(sys.argv)
-    start_year = None
+    max_year = 2023
     start_offset = 0
     if len(sys.argv) > 1:
-        start_year = int(sys.argv[1])
+        max_year = int(sys.argv[1])
     if len(sys.argv) > 2:
         start_offset = int(sys.argv[2])
-    print(f"Processing NIH grants starting at year {start_year}, offset {start_offset}")
+    print(f"Processing NIH grants starting at year {max_year}, offset {start_offset}")
 
-    start_year = 2021
-    
-    main(start_year, start_offset)
+    main(max_year, start_offset)
     
     #g=retrieve_nih_grant('1R13AI170179-01')
     #process_grant(g)
