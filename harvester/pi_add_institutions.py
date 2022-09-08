@@ -5,6 +5,14 @@ import json
 import logging
 import requests
 
+################################
+# pi_add_institutions
+#
+# Utility to add institions to PI entries. Cycles through all grants in the system. If the PI of the grant
+# does not have an affiliated institution/organization, connects the PI to the institution that
+# was awarded the grant.
+################################
+
 def process(grant):
     print(f"Processing {grant['award_id']}")
     org = grant['awardee_organization']
