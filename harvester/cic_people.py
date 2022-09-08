@@ -1,4 +1,5 @@
 import cic_config
+import cic_orgs
 import json
 import logging
 import requests
@@ -9,7 +10,8 @@ CIC_PEOPLE_API = f"{cic_config.CIC_BASE}/v1/people"
 def main():
     print("CIC people demo")
     print()
-    print(f"Find in CIC: {find_cic_person('Shreeram','Akilesh')}")
+    person = find_cic_person('Shreeram','Akilesh')
+    print(f"Find in CIC: {person}")
 
     
 def find_or_create_person(first, last, email = '', link = ''):
@@ -22,7 +24,8 @@ def find_or_create_person(first, last, email = '', link = ''):
         person = create_cic_person(person_name_to_cic_format(first, last, email, link))
 
     return person
-                  
+
+
 def create_cic_person(person_json):
     r = requests.post(url = CIC_PEOPLE_API,
                       data = json.dumps(person_json),
@@ -37,6 +40,20 @@ def create_cic_person(person_json):
     return r.json()['data']
 
 
+def update_cic_person(person_json, person_id):
+    person_json['data']['id'] = person_id
+    logging.info(f" -- updating person {person_id} with {person_json}")
+    r = requests.patch(url = CIC_PEOPLE_API + f"/{person_id}",
+                      data = json.dumps(person_json),
+                      headers={"Content-Type":"application/vnd.api+json",
+                               "Authorization": f"access_token {cic_config.CIC_TOKEN}"
+                      })
+    if r.status_code >= 300:
+        logging.error(f"{r} {r.text}")
+        print(f"ERROR {r} {r.text}")
+    return r
+
+
 def person_name_to_cic_format(first, last, email = '', link = ''):
     person_data = {
         "data": {
@@ -47,6 +64,27 @@ def person_name_to_cic_format(first, last, email = '', link = ''):
                 "emails": email,
                 "private_emails": link
         }}}
+    return person_data
+
+
+def person_org_to_cic_format(person, org_id):
+    person_data = {
+        "data": {
+            "type": "Person", 
+            "attributes": {
+                "first_name": person['first_name'],
+                "last_name": person['last_name'],
+                "emails": person['emails'],
+                "private_emails": person['private_emails'],
+                "affiliations": [
+                    {
+                        "type": "Organization",
+                        "id": org_id
+                    }
+                ]
+            }
+        }
+    }
     return person_data
 
 
@@ -94,3 +132,4 @@ def delete_cic_person(person_id):
 
 if __name__ == "__main__":
     main()
+    
