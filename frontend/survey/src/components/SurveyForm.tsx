@@ -1,6 +1,5 @@
-import React, { Component } from "react";
+import React, { ChangeEvent, Component } from "react";
 import { Formik, Form, FormikProps, Field } from 'formik'
-import Box from '@mui/material/Box';
 import Radio from '@mui/material/Radio';
 import RadioGroup from '@mui/material/RadioGroup';
 import FormControlLabel from '@mui/material/FormControlLabel';
@@ -27,6 +26,7 @@ const styles = {
 };
 
 interface FormState {
+    other_funder: string | ''
     first_name_error_msg?: string | null
     first_name_error: boolean | false
     last_name_error_msg?: string | null
@@ -44,6 +44,7 @@ interface SurveyFormData {
     award_id: string
     grant_kw: string
     funder: string
+    other_funder: string
     dois: string
     grant_add_kw: string
     websites: string
@@ -55,7 +56,8 @@ interface SurveyFormData {
 
 enum Funder {
     NSF,
-    NIH
+    NIH,
+    OTHER
 }
 
 let url = ''
@@ -71,6 +73,7 @@ class SurveyForm extends Component <any, FormState> {
     constructor(props:any) {
         super(props)
         this.state = {
+            other_funder: '',
             first_name_error_msg: null,
             first_name_error: false,
             last_name_error_msg: null,
@@ -81,6 +84,8 @@ class SurveyForm extends Component <any, FormState> {
         this.firstNameChangeHandler = this.firstNameChangeHandler.bind(this)
         this.lastNameChangeHandler = this.lastNameChangeHandler.bind(this)
         this.awardIdChangeHandler = this.awardIdChangeHandler.bind(this)
+        this.handleOtherFunderChange = this.handleOtherFunderChange.bind(this)
+        this.get_funder_name = this.get_funder_name.bind(this)
     }
 
     firstNameChangeHandler(event: React.ChangeEvent<HTMLInputElement>) {
@@ -118,17 +123,24 @@ class SurveyForm extends Component <any, FormState> {
         for (var enumMember in Funder) {
             var isValueProperty = Number(enumMember) >= 0
             if (isValueProperty && (enumMember == value)) {
+                if (Number(enumMember) == 2) {
+                    return this.state.other_funder
+                }
                 return Funder[enumMember]
             }
         }
         return ''
     }
 
-    handleReset() {
-
+    handleOtherFunderChange(event:any) {
+        this.setState({ other_funder: event.target.value })
+        event.preventDefault()
     }
 
     handleSubmit(values:SurveyFormData) {
+        if (values.funder == 'OTHER') {
+            values.funder = this.state.other_funder
+        }
         var payload = {
             first_name: values.first_name,
             last_name: values.last_name,
@@ -154,7 +166,6 @@ class SurveyForm extends Component <any, FormState> {
             headers: headers
           })
           .then((response) => {
-            this.handleReset()
           })
           .catch((error) => {
             console.log(error)
@@ -201,6 +212,7 @@ class SurveyForm extends Component <any, FormState> {
                         grant_kw: '',
                         dois: '',
                         funder: Funder.NSF.toString(),
+                        other_funder: '',
                         grant_add_kw: '',
                         websites: '',
                         person_kw: '',
@@ -218,6 +230,7 @@ class SurveyForm extends Component <any, FormState> {
                             "award_id": values.award_id,
                             "grant_kw": values.grant_kw,
                             "funder": this.get_funder_name(values.funder),
+                            "other_funder": values.other_funder,
                             "dois": values.dois,
                             "grant_add_kw": values.grant_add_kw,
                             "websites": values.websites,
@@ -228,6 +241,7 @@ class SurveyForm extends Component <any, FormState> {
                         }
                         this.handleSubmit(form_values)
                         resetForm({});
+                        this.setState({ other_funder: '' })
                     }}
                 >
                     {({ handleSubmit, values, handleChange, handleReset, setFieldValue }) => {
@@ -364,9 +378,21 @@ class SurveyForm extends Component <any, FormState> {
                                                 control={<Radio />} 
                                                 label="NSF" />
                                             <FormControlLabel 
-                                                value="NIH" 
+                                                value={ Funder.NIH.toString() } 
                                                 control={<Radio />} 
                                                 label="NIH" />
+                                            <FormControlLabel 
+                                                value={ Funder.OTHER.toString() }
+                                                control={<Radio/>}
+                                                label={
+                                                    <div>
+                                                        <span>Other:</span>&nbsp;
+                                                        <TextField 
+                                                            onChange={ this.handleOtherFunderChange } 
+                                                            id='other_funder_text'
+                                                            value={ this.state.other_funder }/>
+                                                    </div>
+                                                }/>
                                         </RadioGroup>
                                     </FormControl>
                                 </Paper>

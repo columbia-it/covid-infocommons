@@ -59,26 +59,37 @@ def submitForm(request):
                 keywords = grant_keywords + grant_additional_keywords
             funder_obj = None
             if funder:
-                funder_obj = Funder.objects.get(name=funder)
+                try:
+                    funder_obj = Funder.objects.get(name=funder)
+                except:
+                    funder_obj = Funder(name=funder, approved=False)
+                    funder_obj.save()
+                    print('Funder saved!')
+
             grant = Grant(
                 award_id = award_id,
                 funder = funder_obj,
                 keywords = keywords,
-                approved = False
+                approved = False,
+                principal_investigator = person
             )
             grant.save()
-
+            print('Grant saved!')
             # Save publication
             dois = data.get('dois', None)
             if dois:
                 if ',' in dois:
                     doi_list = dois.split(',')
                     for doi in doi_list:
-                        p = Publication(doi=doi)
+                        p = Publication(doi=doi, grants=[grant])
                         p.save()
+                        print('Grant saved!')
+
                 else:
-                    p = Publication(doi=dois)
+                    p = Publication(doi=dois, grants=[grant])
                     p.save()
+                    print('Grant saved!')
+
 
         except Exception as e:
             print(e)

@@ -36,6 +36,9 @@ class GrantDocument(Document):
             'keywords': fields.KeywordField(),
             'full_name': fields.KeywordField(),
             'approved': fields.BooleanField(),
+            'websites': fields.KeywordField(),
+            'desired_collaboration': fields.KeywordField(),
+            'comments': fields.KeywordField(),
             'affiliations': fields.NestedField(properties = {
                 'id': fields.IntegerField(),
                 'ror': fields.KeywordField(),
@@ -119,7 +122,10 @@ class GrantDocument(Document):
                         'private_emails': person.private_emails,
                         'keywords': person.keywords,
                         'affiliations': prepare_affiliations(self, person),
-                        'approved': person.approved
+                        'approved': person.approved,
+                        'websites': person.websites,
+                        'desired_collaboration': person.desired_collaboration,
+                        'comments': person.comments
                     }
                 )
         return people
@@ -158,7 +164,10 @@ class GrantDocument(Document):
                         'private_emails': person.private_emails,
                         'keywords': person.keywords,
                         'affiliations': prepare_affiliations(self, person),
-                        'approved': person.approved
+                        'approved': person.approved,
+                        'websites': person.websites,
+                        'desired_collaboration': person.desired_collaboration,
+                        'comments': person.comments
                     }
                 )
         return people
@@ -193,7 +202,10 @@ class GrantDocument(Document):
                 'private_emails': instance.principal_investigator.private_emails,
                 'keywords': instance.principal_investigator.keywords,
                 'affiliations': prepare_affiliations(self, instance.principal_investigator),
-                'approved': instance.principal_investigator.approved
+                'approved': instance.principal_investigator.approved,
+                'websites': instance.principal_investigator.websites,
+                'desired_collaboration': instance.principal_investigator.desired_collaboration,
+                'comments': instance.principal_investigator.comments
             }
         else:
             return None
