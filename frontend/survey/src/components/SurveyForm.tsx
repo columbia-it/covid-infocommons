@@ -249,7 +249,7 @@ class SurveyForm extends Component <any, FormState> {
                         <form onSubmit={(handleSubmit)}>
                             <div>
                                 <Paper className="name-container">
-                                    <div className="name-child">
+                                    <div className="name-child-1">
                                         <FormControl>
                                             <FormLabel id="fname_label" className="label">
                                                 Your first name <span className="required-text">*</span>
@@ -268,7 +268,7 @@ class SurveyForm extends Component <any, FormState> {
                                             <br/>
                                         </FormControl>
                                     </div>
-                                    <div className="name-child">
+                                    <div className="name-child-2">
                                         <FormControl>
                                             <FormLabel id="lname-label" className="label">
                                                 Your last name <span className="required-text">*</span>

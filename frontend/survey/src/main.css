@@ -9,14 +9,17 @@
 .name-container {
     padding: 16px; 
     display: flex; 
-    /*justify-content: flex-start;*/
-    flex-direction:row;
+    /*flex-direction:row;*/
 }
 
-.name-child {
-    flex:1 1 auto;
-    width: 100%;
-}  
+.name-child-1 {
+    flex: 1;
+    padding-right: 3rem;
+} 
+
+.name-child-2 {
+    flex: 2;
+} 
 
 .survey-form-heading {
     text-align: center;
