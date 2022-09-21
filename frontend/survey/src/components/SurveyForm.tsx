@@ -1,5 +1,5 @@
-import React, { ChangeEvent, Component } from "react";
-import { Formik, Form, FormikProps, Field } from 'formik'
+import React, { useEffect, Component } from "react";
+import { Formik, useFormikContext } from 'formik'
 import Radio from '@mui/material/Radio';
 import RadioGroup from '@mui/material/RadioGroup';
 import FormControlLabel from '@mui/material/FormControlLabel';
@@ -7,6 +7,7 @@ import FormControl from '@mui/material/FormControl';
 import FormLabel from '@mui/material/FormLabel';
 import Stack from '@mui/material/Stack';
 import axios from "axios";
+import * as Yup from 'yup';
 
 import {
     Paper,
@@ -69,6 +70,46 @@ if (process.env.NODE_ENV == 'production') {
     url = "http://127.0.0.1:8000"
 }
 
+const getFieldErrorNames = (formikErrors:any) => {
+    const transformObjectToDotNotation = (obj:any, prefix = "", result:any = []) => {
+      Object.keys(obj).forEach(key => {
+        const value = obj[key]
+        if (!value) return
+  
+        const nextKey:string = prefix ? `${prefix}.${key}` : key
+        if (typeof value === "object") {
+          transformObjectToDotNotation(value, nextKey, result)
+        } else {
+          result.push(nextKey)
+        }
+      })
+  
+      return result
+    }
+  
+    return transformObjectToDotNotation(formikErrors)
+  }
+
+  const ScrollToFieldError = () => {
+    const { submitCount, isValid, errors } = useFormikContext()
+    useEffect(() => {
+      if (isValid) return
+  
+      const fieldErrorNames = getFieldErrorNames(errors)
+      if (fieldErrorNames.length <= 0) return
+  
+      const element = document.querySelector(
+        `input[id='${fieldErrorNames[0]}']`
+      )
+      if (!element) return
+  
+      // Scroll to first known error into view
+      element.scrollIntoView({ behavior: "smooth", block: "center" })
+    }, [submitCount]) // eslint-disable-line react-hooks/exhaustive-deps
+  
+    return null
+  }
+  
 class SurveyForm extends Component <any, FormState> {    
     constructor(props:any) {
         super(props)
@@ -135,6 +176,16 @@ class SurveyForm extends Component <any, FormState> {
     handleOtherFunderChange(event:any) {
         this.setState({ other_funder: event.target.value })
         event.preventDefault()
+    }
+
+    validate_comma_separated_string(value:any) {
+        const specialChars = /[`!#$%^&*()_+\-=\[\]{};':"\\|<>\/?~]/;
+        if (specialChars.test(value)) {
+            return false;
+        }
+        else {
+            return true;
+        }
     }
 
     handleSubmit(values:SurveyFormData) {
@@ -220,6 +271,21 @@ class SurveyForm extends Component <any, FormState> {
                         person_comments: '',
                         additional_comments: ''
                     }}
+                    validationSchema = {
+                        Yup.object({
+                            emails: Yup.string().
+                                required().
+                                test('no-special-chars', 'Emails must be comma separated list', this.validate_comma_separated_string),
+                            other_emails: Yup.string().
+                                test('no-special-chars', 'Emails must be comma separated', this.validate_comma_separated_string),
+                            grant_kw: Yup.string().
+                                test('no-special-chars', 'Keywords must be comma separated', this.validate_comma_separated_string),
+                            grant_add_kw: Yup.string().
+                                test('no-special-chars', 'Keywords must be comma separated', this.validate_comma_separated_string),
+                            person_kw: Yup.string().
+                                test('no-special-chars', 'Keywords must be comma separated', this.validate_comma_separated_string),
+                        })
+                    }
                     onSubmit={(values, { resetForm }) => {
                         var form_values:SurveyFormData = {
                             "first_name": values.first_name,
@@ -244,9 +310,10 @@ class SurveyForm extends Component <any, FormState> {
                         this.setState({ other_funder: '' })
                     }}
                 >
-                    {({ handleSubmit, values, handleChange, handleReset, setFieldValue }) => {
+                    {({ handleSubmit, values, handleChange, handleReset, setFieldValue, errors, touched }) => {
                         return (
-                        <form onSubmit={(handleSubmit)}>
+                        <form onSubmit={(handleSubmit)} >
+                            <ScrollToFieldError />
                             <div>
                                 <Paper className="name-container">
                                     <div className="name-child-1">
@@ -301,6 +368,7 @@ class SurveyForm extends Component <any, FormState> {
                                             value={ values.emails }
                                             onChange={ handleChange }
                                         />
+                                        {errors.emails && touched.emails ? (<div className="required-text">{errors.emails}</div>) : null}
                                     </FormControl>
                                     <br/>
                                     <br/>
@@ -314,6 +382,7 @@ class SurveyForm extends Component <any, FormState> {
                                             onChange={ handleChange }
                                             value={ values.other_emails }
                                         />
+                                        { errors.other_emails && touched.other_emails ? (<div className="required-text">{errors.other_emails}</div>) : null }
                                     </FormControl>
                                     <br/>
                                 </Paper> 
@@ -369,9 +438,6 @@ class SurveyForm extends Component <any, FormState> {
                                                 name="funder"
                                                 onChange={ handleChange }
                                                 value={ values.funder.toString() }
-                                                // onChange={(event) => {
-                                                //     setFieldValue(values.funder.toString(), event.currentTarget.value)
-                                                // }}
                                             >
                                             <FormControlLabel 
                                                 value={ Funder.NSF.toString() } 
@@ -411,6 +477,7 @@ class SurveyForm extends Component <any, FormState> {
                                             value={ values.grant_kw }
                                             onChange={ handleChange }
                                         />
+                                        { errors.grant_kw && touched.grant_kw ? (<div className="required-text">{errors.grant_kw}</div>) : null }
                                     </FormControl>
                                     <br/>
                                     <br/>
@@ -447,6 +514,7 @@ class SurveyForm extends Component <any, FormState> {
                                             value={ values.grant_add_kw }
                                             onChange={ handleChange }
                                         />
+                                        { errors.grant_add_kw && touched.grant_add_kw ? (<div className="required-text">{errors.grant_add_kw}</div>) : null }
                                     </FormControl>
                                     <br/>
                                     <br/>
@@ -483,6 +551,7 @@ class SurveyForm extends Component <any, FormState> {
                                             onChange={ handleChange }
                                             value={ values.person_kw }
                                         />
+                                        { errors.person_kw && touched.person_kw ? (<div className="required-text">{errors.person_kw}</div>) : null }
                                     </FormControl>
                                     <br/>
                                     <br/>

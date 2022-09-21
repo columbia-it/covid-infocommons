@@ -12,6 +12,7 @@
 .name-container {
     padding: 16px; 
     display: flex; 
+    /*flex-direction:row;*/
 }
 
 .name-child-1 {
