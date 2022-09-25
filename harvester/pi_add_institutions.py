@@ -16,21 +16,17 @@ import requests
 def process(grant):
     print(f"Processing {grant['award_id']}")
     org = grant['awardee_organization']
-    print(f" -- {org['id']}")
     pi = grant['principal_investigator']
-    print(f" -- {pi['emails']} {pi['first_name']} {pi['last_name']}")
-
+    if pi is None or org is None:
+        return
     person = cic_people.find_cic_person(pi['first_name'], pi['last_name'])
-    print(f" -- person {person}")
+    if person is None or person['attributes'] is None:
+        return
     person_affil = person['attributes']['affiliations']
-    print(f" -- af {person_affil}")
     if person_affil is None or len(person_affil) == 0:
         print(" -- replacing affiliation")
         person_json = cic_people.person_org_to_cic_format(person['attributes'], org['id'])
-        print(f"person_json {person_json}")
         cic_people.update_cic_person(person_json, person['id'])
-        
-        
 
     
 def main():
@@ -38,11 +34,13 @@ def main():
     grants = cic_grants.find_cic_grants()
     print(f"Received {len(grants)} grants")
     page = 1
+    total = 0
     while len(grants) > 0:
+        total += len(grants)
         for g in grants:
             process(g['attributes'])
         grants = cic_grants.find_cic_grants(page)
-        print(f"Received {len(grants)} grants")
+        print(f"Received {len(grants)} grants -- total {total}")
         page += 1
     print("Completed grant processing")
 
