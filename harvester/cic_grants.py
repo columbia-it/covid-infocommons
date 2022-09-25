@@ -10,8 +10,12 @@ def main():
     print("CIC grant demo")
     print("")
     print("finding test grant 3R43CA243815-01S2")
-    grant = find_cic_grant('3R43CA243815-01S2')
+#    grant = find_cic_grant('3R43CA243815-01S2')
+#    if grant is None:
+    grant = find_cic_grant('2204082')
     print(f" -- found {grant['id']} -- {grant['award_id']} -- {grant['title']}")
+    grant_json = grant_object_to_upload_json(grant)
+    update_cic_grant(grant_json, grant['id'])
 
 
 def create_cic_grant(grant_json):
@@ -67,12 +71,63 @@ def find_cic_grant(grant_id):
             return cg['_source']
     return None
 
+def grant_object_to_upload_json(grant):
+    # converts from the CIC output format to the CIC upload format
+    print(f"Converting to upload JSON -- {grant}")
+    grant_data = {
+        "data": {
+            "type": "Grant", 
+            "attributes": {
+                "funder": {
+                    "type": "Funder",
+                    "id": grant['funder']['id']
+                },
+                "funder_divisions": grant['funder_divisions'],
+                "program_reference_codes": grant['program_reference_codes'],
+                "program_officials": person_array_to_reference_array(grant['program_officials']),                
+                "other_investigators": person_array_to_reference_array(grant['other_investigators']),                
+                "principal_investigator": person_to_reference(grant['principal_investigator']),                
+                "awardee_organization": org_to_reference(grant['awardee_organization']),
+                "keywords": grant['keywords'],                
+                "award_id": grant['id'],
+                "title": grant['title'],
+                "start_date": grant['start_date'],
+                "end_date": grant['end_date'],
+                "award_amount": grant['award_amount'],
+                "abstract": grant['abstract'],
+                "approved": grant['approved']
+            }
+        }
+    }
+    print(f"upload JSON is -- {grant_data}")
+    return grant_data
+
+
+def person_array_to_reference_array(people):
+    ref_array = []
+    for p in people:
+        ref_array.append(person_to_reference(p))
+    return ref_array
+
+def person_to_reference(person):
+    reference = { "type": "Person",
+                  "id": person['id']
+    }
+    return reference
+
+def org_to_reference(org):
+    reference = { "type": "Organization",
+                  "id": org['id']
+    }
+    return reference
 
 # Find a page of grants
 def find_cic_grants(page = 1):
     logging.debug(" -- Reading grants from CIC API")
     response = requests.get(f"{CIC_GRANTS_API}?page%5Bnumber%5D={page}")
     response_json = response.json()
+    if 'data' not in response_json:
+        return []
     grants = response_json['data']
     return grants
 
