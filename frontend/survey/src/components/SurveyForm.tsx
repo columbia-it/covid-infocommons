@@ -15,6 +15,14 @@ import {
     TextField
   } from '@material-ui/core';
 
+import { styled } from '@mui/material/styles';
+import Dialog from '@mui/material/Dialog';
+import DialogTitle from '@mui/material/DialogTitle';
+import DialogContent from '@mui/material/DialogContent';
+import DialogActions from '@mui/material/DialogActions';
+import IconButton from '@mui/material/IconButton';
+import CloseIcon from '@mui/icons-material/Close';
+
 const styles = {
     // See MUI Button CSS classes at https://mui.com/material-ui/api/button/
     "&.MuiButton-contained": {
@@ -43,6 +51,7 @@ interface SurveyFormData {
     emails: string
     other_emails: string
     award_id: string
+    award_title: string
     grant_kw: string
     funder: string
     other_funder: string
@@ -120,7 +129,7 @@ class SurveyForm extends Component <any, FormState> {
             last_name_error_msg: null,
             last_name_error: false,
             award_id_error_msg: null,
-            award_id_error: false
+            award_id_error: false,
         }
         this.firstNameChangeHandler = this.firstNameChangeHandler.bind(this)
         this.lastNameChangeHandler = this.lastNameChangeHandler.bind(this)
@@ -188,6 +197,41 @@ class SurveyForm extends Component <any, FormState> {
         }
     }
 
+    validate_orcid(value: any) {
+        const regex = new RegExp('(https?://)?([\\da-z.-]+)\\.([a-z.]{2,6})[/\\w .-]*/?');    
+        let is_orcid_valid = true
+        if (value == 'NA') {
+            return is_orcid_valid
+        }
+        if (regex.test(value)) {
+            if (value.indexOf("https://orcid.org/") !== -1) {
+                let id = value.substring(18)
+                if (id.length != 19) {
+                    is_orcid_valid = false
+                } else {
+                    if (value.split("-").length != 4) {
+                        is_orcid_valid = false
+                    } else {
+                        let id_parts = id.split("-")
+                        const numbers_only_regex = new RegExp('[0-9]+');    
+                        for (let i = 0; i < id_parts.length; i++) { 
+                            if (numbers_only_regex.test(id_parts[i]) && id_parts[i].length == 4) {
+                                is_orcid_valid = true
+                            } else {
+                                is_orcid_valid = false
+                            }
+                        }
+                    }
+                }
+            } else {
+                is_orcid_valid = false
+            }
+        } else {
+            is_orcid_valid = false
+        }
+        return is_orcid_valid
+    }
+
     handleSubmit(values:SurveyFormData) {
         if (values.funder == 'OTHER') {
             values.funder = this.state.other_funder
@@ -199,6 +243,7 @@ class SurveyForm extends Component <any, FormState> {
             emails: values.emails,
             other_emails: values.other_emails,
             award_id: values.award_id,
+            award_title: values.award_title,
             grant_kw: values.grant_kw,
             funder: values.funder,
             dois: values.dois,
@@ -217,6 +262,7 @@ class SurveyForm extends Component <any, FormState> {
             headers: headers
           })
           .then((response) => {
+              console.log('Success')
           })
           .catch((error) => {
             console.log(error)
@@ -260,6 +306,7 @@ class SurveyForm extends Component <any, FormState> {
                         emails: '',
                         other_emails: '',
                         award_id: '',
+                        award_title: '',
                         grant_kw: '',
                         dois: '',
                         funder: Funder.NSF.toString(),
@@ -284,33 +331,36 @@ class SurveyForm extends Component <any, FormState> {
                                 test('no-special-chars', 'Keywords must be comma separated', this.validate_comma_separated_string),
                             person_kw: Yup.string().
                                 test('no-special-chars', 'Keywords must be comma separated', this.validate_comma_separated_string),
+                            orcid: Yup.string().
+                                test('valid-url', 'Please enter ORCID as: https://orcid.org/xxxx-xxxx-xxxx-xxxx', this.validate_orcid)
                         })
                     }
                     onSubmit={(values, { resetForm }) => {
                         var form_values:SurveyFormData = {
-                            "first_name": values.first_name,
-                            "last_name": values.last_name,
-                            "orcid": values.orcid,
-                            "emails": values.emails,
-                            "other_emails": values.other_emails,
+                            "first_name": values.first_name.trim(),
+                            "last_name": values.last_name.trim(),
+                            "orcid": values.orcid.trim(),
+                            "emails": values.emails.trim(),
+                            "other_emails": values.other_emails.trim(),
                             "award_id": values.award_id,
-                            "grant_kw": values.grant_kw,
+                            "award_title": values.award_title,
+                            "grant_kw": values.grant_kw.trim(),
                             "funder": this.get_funder_name(values.funder),
                             "other_funder": values.other_funder,
-                            "dois": values.dois,
-                            "grant_add_kw": values.grant_add_kw,
-                            "websites": values.websites,
-                            "person_kw": values.person_kw,
-                            "desired_collaboration": values.desired_collaboration,
-                            "person_comments": values.person_comments,
-                            "additional_comments": values.additional_comments
+                            "dois": values.dois.trim(),
+                            "grant_add_kw": values.grant_add_kw.trim(),
+                            "websites": values.websites.trim(),
+                            "person_kw": values.person_kw.trim(),
+                            "desired_collaboration": values.desired_collaboration.trim(),
+                            "person_comments": values.person_comments.trim(),
+                            "additional_comments": values.additional_comments.trim()
                         }
                         this.handleSubmit(form_values)
                         resetForm({});
                         this.setState({ other_funder: '' })
                     }}
                 >
-                    {({ handleSubmit, values, handleChange, handleReset, setFieldValue, errors, touched }) => {
+                    {({ handleSubmit, handleBlur, values, handleChange, handleReset, setFieldValue, errors, touched }) => {
                         return (
                         <form onSubmit={(handleSubmit)} >
                             <ScrollToFieldError />
@@ -321,15 +371,12 @@ class SurveyForm extends Component <any, FormState> {
                                             <FormLabel id="fname_label" className="label">
                                                 Your first name <span className="required-text">*</span>
                                             </FormLabel>
-                                            
                                             <TextField 
                                                 id="first_name" 
                                                 variant="outlined" 
                                                 required 
                                                 value={ values.first_name }
                                                 onChange={ handleChange }
-                                                error={ this.state.award_id_error }
-                                                helperText={ this.state.award_id_error_msg }
                                             />
                                             <br/>
                                             <br/>
@@ -367,6 +414,7 @@ class SurveyForm extends Component <any, FormState> {
                                             required 
                                             value={ values.emails }
                                             onChange={ handleChange }
+                                            onKeyUp={ handleBlur }
                                         />
                                         {errors.emails && touched.emails ? (<div className="required-text">{errors.emails}</div>) : null}
                                     </FormControl>
@@ -381,6 +429,7 @@ class SurveyForm extends Component <any, FormState> {
                                             variant="outlined" 
                                             onChange={ handleChange }
                                             value={ values.other_emails }
+                                            onKeyUp={ handleBlur }
                                         />
                                         { errors.other_emails && touched.other_emails ? (<div className="required-text">{errors.other_emails}</div>) : null }
                                     </FormControl>
@@ -400,9 +449,10 @@ class SurveyForm extends Component <any, FormState> {
                                             required 
                                             value={ values.orcid }
                                             onChange={ handleChange }
-                                            error={ this.state.award_id_error }
-                                            helperText={ this.state.award_id_error_msg }
+                                            onBlur={ this.validate_orcid }
+                                            onKeyUp={ handleBlur }
                                         />
+                                        { errors.orcid && touched.orcid ? (<div className="required-text">{errors.orcid}</div>) : null }
                                     </FormControl>
                                     <br/>
                                     <br/>
@@ -420,6 +470,25 @@ class SurveyForm extends Component <any, FormState> {
                                             variant="outlined" 
                                             required 
                                             value={ values.award_id }
+                                            onChange={ handleChange }
+                                        />
+                                    </FormControl>
+                                    <br/>
+                                    <br/>
+                                </Paper>
+                            </div>
+                            <br/>
+                            <div>
+                                <Paper style={{ padding: 16 }}>
+                                    <FormControl className="name-input">
+                                        <FormLabel id="award-title-label" className="label">
+                                            COVID-19 Research Award Title <span className="required-text">*</span>
+                                        </FormLabel>
+                                        <TextField 
+                                            id="award_title" 
+                                            variant="outlined" 
+                                            required 
+                                            value={ values.award_title }
                                             onChange={ handleChange }
                                         />
                                     </FormControl>
@@ -476,6 +545,7 @@ class SurveyForm extends Component <any, FormState> {
                                             variant="outlined" 
                                             value={ values.grant_kw }
                                             onChange={ handleChange }
+                                            onKeyUp={ handleBlur }
                                         />
                                         { errors.grant_kw && touched.grant_kw ? (<div className="required-text">{errors.grant_kw}</div>) : null }
                                     </FormControl>
@@ -513,6 +583,7 @@ class SurveyForm extends Component <any, FormState> {
                                             variant="outlined" 
                                             value={ values.grant_add_kw }
                                             onChange={ handleChange }
+                                            onKeyUp={ handleBlur }
                                         />
                                         { errors.grant_add_kw && touched.grant_add_kw ? (<div className="required-text">{errors.grant_add_kw}</div>) : null }
                                     </FormControl>
@@ -550,6 +621,7 @@ class SurveyForm extends Component <any, FormState> {
                                             variant="outlined" 
                                             onChange={ handleChange }
                                             value={ values.person_kw }
+                                            onKeyUp={ handleBlur }
                                         />
                                         { errors.person_kw && touched.person_kw ? (<div className="required-text">{errors.person_kw}</div>) : null }
                                     </FormControl>
@@ -629,7 +701,7 @@ class SurveyForm extends Component <any, FormState> {
                                     </Button>
                                     <Button variant="text" onClick={ handleReset }>
                                         Clear form
-                                    </Button>
+                                    </Button>       
                                 </Stack>
                             </div>
                             <br/>

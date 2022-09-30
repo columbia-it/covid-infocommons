@@ -1,8 +1,5 @@
-from ast import keyword
-from unicodedata import name
 from django.shortcuts import render, HttpResponse
 
-from .forms import PISurveyform
 from django.views.decorators.csrf import csrf_exempt
 from django.shortcuts import redirect
 import json
@@ -52,6 +49,7 @@ def submitForm(request):
 
             # Save Grant
             award_id = data.get('award_id', None)
+            award_title = data.get('award_title', None)
             funder = data.get('funder', None)
             grant_keywords = data.get('grant_kw', None)
             grant_additional_keywords = data.get('grant_add_kw', None)
@@ -64,17 +62,16 @@ def submitForm(request):
                 except:
                     funder_obj = Funder(name=funder, approved=False)
                     funder_obj.save()
-                    print('Funder saved!')
 
             grant = Grant(
                 award_id = award_id,
+                title = award_title,
                 funder = funder_obj,
                 keywords = keywords,
                 approved = False,
                 principal_investigator = person
             )
             grant.save()
-            print('Grant saved!')
             # Save publication
             dois = data.get('dois', None)
             if dois:
@@ -83,13 +80,11 @@ def submitForm(request):
                     for doi in doi_list:
                         p = Publication(doi=doi, grants=[grant])
                         p.save()
-                        print('Grant saved!')
-
                 else:
-                    p = Publication(doi=dois, grants=[grant])
+                    p = Publication(doi=dois)
                     p.save()
-                    print('Grant saved!')
-
+                    p.grants.add(grant)
+                    p.save()
 
         except Exception as e:
             print(e)
