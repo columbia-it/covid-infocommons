@@ -5,6 +5,7 @@ import RadioGroup from '@mui/material/RadioGroup';
 import FormControlLabel from '@mui/material/FormControlLabel';
 import FormControl from '@mui/material/FormControl';
 import FormLabel from '@mui/material/FormLabel';
+import Typography from '@mui/material/Typography';
 import Stack from '@mui/material/Stack';
 import axios from "axios";
 import * as Yup from 'yup';
@@ -42,6 +43,7 @@ interface FormState {
     last_name_error: boolean | false
     award_id_error_msg?: string | null
     award_id_error: boolean | false
+    ok_dialog_open: boolean | false
 }
 
 interface SurveyFormData {
@@ -62,6 +64,12 @@ interface SurveyFormData {
     desired_collaboration: string
     person_comments: string
     additional_comments: string
+}
+
+interface DialogTitleProps {
+    id: string;
+    children?: React.ReactNode;
+    onClose: () => void;
 }
 
 enum Funder {
@@ -118,6 +126,39 @@ const getFieldErrorNames = (formikErrors:any) => {
   
     return null
   }
+
+  const BootstrapDialog = styled(Dialog)(({ theme }) => ({
+    '& .MuiDialogContent-root': {
+      padding: theme.spacing(2),
+    },
+    '& .MuiDialogActions-root': {
+      padding: theme.spacing(1),
+    },
+  }));
+
+  const BootstrapDialogTitle = (props: DialogTitleProps) => {
+    const { children, onClose, ...other } = props;
+  
+    return (
+      <DialogTitle sx={{ m: 0, p: 2 }} {...other}>
+        {children}
+        {onClose ? (
+          <IconButton
+            aria-label="close"
+            onClick={onClose}
+            sx={{
+              position: 'absolute',
+              right: 8,
+              top: 8,
+              color: (theme) => theme.palette.grey[500],
+            }}
+          >
+            <CloseIcon />
+          </IconButton>
+        ) : null}
+      </DialogTitle>
+    );
+  };
   
 class SurveyForm extends Component <any, FormState> {    
     constructor(props:any) {
@@ -130,12 +171,14 @@ class SurveyForm extends Component <any, FormState> {
             last_name_error: false,
             award_id_error_msg: null,
             award_id_error: false,
+            ok_dialog_open: false
         }
         this.firstNameChangeHandler = this.firstNameChangeHandler.bind(this)
         this.lastNameChangeHandler = this.lastNameChangeHandler.bind(this)
         this.awardIdChangeHandler = this.awardIdChangeHandler.bind(this)
         this.handleOtherFunderChange = this.handleOtherFunderChange.bind(this)
         this.get_funder_name = this.get_funder_name.bind(this)
+        this.handle_ok_dialog_close = this.handle_ok_dialog_close.bind(this)
     }
 
     firstNameChangeHandler(event: React.ChangeEvent<HTMLInputElement>) {
@@ -262,11 +305,20 @@ class SurveyForm extends Component <any, FormState> {
             headers: headers
           })
           .then((response) => {
-              console.log('Success')
+              this.setState({
+                  ok_dialog_open: true
+              })
           })
           .catch((error) => {
             console.log(error)
           })
+    }
+
+    handle_ok_dialog_close() {
+        this.setState({
+            ok_dialog_open: false
+        })
+        window.scrollTo({top: 0, left: 0, behavior: 'smooth'});
     }
 
     render() {
@@ -699,6 +751,26 @@ class SurveyForm extends Component <any, FormState> {
                                     >
                                         Submit
                                     </Button>
+                                    <BootstrapDialog
+                                        onClose={ this.handle_ok_dialog_close }
+                                        aria-labelledby="customized-dialog-title"
+                                        open={ this.state.ok_dialog_open }
+                                    >
+                                        <BootstrapDialogTitle id="customized-dialog-title" onClose={ this.handle_ok_dialog_close }>
+                                            Success
+                                        </BootstrapDialogTitle>
+                                        <DialogContent dividers>
+                                            <Typography gutterBottom>
+                                            Thank you for filling out the survey. After our staff reviews it for inclusion in the COVID Information Commons, you can view it <a href={ url + '/grants' } target="_blank">here.</a>
+                                            If you have another award, please fill out the survey form again. 
+                                            </Typography>
+                                        </DialogContent>
+                                        <DialogActions>
+                                            <Button autoFocus onClick={ this.handle_ok_dialog_close }>
+                                                OK
+                                            </Button>
+                                        </DialogActions>
+                                    </BootstrapDialog>
                                     <Button variant="text" onClick={ handleReset }>
                                         Clear form
                                     </Button>       
