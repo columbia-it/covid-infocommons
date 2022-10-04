@@ -301,7 +301,7 @@ class SurveyForm extends Component <any, FormState> {
             'Content-Type': 'application/json'
         }
 
-        axios.post(url + "/survey/submit", payload, {
+        axios.post("http://127.0.0.1:8000/survey/submit", payload, {
             headers: headers
           })
           .then((response) => {
@@ -372,8 +372,10 @@ class SurveyForm extends Component <any, FormState> {
                     }}
                     validationSchema = {
                         Yup.object({
+                            first_name: Yup.string().required('First name is required'),
+                            last_name: Yup.string().required('Last name is required'),
                             emails: Yup.string().
-                                required().
+                                required('Email address(es) is required').
                                 test('no-special-chars', 'Emails must be comma separated list', this.validate_comma_separated_string),
                             other_emails: Yup.string().
                                 test('no-special-chars', 'Emails must be comma separated', this.validate_comma_separated_string),
@@ -384,7 +386,10 @@ class SurveyForm extends Component <any, FormState> {
                             person_kw: Yup.string().
                                 test('no-special-chars', 'Keywords must be comma separated', this.validate_comma_separated_string),
                             orcid: Yup.string().
-                                test('valid-url', 'Please enter ORCID as: https://orcid.org/xxxx-xxxx-xxxx-xxxx', this.validate_orcid)
+                                required('ORCID iD is required').
+                                test('valid-url', 'Please enter ORCID iD as: https://orcid.org/xxxx-xxxx-xxxx-xxxx', this.validate_orcid),
+                            award_title: Yup.string().required('Award title is required'),
+                            award_id: Yup.string().required('Award ID is required')
                         })
                     }
                     onSubmit={(values, { resetForm }) => {
@@ -426,10 +431,13 @@ class SurveyForm extends Component <any, FormState> {
                                             <TextField 
                                                 id="first_name" 
                                                 variant="outlined" 
-                                                required 
                                                 value={ values.first_name }
                                                 onChange={ handleChange }
+                                                onKeyUp={ handleBlur }
+                                                onBlur={ handleBlur }
                                             />
+                                            { errors.first_name && touched.first_name ? (<div className="required-text">{errors.first_name}</div>) : null }
+
                                             <br/>
                                             <br/>
                                         </FormControl>
@@ -442,10 +450,12 @@ class SurveyForm extends Component <any, FormState> {
                                             <TextField 
                                                 id="last_name" 
                                                 variant="outlined" 
-                                                required 
                                                 value={ values.last_name }
                                                 onChange={ handleChange }
+                                                onKeyUp={ handleBlur }
+                                                onBlur={ handleBlur }
                                             />
+                                            { errors.last_name && touched.last_name ? (<div className="required-text">{ errors.last_name }</div>) : null }
                                             <br/>
                                             <br/>
                                         </FormControl>
@@ -463,10 +473,10 @@ class SurveyForm extends Component <any, FormState> {
                                         <TextField 
                                             id="emails" 
                                             variant="outlined" 
-                                            required 
                                             value={ values.emails }
                                             onChange={ handleChange }
                                             onKeyUp={ handleBlur }
+                                            onBlur={ handleBlur }
                                         />
                                         {errors.emails && touched.emails ? (<div className="required-text">{errors.emails}</div>) : null}
                                     </FormControl>
@@ -498,11 +508,10 @@ class SurveyForm extends Component <any, FormState> {
                                         <TextField 
                                             id="orcid" 
                                             variant="outlined" 
-                                            required 
                                             value={ values.orcid }
                                             onChange={ handleChange }
-                                            onBlur={ this.validate_orcid }
                                             onKeyUp={ handleBlur }
+                                            onBlur={ handleBlur }
                                         />
                                         { errors.orcid && touched.orcid ? (<div className="required-text">{errors.orcid}</div>) : null }
                                     </FormControl>
@@ -520,10 +529,12 @@ class SurveyForm extends Component <any, FormState> {
                                         <TextField 
                                             id="award_id" 
                                             variant="outlined" 
-                                            required 
                                             value={ values.award_id }
                                             onChange={ handleChange }
+                                            onKeyUp={ handleBlur }
+                                            onBlur={ handleBlur }
                                         />
+                                        { errors.award_id && touched.award_id ? (<div className="required-text">{ errors.award_id }</div>) : null }                                        
                                     </FormControl>
                                     <br/>
                                     <br/>
@@ -539,10 +550,13 @@ class SurveyForm extends Component <any, FormState> {
                                         <TextField 
                                             id="award_title" 
                                             variant="outlined" 
-                                            required 
                                             value={ values.award_title }
                                             onChange={ handleChange }
+                                            onKeyUp={ handleBlur }
+                                            onBlur={ handleBlur }
                                         />
+                                        { errors.award_title && touched.award_title ? (<div className="required-text">{ errors.award_title }</div>) : null }
+
                                     </FormControl>
                                     <br/>
                                     <br/>

@@ -114,7 +114,7 @@ class Publication(models.Model):
     approved = models.BooleanField(default=True)
 
     def __str__(self):
-        return self.title
+        return str(self.doi)
 
     class Meta:
         db_table = 'publication'
