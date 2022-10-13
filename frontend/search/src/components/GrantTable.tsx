@@ -87,7 +87,7 @@ class GrantsTable extends Component<GrantsTableProps> {
                 } }
                 columns={[
                     {
-                        title: "Projects", 
+                        title: "Awards", 
                         field: "title",
 			width: "50%",
                         render: (row: any) => {

@@ -12,16 +12,27 @@
 .name-container {
     padding: 16px; 
     display: flex; 
+    flex-direction: row;
+    align-items: flex-start;
     /*flex-direction:row;*/
 }
 
+.MuiFormControl-root {
+    width: 100%;
+}
+
+.name_input {
+    width: 80%;
+}
+
 .name-child-1 {
-    flex: 1;
-    padding-right: 3rem;
+    width: 50%;
+    flex-grow: 1;
 } 
 
 .name-child-2 {
-    flex: 2;
+    width: 50%;
+    flex-grow: 1;
 } 
 
 .survey-form-heading {
@@ -30,4 +41,5 @@
 
 .label {
     padding-bottom: 5px;
+    width: 100%;
 }

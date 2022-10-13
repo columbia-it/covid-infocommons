@@ -39,7 +39,8 @@ def submitForm(request):
                 person_keywords = data.get('person_kw', None),
                 desired_collaboration = data.get('desired_collaboration', None),
                 person_comments = data.get('person_comments', None),
-                person_additional_comments = data.get('additional_comments', None)
+                person_additional_comments = data.get('additional_comments', None),
+                is_copi = data.get('is_copi', None)
             )
             survey.save()
         except Exception as e:

@@ -1,9 +1,11 @@
 from django.contrib import admin
 from .models import Survey
 from apis.models import Person, Funder, Grant, Publication
+from django.core.exceptions import ValidationError
+from simple_history.admin import SimpleHistoryAdmin
 
 # Customize the Django admin view to include surveys
-class SurveyAdmin(admin.ModelAdmin):
+class SurveyAdmin(SimpleHistoryAdmin):
 
     # Check if a person already exists with the given email. Return the person found.
     # If no person found, create one with the given attributes and return it.
@@ -84,36 +86,49 @@ class SurveyAdmin(admin.ModelAdmin):
     def save_model(self, request, obj, form, change):
         if getattr(obj, 'approved'):
             try:
-                person = self.get_person_object(obj)
-                setattr(person, 'approved', True)
-                funder = self.get_funder_object(getattr(obj, 'funder_name'))
-                setattr(funder, 'approved', True)
-                grant = self.get_grant_object(obj)  
-                grant.funder = funder 
-                grant.principal_investigator = person
-                setattr(grant, 'approved', True)
-                person.save()
-                funder.save()
-                grant.save()
-                dois = getattr(obj, 'dois')
-                if dois:
-                    if ',' in dois:
-                        doi_list = dois.split(',')
-                        for doi in doi_list:
-                            p = self.get_publication_object(doi=doi)
+                is_copi = getattr(obj, 'is_copi')
+                if not is_copi:
+                    person = self.get_person_object(obj)
+                    setattr(person, 'approved', True)
+                    funder = self.get_funder_object(getattr(obj, 'funder_name'))
+                    setattr(funder, 'approved', True)
+                    grant = self.get_grant_object(obj)  
+                    grant.funder = funder 
+                    grant.principal_investigator = person
+                    setattr(grant, 'approved', True)
+                    person.save()
+                    funder.save()
+                    grant.save()
+                    dois = getattr(obj, 'dois')
+                    if dois:
+                        if ',' in dois:
+                            doi_list = dois.split(',')
+                            for doi in doi_list:
+                                p = self.get_publication_object(doi=doi)
+                                setattr(p, 'approved', True)
+                                p.save()
+                                p.grants.add(grant)
+                                p.save()
+                        else:
+                            p = self.get_publication_object(dois)
                             setattr(p, 'approved', True)
                             p.save()
                             p.grants.add(grant)
                             p.save()
-                    else:
-                        p = self.get_publication_object(dois)
-                        setattr(p, 'approved', True)
-                        p.save()
-                        p.grants.add(grant)
-                        p.save()
+                    super().save_model(request, obj, form, change)
+                else:
+                    award_id = getattr(obj, 'award_id')
+                    try:
+                        grant = Grant.objects.get(award_id=award_id)
+                        super().save_model(request, obj, form, change)
+                    except:
+                        print('Grant not found for adding Co-PI')
+                        raise ValidationError("Grant not found for adding Co-PI")
             except Exception as e:
                 print(e)
                 print('Error occurred while saving survey')
-        super().save_model(request, obj, form, change)
+        else:
+            super().save_model(request, obj, form, change)
+
 
 admin.site.register(Survey, SurveyAdmin)

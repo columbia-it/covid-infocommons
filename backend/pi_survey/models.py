@@ -1,6 +1,7 @@
 from django.db import models
 from django_mysql.models import ListCharField
 import datetime
+from simple_history.models import HistoricalRecords
 
 # Model to store the PI survey form data
 class Survey(models.Model):
@@ -23,11 +24,12 @@ class Survey(models.Model):
     person_additional_comments = models.TextField(null=True, blank=True)
     approved = models.BooleanField(default=False)
     submission_date = models.DateField(default=datetime.date.today)
-
+    is_copi = models.BooleanField(default=False)
+    history = HistoricalRecords()
+    
     def __str__(self):
         return self.first_name + ' ' + self.last_name + ' - Added on: '+ str(self.submission_date)
 
     class Meta:
         db_table = 'survey'
         ordering = ['id']
-
