@@ -17,6 +17,9 @@ from django.http import Http404
 def index(request):
     return render(request, 'survey_form.html', {})
 
+def send_email():
+    from_address = ''
+    to_address = ''
 @csrf_exempt
 #@get_token
 def submitForm(request):
@@ -26,8 +29,7 @@ def submitForm(request):
             survey = Survey(
                 first_name = data.get('first_name', None),
                 last_name = data.get('last_name', None),
-                emails = data.get('emails', None),
-                other_emails = data.get('other_emails', None),
+                email = data.get('email', None),
                 orcid = data.get('orcid', None),
                 award_id = data.get('award_id', None),
                 award_title = data.get('award_title', None),

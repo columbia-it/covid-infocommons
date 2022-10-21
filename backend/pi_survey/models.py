@@ -8,8 +8,7 @@ class Survey(models.Model):
     id = models.BigAutoField(primary_key=True)
     first_name = models.CharField(max_length=1000)
     last_name = models.CharField(max_length=1000)
-    emails = models.TextField()
-    other_emails = models.TextField(null=True, blank=True)
+    email = models.CharField(max_length=1000)
     orcid = models.CharField(max_length=1000)
     award_id = models.CharField(max_length=255)
     award_title = models.TextField()
@@ -26,7 +25,7 @@ class Survey(models.Model):
     submission_date = models.DateField(default=datetime.date.today)
     is_copi = models.BooleanField(default=False)
     history = HistoricalRecords()
-    
+
     def __str__(self):
         return self.first_name + ' ' + self.last_name + ' - Added on: '+ str(self.submission_date)
 

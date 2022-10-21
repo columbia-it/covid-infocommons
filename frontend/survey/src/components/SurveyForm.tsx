@@ -50,7 +50,7 @@ interface SurveyFormData {
     first_name: string
     last_name: string
     orcid: string
-    emails: string
+    email: string
     award_id: string
     award_title: string
     grant_kw: string
@@ -64,6 +64,7 @@ interface SurveyFormData {
     person_comments: string
     additional_comments: string
     is_copi: boolean
+    pi_or_copi: string
 }
 
 interface DialogTitleProps {
@@ -76,6 +77,11 @@ enum Funder {
     NSF,
     NIH,
     OTHER
+}
+
+enum PI_OR_COPI {
+    PI, 
+    CoPI
 }
 
 let url = ''
@@ -180,7 +186,7 @@ class SurveyForm extends Component <any, FormState> {
         this.get_funder_name = this.get_funder_name.bind(this)
         this.handle_ok_dialog_close = this.handle_ok_dialog_close.bind(this)
         this.validate_comma_separated_string = this.validate_comma_separated_string.bind(this)
-        this.validate_emails = this.validate_emails.bind(this)
+        this.validate_email = this.validate_email.bind(this)
     }
 
     firstNameChangeHandler(event: React.ChangeEvent<HTMLInputElement>) {
@@ -214,6 +220,14 @@ class SurveyForm extends Component <any, FormState> {
         }
     }
 
+    is_copi(value: string) {
+        let selected_value = Number(value)
+        if (selected_value > 0) {
+            return true
+        }
+        return true
+    }
+
     get_funder_name(value: string) {
         for (var enumMember in Funder) {
             var isValueProperty = Number(enumMember) >= 0
@@ -222,6 +236,16 @@ class SurveyForm extends Component <any, FormState> {
                     return this.state.other_funder
                 }
                 return Funder[enumMember]
+            }
+        }
+        return ''
+    }
+
+    get_pi_copi_name(value: string) {
+        for (var enumMember in PI_OR_COPI) {
+            var isValueProperty = Number(enumMember) >= 0
+            if (isValueProperty && (enumMember == value)) {
+                return PI_OR_COPI[enumMember]
             }
         }
         return ''
@@ -242,23 +266,15 @@ class SurveyForm extends Component <any, FormState> {
         }
     }
 
-    validate_emails(value: any) {
-        let is_email_valid = true
+    validate_email(value: any) {
         if (value != null) {
             value = value.trim()
-            let is_string_valid = this.validate_comma_separated_string(value)
-            if (is_string_valid) {
-                let emails = value.split(',')
-                for (let i = 0; i < emails.length; i++) {
-                    let email_exp = /^(([^<>()[\]\\.,;:\s@\"]+(\.[^<>()[\]\\.,;:\s@\"]+)*)|(\".+\"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/
-                    if (!emails[i].match(email_exp)) {
-                        is_email_valid = false
-                    } 
-                }
+            let email_exp = /^(([^<>()[\]\\.,;:\s@\"]+(\.[^<>()[\]\\.,;:\s@\"]+)*)|(\".+\"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/
+            if (!value.match(email_exp)) {
+                return false
             }
-            return is_email_valid
-        } 
-        return is_email_valid
+        }
+        return true
     }
 
     validate_orcid(value: any) {
@@ -320,11 +336,16 @@ class SurveyForm extends Component <any, FormState> {
         if (values.orcid != 'NA' && values.orcid.indexOf("https://orcid.org/") == -1) {
             values.orcid = "https://orcid.org/" + values.orcid
         }
+        // if (values.pi_or_copi == PI_OR_COPI.CoPI.toString()) {
+        //     values.is_copi = true
+        // } else {
+        //     values.is_copi = false
+        // }
         var payload = {
             first_name: values.first_name,
             last_name: values.last_name,
             orcid: values.orcid,
-            emails: values.emails,
+            email: values.email,
             award_id: values.award_id,
             award_title: values.award_title,
             grant_kw: values.grant_kw,
@@ -362,6 +383,12 @@ class SurveyForm extends Component <any, FormState> {
         window.scrollTo({top: 0, left: 0, behavior: 'smooth'});
     }
 
+    handle_clear_form() {
+        this.setState({
+            other_funder: ''
+        })
+    }
+
     render() {
         return (
             <div className="form_div">
@@ -382,7 +409,8 @@ class SurveyForm extends Component <any, FormState> {
                 </p>
                 <br/>
                 <p>
-                    As a COVID-19 research awardee, we invite you to provide voluntary contributions of additional, applicable public information about your project, beyond the award abstract, which you would like to make openly available via the <a href="https://covidinfocommons.datascience.columbia.edu/">COVID Information Commons (CIC)</a> website in our PI Database.
+                    As a COVID-19 research awardee, we invite you to provide voluntary contributions of additional, applicable public information about your project, beyond the award abstract, which you would like to make openly available via the <a href="https://covidinfocommons.datascience.columbia.edu/">COVID Information Commons (CIC)</a> website in our PI Database. 
+                    After our staff reviews it for inclusion in the COVID Information Commons, you can view it <a href={ url + '/grants' } target="_blank">here. </a>If you have another award, please fill out the survey form again. 
                 </p>
                 <br/>
                 <p>
@@ -396,12 +424,13 @@ class SurveyForm extends Component <any, FormState> {
                         first_name: '',
                         last_name: '',
                         orcid: '',
-                        emails: '',
+                        email: '',
                         award_id: '',
                         award_title: '',
                         grant_kw: '',
                         dois: '',
                         funder: Funder.NSF.toString(),
+                        pi_or_copi: PI_OR_COPI.PI.toString(),
                         other_funder: '',
                         grant_add_kw: '',
                         websites: '',
@@ -415,9 +444,9 @@ class SurveyForm extends Component <any, FormState> {
                         Yup.object({
                             first_name: Yup.string().required('First name is required'),
                             last_name: Yup.string().required('Last name is required'),
-                            emails: Yup.string().
+                            email: Yup.string().
                                 required('Email address(es) is required').
-                                test('validate_emails', 'Email(s) must be comma separated list of valid address(es)', this.validate_emails),
+                                test('validate_email', 'Email must be a valid email address', this.validate_email),
                             grant_kw: Yup.string().
                                 test('no-special-chars', 'Keywords must be comma separated', this.validate_comma_separated_string),
                             grant_add_kw: Yup.string().
@@ -436,11 +465,12 @@ class SurveyForm extends Component <any, FormState> {
                             "first_name": values.first_name.trim(),
                             "last_name": values.last_name.trim(),
                             "orcid": values.orcid.trim(),
-                            "emails": values.emails.trim(),
+                            "email": values.email.trim(),
                             "award_id": values.award_id,
                             "award_title": values.award_title,
                             "grant_kw": values.grant_kw.trim(),
                             "funder": this.get_funder_name(values.funder),
+                            "pi_or_copi": this.get_pi_copi_name(values.pi_or_copi),
                             "other_funder": values.other_funder,
                             "dois": values.dois.trim(),
                             "grant_add_kw": values.grant_add_kw.trim(),
@@ -449,7 +479,7 @@ class SurveyForm extends Component <any, FormState> {
                             "desired_collaboration": values.desired_collaboration.trim(),
                             "person_comments": values.person_comments.trim(),
                             "additional_comments": values.additional_comments.trim(),
-                            "is_copi": values.is_copi
+                            "is_copi": this.is_copi(values.pi_or_copi),
                         }
                         this.handleSubmit(form_values)
                         resetForm({});
@@ -464,7 +494,7 @@ class SurveyForm extends Component <any, FormState> {
                                     keyEvent.preventDefault();
                                   }
                             }
-                        } >
+                        }>
                             <ScrollToFieldError />
                             <div>
                                 <Paper className="name-container">
@@ -520,17 +550,17 @@ class SurveyForm extends Component <any, FormState> {
                                 <Paper style={{ padding: 16 }}>
                                     <FormControl className="name-input">
                                         <FormLabel id="emails-label" className="label">
-                                            Your email address(es) <span className="required-text">*</span>
+                                            Your email address <span className="required-text">*</span>
                                         </FormLabel>
                                         <TextField 
-                                            id="emails" 
+                                            id="email" 
                                             variant="outlined" 
-                                            value={ values.emails }
+                                            value={ values.email }
                                             onChange={ handleChange }
                                             onKeyUp={ handleBlur }
                                             onBlur={ handleBlur }
                                         />
-                                        {errors.emails && touched.emails ? (<div className="required-text">{errors.emails}</div>) : null}
+                                        {errors.email && touched.email ? (<div className="required-text">{errors.email}</div>) : null}
                                     </FormControl>
                                     <br/>
                                 </Paper> 
@@ -607,17 +637,18 @@ class SurveyForm extends Component <any, FormState> {
                                             <RadioGroup
                                                 aria-labelledby="pi-copi-label"
                                                 defaultValue="PI"
-                                                name="pi"
-                                                onChange={ (e, val)=> { if (val === 'CoPI') { values.is_copi = true } else { values.is_copi = false }} }
+                                                name="pi_or_copi"
+                                                onChange={ handleChange }
+                                                value={ values.pi_or_copi.toString() }
                                             >
                                             <FormControlLabel 
-                                                value="PI" 
+                                                value={ PI_OR_COPI.PI.toString() }
                                                 control={<Radio />} 
                                                 label="PI" />
                                             <FormControlLabel 
-                                                value="CoPI" 
+                                                value={ PI_OR_COPI.CoPI.toString() }
                                                 control={<Radio />} 
-                                                label="Co-PI" />
+                                                label="CoPI" />
                                         </RadioGroup>
                                     </FormControl>
                                 </Paper>
@@ -845,7 +876,10 @@ class SurveyForm extends Component <any, FormState> {
                                             </Button>
                                         </DialogActions>
                                     </BootstrapDialog>
-                                    <Button variant="text" onClick={ handleReset }>
+                                    <Button variant="text" onClick={ () => {
+                                        handleReset();
+                                        this.handle_clear_form();
+                                    }}>
                                         Clear form
                                     </Button>       
                                 </Stack>
