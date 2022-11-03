@@ -66,8 +66,13 @@ def index(request):
 
 def detail(request, grant_id):
     grant = get_object_or_404(Grant, pk=grant_id)
-    state = grant.awardee_organization.state
-    return render(request, 'grant_detail.html', {'grant': grant, 'state': states[state]})
+    state_abbrev = ""
+    state = ""
+    if grant.awardee_organization is not None:
+        state_abbrev = grant.awardee_organization.state
+    if state_abbrev in states:
+        state = states[state_abbrev]        
+    return render(request, 'grant_detail.html', {'grant': grant, 'state': state})
 
 def pi_detail(request, pi_id):
     person = get_object_or_404(Person, pk=pi_id)
