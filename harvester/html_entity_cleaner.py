@@ -35,7 +35,7 @@ def process(grant):
             changed = True
             print(" - abstract changed")
 
-    if not changed:
+#    if not changed:
         return
 
     print(" - running update")
@@ -71,6 +71,11 @@ def grant_update_json(title, abstract):
 
     
 def main():
+    grant = cic_grants.find_cic_grant('1955260')
+    process(grant)
+    return
+
+    
     # process all grants, one page at a time
     page = 1
     total = 0

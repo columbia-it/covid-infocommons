@@ -24,7 +24,7 @@ NIH_API_DELAY = 5
 def main(max_year = None, start_offset = 0):
 
     if max_year is None:
-        max_year = date.today().year + 1
+        max_year = date.today().year
         
     imported_count = 0
 

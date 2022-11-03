@@ -87,7 +87,7 @@ DIVISION_TO_DIRECTORATE = {
 }
 
 def main():
-    max_year = date.today().year + 1
+    max_year = date.today().year
     imported_count = 0
 
     # The NSF API will only return a max of 3000 grants per request, and the default page size is 25
@@ -99,9 +99,9 @@ def main():
 
             for offset in range(0, 3000, 25):
                 grants = retrieve_nsf_grants(year, month, offset)                
-                print(f"Received {len(grants)} grants")
-                if len(grants) == 0:
+                if grants is None or len(grants) == 0:
                     break
+                print(f"Received {len(grants)} grants")
                 for g in grants:
                     process_grant(g)
                 imported_count += len(grants)
@@ -131,8 +131,11 @@ def retrieve_nsf_grants(year, month, offset):
     logging.info(f"REQUEST = {nsf_url}")
 
     response = requests.get(nsf_url)
-    response_json = response.json()    
-    grants = response_json['response']['award']
+    response_json = response.json()
+    response_detail = response_json['response']
+    if 'award' not in response_detail:
+        return None
+    grants = response_detail['award']
     return grants
 
 

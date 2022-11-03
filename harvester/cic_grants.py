@@ -14,8 +14,9 @@ def main():
 #    if grant is None:
     grant = find_cic_grant('2204082')
     print(f" -- found {grant['id']} -- {grant['award_id']} -- {grant['title']}")
-    grant_json = grant_object_to_upload_json(grant)
-    update_cic_grant(grant_json, grant['id'])
+#    grant_json = grant_object_to_upload_json(grant)
+#    update_cic_grant(grant_json, grant['id'])
+#    delete_cic_grant(10721)
 
 
 def create_cic_grant(grant_json):
@@ -56,15 +57,15 @@ def delete_cic_grant(grant_id):
     logging.info(f"    -- {response}")
     
     
-def find_cic_grant(grant_id):
-    logging.debug(f" -- Looking for existing grant {grant_id}")
-    logging.debug(f"    -- {CIC_GRANTS_SEARCH_API}?keyword={grant_id}")
-    response = requests.get(f"{CIC_GRANTS_SEARCH_API}?keyword={grant_id}")
+def find_cic_grant(award_id):
+    logging.debug(f" -- Looking for existing grant {award_id}")
+    logging.debug(f"    -- {CIC_GRANTS_SEARCH_API}?keyword={award_id}")
+    response = requests.get(f"{CIC_GRANTS_SEARCH_API}?keyword={award_id}")
     response_json = response.json()
     cic_grants = response_json['hits']['hits']
     for cg in cic_grants:
         logging.debug(f" --  checking {cg['_id']}")
-        if cg['_source']['award_id'] == grant_id:
+        if cg['_source']['award_id'] == award_id:
             logging.debug(f"   -- found {cg['_source']['award_id']}")
             # copy the id into the internal metadata, so it has the same structure as the rest of the API
             cg['_source']['id'] = cg['_id']
