@@ -8,7 +8,7 @@ import logging
 import requests
 
 
-NSF_GRANT_REQUEST = "https://api.nsf.gov/services/v1/awards.json?keyword=covid+%22covid-19%22+%22corid-19%22+%22corvid-19%22+coronavirus+sars2+%22SARS-CoV-2%22&printFields=abstractText,agency,awardAgencyCode,awardee,awardeeAddress,awardeeCity,awardeeCountryCode,awardeeCounty,awardeeDistrictCode,awardeeName,awardeeStateCode,awardeeZipCode,cfdaNumber,coPDPI,date,dunsNumber,estimatedTotalAmt,expDate,fundAgencyCode,fundProgramName,fundsObligatedAmt,id,offset,parentDunsNumber,pdPIName,perfAddress,perfCity,perfCountryCode,perfCounty,perfDistrictCode,perfLocation,perfStateCode,perfZipCode,piEmail,piFirstName,piLastName,piMiddeInitial,piPhone,poEmail,poName,poPhone,primaryProgram,projectOutComesReport,publicationConference,publicationResearch,rpp,startDate,title,transType"
+NSF_GRANT_REQUEST = "https://api.nsf.gov/services/v1/awards.json?keyword=covid+COVID+covid19+coronavirus+pandemic+sars2+%22SARS-CoV%22&printFields=abstractText,agency,awardAgencyCode,awardee,awardeeAddress,awardeeCity,awardeeCountryCode,awardeeCounty,awardeeDistrictCode,awardeeName,awardeeStateCode,awardeeZipCode,cfdaNumber,coPDPI,date,dunsNumber,estimatedTotalAmt,expDate,fundAgencyCode,fundProgramName,fundsObligatedAmt,id,offset,parentDunsNumber,pdPIName,perfAddress,perfCity,perfCountryCode,perfCounty,perfDistrictCode,perfLocation,perfStateCode,perfZipCode,piEmail,piFirstName,piLastName,piMiddeInitial,piPhone,poEmail,poName,poPhone,primaryProgram,projectOutComesReport,publicationConference,publicationResearch,rpp,startDate,title,transType"
 
 NSF_SINGLE_GRANT_REQUEST = "https://api.nsf.gov/services/v1/awards.json?printFields=abstractText,agency,awardAgencyCode,awardee,awardeeAddress,awardeeCity,awardeeCountryCode,awardeeCounty,awardeeDistrictCode,awardeeName,awardeeStateCode,awardeeZipCode,cfdaNumber,coPDPI,date,dunsNumber,estimatedTotalAmt,expDate,fundAgencyCode,fundProgramName,fundsObligatedAmt,id,offset,parentDunsNumber,pdPIName,perfAddress,perfCity,perfCountryCode,perfCounty,perfDistrictCode,perfLocation,perfStateCode,perfZipCode,piEmail,piFirstName,piLastName,piMiddeInitial,piPhone,poEmail,poName,poPhone,primaryProgram,projectOutComesReport,publicationConference,publicationResearch,rpp,startDate,title,transType&id="
 
@@ -87,21 +87,21 @@ DIVISION_TO_DIRECTORATE = {
 }
 
 def main():
-    max_year = date.today().year + 1
+    max_year = date.today().year
     imported_count = 0
 
     # The NSF API will only return a max of 3000 grants per request, and the default page size is 25
     # So we request one month at a time, and step through each page
-    for year in range(max_year, 2005, -1):
+    for year in range(max_year, 2020, -1):
         for month in range(1, 13):
             print(f'==================== Imported so far: {imported_count} ==========================')
             print(f'==================== Retrieving month {year}-{month} ======================')
 
             for offset in range(0, 3000, 25):
                 grants = retrieve_nsf_grants(year, month, offset)                
-                print(f"Received {len(grants)} grants")
-                if len(grants) == 0:
+                if grants is None or len(grants) == 0:
                     break
+                print(f"Received {len(grants)} grants")
                 for g in grants:
                     process_grant(g)
                 imported_count += len(grants)
@@ -131,8 +131,11 @@ def retrieve_nsf_grants(year, month, offset):
     logging.info(f"REQUEST = {nsf_url}")
 
     response = requests.get(nsf_url)
-    response_json = response.json()    
-    grants = response_json['response']['award']
+    response_json = response.json()
+    response_detail = response_json['response']
+    if 'award' not in response_detail:
+        return None
+    grants = response_detail['award']
     return grants
 
 

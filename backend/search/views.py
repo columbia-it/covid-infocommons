@@ -76,6 +76,7 @@ def search_grants(request):
         query['query']['bool']['must'].append({
             'multi_match': {
                 'query': keyword,
+                'operator': 'and',
                 'fields': [
                     'title', 
                     'abstract', 
