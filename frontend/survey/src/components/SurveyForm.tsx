@@ -225,7 +225,7 @@ class SurveyForm extends Component <any, FormState> {
         if (selected_value > 0) {
             return true
         }
-        return true
+        return false
     }
 
     get_funder_name(value: string) {
@@ -498,44 +498,44 @@ class SurveyForm extends Component <any, FormState> {
                             <ScrollToFieldError />
                             <div>
                                 <Paper className="name-container">
-                                    <div className="name-child-1">
+                                    <div>
                                         <FormControl>
                                             <div>
-                                            <FormLabel id="fname_label" className="label">
-                                                Your first name (plus middle initial, if any) <span className="required-text">*</span>
-                                            </FormLabel>
+                                                <FormLabel id="fname_label" className="label">
+                                                    Your first name (plus middle initial, if any) <span className="required-text">*</span>
+                                                </FormLabel>
                                             </div>
                                             <div className="name_input">
-                                            <TextField 
-                                                id="first_name" 
-                                                variant="outlined" 
-                                                value={ values.first_name }
-                                                onChange={ handleChange }
-                                                onKeyUp={ handleBlur }
-                                                onBlur={ handleBlur }
-                                            />
+                                                <TextField 
+                                                    id="first_name" 
+                                                    variant="outlined" 
+                                                    value={ values.first_name }
+                                                    onChange={ handleChange }
+                                                    onKeyUp={ handleBlur }
+                                                    onBlur={ handleBlur }
+                                                />
                                             </div>
                                             { errors.first_name && touched.first_name ? (<div className="required-text">{errors.first_name}</div>) : null }
                                             <br/>
                                             <br/>
                                         </FormControl>
                                     </div>
-                                    <div className="name-child-2">
+                                    <div>
                                         <FormControl sx={{width: '100%'}}>
                                             <div>
-                                            <FormLabel id="lname-label" className="label">
-                                                Your last name<span className="required-text">*</span>
-                                            </FormLabel>
+                                                <FormLabel id="lname-label" className="label">
+                                                    Your last name<span className="required-text">*</span>
+                                                </FormLabel>
                                             </div>
                                             <div className="name_input">
-                                            <TextField 
-                                                id="last_name" 
-                                                variant="outlined" 
-                                                value={ values.last_name }
-                                                onChange={ handleChange }
-                                                onKeyUp={ handleBlur }
-                                                onBlur={ handleBlur }
-                                            />
+                                                <TextField 
+                                                    id="last_name" 
+                                                    variant="outlined" 
+                                                    value={ values.last_name }
+                                                    onChange={ handleChange }
+                                                    onKeyUp={ handleBlur }
+                                                    onBlur={ handleBlur }
+                                                />
                                             </div>
                                             { errors.last_name && touched.last_name ? (<div className="required-text">{ errors.last_name }</div>) : null }
                                             <br/>

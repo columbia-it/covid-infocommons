@@ -58,14 +58,16 @@ class SurveyAdmin(SimpleHistoryAdmin):
     # Override save_model() in ModelAdmin so that we can persist the models and their relationships
     # when approved flag is set to true. 
     def save_model(self, request, obj, form, change):
-        print('===== save_model ====')
         if getattr(obj, 'approved'):
             try:
                 person = self.get_person(obj)
-                print('... got person ...')
                 grants = self.get_grant(obj)
-                print('... got grant ...')
                 is_copi = getattr(obj, 'is_copi')
+                comments = getattr(obj, 'person_comments')
+                comments += getattr(obj, 'person_additional_comments')
+                desired_collaboration = getattr(obj, 'desired_collaboration')
+                websites = getattr(obj, 'websites')
+
                 if person:
                     if not person.orcid:
                         setattr(person, 'orcid', getattr(obj, 'orcid'))
@@ -76,18 +78,19 @@ class SurveyAdmin(SimpleHistoryAdmin):
                     else:
                         original_kws = new_kws
                     setattr(person, 'keywords', original_kws)
+                    setattr(person, 'comments', comments)
+                    setattr(person, 'desired_collaboration', desired_collaboration)
+                    setattr(person, 'websites', websites)
                 else:
-                    comments = getattr(obj, 'person_comments')
-                    comments += getattr(obj, 'person_additional_comments')
                     person = Person(
                         first_name = getattr(obj, 'first_name'),
                         last_name = getattr(obj, 'last_name'),
                         orcid = getattr(obj, 'orcid'),
                         emails = getattr(obj, 'email'),
-                        websites = getattr(obj, 'websites'),
+                        websites = websites,
                         keywords = getattr(obj, 'person_keywords'),
-                        desired_collaboration = getattr(obj, 'desired_collaboration'),
-                        comments = comments,
+                        desired_collaboration = desired_collaboration,
+                        comments = comments
                     )
                 
                 funder = self.get_funder(getattr(obj, 'funder_name'))

@@ -8,8 +8,7 @@
 
 .name-container {
     padding: 16px; 
-    display: flex; 
-    flex-direction: row;
+    display: grid; 
     align-items: flex-start;
     /*flex-direction:row;*/
 }
@@ -19,18 +18,8 @@
 }
 
 .name_input {
-    width: 80%;
+    width: 50%;
 }
-
-.name-child-1 {
-    width: 50%;
-    flex-grow: 1;
-} 
-
-.name-child-2 {
-    width: 50%;
-    flex-grow: 1;
-} 
 
 .survey-form-heading {
     text-align: center;

@@ -20,6 +20,7 @@ def index(request):
 def send_email():
     from_address = ''
     to_address = ''
+    
 @csrf_exempt
 #@get_token
 def submitForm(request):
