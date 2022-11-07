@@ -1,10 +1,10 @@
 const path = require("path");
+const webpack = require('webpack');
+const Dotenv = require('dotenv-webpack');
 const HtmlWebpackPlugin = require("html-webpack-plugin");
-
-const static_dir = path.resolve("../").concat("/backend/search/static/search")
-
+const static_dir = path.resolve("../../").concat("/backend/pi_survey/static/pi_survey")
 const MiniCssExtractPlugin = require("mini-css-extract-plugin");
-
+console.log(__dirname)
 module.exports = {
     entry: path.join(__dirname, "src", "index.tsx"),
     output: { 
@@ -40,5 +40,10 @@ module.exports = {
               }
         ]
     },
-    plugins: [new MiniCssExtractPlugin()]
+    plugins: [new MiniCssExtractPlugin(),
+        new Dotenv()
+        // new webpack.DefinePlugin({
+        //     "process.env.OAUTH_TOKEN": process.env.OAUTH_TOKEN,
+        //   }),
+    ]
 }

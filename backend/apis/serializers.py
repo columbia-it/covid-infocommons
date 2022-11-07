@@ -27,7 +27,7 @@ class PersonSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Person
-        fields = ('id', 'affiliations', 'first_name', 'last_name', 'orcid', 'emails', 'private_emails', 'keywords', 'approved')
+        fields = ('id', 'affiliations', 'first_name', 'last_name', 'orcid', 'emails', 'private_emails', 'keywords', 'approved', 'desired_collaboration', 'comments')
         depth = 2
 
 
@@ -40,7 +40,7 @@ class CreatePersonSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Person
-        fields = ('id', 'affiliations', 'first_name', 'last_name', 'orcid', 'emails', 'private_emails', 'keywords', 'approved')
+        fields = ('id', 'affiliations', 'first_name', 'last_name', 'orcid', 'emails', 'private_emails', 'keywords', 'approved', 'desired_collaboration', 'comments')
 
 
 class FunderDivisionListField(serializers.Field):

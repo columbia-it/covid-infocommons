@@ -55,6 +55,9 @@ class Person(models.Model):
 
     affiliations = models.ManyToManyField(Organization, blank=True)
     approved = models.BooleanField(default=True)
+    websites = ListCharField(base_field=models.CharField(max_length=1000, null=True, blank=True), max_length=100, null=True, blank=True)
+    desired_collaboration = models.TextField(null=True, blank=True)
+    comments = models.TextField(null=True, blank=True)
 
     def __str__(self):
         return '{first_name} {last_name}'.format(first_name=self.first_name, last_name=self.last_name)
@@ -111,7 +114,7 @@ class Publication(models.Model):
     approved = models.BooleanField(default=True)
 
     def __str__(self):
-        return self.title
+        return str(self.doi)
 
     class Meta:
         db_table = 'publication'
