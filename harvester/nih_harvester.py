@@ -2,6 +2,7 @@ from datetime import date, datetime
 import cic_grants
 import cic_orgs
 import cic_people
+import html_entity_cleaner
 import json
 import logging
 import requests
@@ -53,7 +54,7 @@ def main(max_year = None, start_offset = 0):
             time.sleep(NIH_API_DELAY) 
 
     for year in range(max_year, 2020, -1):
-        for month in range(1,13):
+        for month in range(12,0,-1):
             # grants that explicitly mention COVID
             offset = start_offset
             processed_count = 0
@@ -86,7 +87,7 @@ def retrieve_nih_grant(award_id):
 def retrieve_subject_grants(year, month, offset):
     # Since NIH doesn't allow us to query directly by subject, we query for everything
     # and then filter the results.
-    logging.info("Reading grants from NIH API")
+    logging.info(f"Reading grants from NIH API for {year}-{month}, offset {offset}")
     criteria = nih_all_grants_criteria(year, month, offset)
     response = requests.post(url = NIH_BASE,
                              data = json.dumps(criteria),
@@ -238,11 +239,11 @@ def nih_to_cic_format(grant):
                 },
                 "awardee_organization": nih_awardee_org(grant['org_name'],grant['org_country'], grant['org_state']),
                 "award_id": grant['project_num'],
-                "title": grant['project_title'],
+                "title": html_entity_cleaner.replace_quoted(grant['project_title']),
                 "start_date": nih_to_cic_date(grant['project_start_date']),
                 "end_date": nih_to_cic_date(grant['project_end_date']),
                 "award_amount": grant['award_amount'],
-                "abstract": nih_abstract(grant['abstract_text'])
+                "abstract": html_entity_cleaner.replace_quoted(nih_abstract(grant['abstract_text']))
             }
         }
     }
