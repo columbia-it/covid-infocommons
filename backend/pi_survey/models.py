@@ -27,8 +27,8 @@ class Survey(models.Model):
     history = HistoricalRecords()
 
     def __str__(self):
-        return self.first_name + ' ' + self.last_name + ' - Added on: '+ str(self.submission_date)
-
+        approved_text = 'Approved' if self.approved else 'Not approved'
+        return self.first_name + ' ' + self.last_name + ' - Added on: '+ str(self.submission_date) + ' - ' + approved_text
     class Meta:
         db_table = 'survey'
         ordering = ['id']
