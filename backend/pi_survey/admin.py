@@ -5,6 +5,7 @@ from apis.models import Person, Funder, Grant, Publication
 from django.core.exceptions import ValidationError
 from simple_history.admin import SimpleHistoryAdmin
 
+
 # Customize the Django admin view to include surveys
 class SurveyAdmin(SimpleHistoryAdmin):
 
@@ -14,17 +15,17 @@ class SurveyAdmin(SimpleHistoryAdmin):
         orcid = getattr(obj, 'orcid')
         try:
             if orcid != 'NA':
-                person_result = Person.objects.get(orcid__contains=orcid)
-                if person_result:
-                    return person_result
+                person_result = Person.objects.filter(orcid__contains=orcid)
+                if person_result and person_result.count() > 0:
+                    return person_result[0]
             else:
                 email = getattr(obj, 'email')
-                person_result = Person.objects.get(emails__contains=email)
-                if person_result:
-                    return person_result
-                person_result = Person.objects.get(private_emails__contains=email)
-                if person_result:
-                    return person_result        
+                person_result = Person.objects.filter(emails__contains=email)
+                if person_result and person_result.len() > 0:
+                    return person_result[0]
+                person_result = Person.objects.filter(private_emails__contains=email)
+                if person_result and person_result.count() > 0:
+                    return person_result[0]    
         except:
             return None
         return None
@@ -35,9 +36,12 @@ class SurveyAdmin(SimpleHistoryAdmin):
         award_id = getattr(obj, 'award_id')
         funder = getattr(obj, 'funder_name')
         grants = Grant.objects.filter(
-            award_id=award_id, 
+            award_id__contains=award_id, 
             funder__name=funder)
-        return grants
+        if grants and grants.count() > 0:
+            return grants[0]
+        else:
+            return None
         
     # Check if a funder exists with the given name. If one is found, return it.
     # If none is found, create a new funder with the given name and return it.
@@ -61,7 +65,7 @@ class SurveyAdmin(SimpleHistoryAdmin):
         if getattr(obj, 'approved'):
             try:
                 person = self.get_person(obj)
-                grants = self.get_grant(obj)
+                grant = self.get_grant(obj)
                 is_copi = getattr(obj, 'is_copi')
                 comments = getattr(obj, 'person_comments')
                 comments += getattr(obj, 'person_additional_comments')
@@ -96,7 +100,7 @@ class SurveyAdmin(SimpleHistoryAdmin):
                 funder = self.get_funder(getattr(obj, 'funder_name'))
                 if not funder:
                     funder = Funder(name=getattr(obj, 'funder_name'))
-                if len(grants) == 0:
+                if not grant:
                     grant_keywords = []
                     if getattr(obj, 'grant_keywords'):
                         grant_keywords = getattr(obj, 'grant_keywords').split(',')
@@ -111,7 +115,6 @@ class SurveyAdmin(SimpleHistoryAdmin):
                     )
                     grant.funder = funder 
                 else:
-                    grant = grants[0]
                     grant_keywords = []
                     if grant.keywords:
                         grant_keywords = grant.keywords.split(',')
