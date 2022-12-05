@@ -35,6 +35,10 @@ class SurveyAdmin(SimpleHistoryAdmin):
     def get_grant(self, obj):
         award_id = getattr(obj, 'award_id')
         funder = getattr(obj, 'funder_name')
+        if funder and funder == 'NIH':
+            funder = 'National Institutes of Health'
+        elif funder and funder == 'NSF':
+            funder = 'National Science Foundation'
         grants = Grant.objects.filter(
             award_id__contains=award_id, 
             funder__name=funder)
@@ -71,16 +75,16 @@ class SurveyAdmin(SimpleHistoryAdmin):
                 comments += getattr(obj, 'person_additional_comments')
                 desired_collaboration = getattr(obj, 'desired_collaboration')
                 websites = getattr(obj, 'websites')
-
+                websites = websites.split(',')
                 if person:
                     if not person.orcid:
                         setattr(person, 'orcid', getattr(obj, 'orcid'))
                     original_kws = person.keywords
                     new_kws = getattr(obj, 'person_keywords')
                     if original_kws:
-                        original_kws = original_kws.append(new_kws)
+                        original_kws.extend(new_kws.split(','))
                     else:
-                        original_kws = new_kws
+                        original_kws = new_kws.split(',')
                     setattr(person, 'keywords', original_kws)
                     setattr(person, 'comments', comments)
                     setattr(person, 'desired_collaboration', desired_collaboration)
@@ -92,11 +96,10 @@ class SurveyAdmin(SimpleHistoryAdmin):
                         orcid = getattr(obj, 'orcid'),
                         emails = getattr(obj, 'email'),
                         websites = websites,
-                        keywords = getattr(obj, 'person_keywords'),
+                        keywords = getattr(obj, 'person_keywords').split(','),
                         desired_collaboration = desired_collaboration,
                         comments = comments
                     )
-                
                 funder = self.get_funder(getattr(obj, 'funder_name'))
                 if not funder:
                     funder = Funder(name=getattr(obj, 'funder_name'))
@@ -105,7 +108,7 @@ class SurveyAdmin(SimpleHistoryAdmin):
                     if getattr(obj, 'grant_keywords'):
                         grant_keywords = getattr(obj, 'grant_keywords').split(',')
                     if getattr(obj, 'grant_additional_keywords'):
-                        grant_keywords = grant_keywords.extend(
+                        grant_keywords.extend(
                             getattr(obj, 'grant_additional_keywords').split(','))
                     
                     grant = Grant(
@@ -117,13 +120,13 @@ class SurveyAdmin(SimpleHistoryAdmin):
                 else:
                     grant_keywords = []
                     if grant.keywords:
-                        grant_keywords = grant.keywords.split(',')
+                        grant_keywords = grant.keywords
                     if getattr(obj, 'grant_keywords'):
-                        grant_keywords = grant_keywords.extend(
+                        grant_keywords.extend(
                             getattr(obj, 'grant_keywords').split(',')
                         )
                     if getattr(obj, 'grant_additional_keywords'):
-                        grant_keywords = grant_keywords.extend(
+                        grant_keywords.extend(
                             getattr(obj, 'grant_additional_keywords').split(',')
                         )
                     setattr(grant, 'keywords', grant_keywords)

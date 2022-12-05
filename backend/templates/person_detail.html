@@ -59,7 +59,7 @@
       {% if person.orcid is not None %}
       <section>
         <small>ORCID ID:</small>
-        <p><a href="https://orcid.org/{{ person.orcid }}"></a></p>
+          <p><a href={{ person.orcid }}>{{ person.orcid }}</a></p>
       </section>
       {% endif %}
 
