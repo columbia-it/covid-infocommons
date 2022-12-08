@@ -4,9 +4,10 @@ from apis.tests.factories import OrganizationFactory, FunderFactory, GrantFactor
 from apis.serializers import GrantSerializer, CreateGrantSerializer
 from rest_framework.reverse import reverse
 from rest_framework.test import APIRequestFactory, APITestCase
+from django.test import RequestFactory, override_settings
 from rest_framework.request import Request
 from apis.views import OrganizationViewSet, GrantViewSet
-from rest_framework.exceptions import NotFound
+from apis.tests import TestBase
 
 class APIURLsTest(APITestCase):
     def setUp(self) -> None:
@@ -153,8 +154,27 @@ class TestGrantViewMixin(APITestCase):
         got = view.get_serializer_class()
         self.assertEqual(got, GrantSerializer)
 
-class TestValidationErrorResponses(APITestCase):
-    pass
+class TestValidationErrorResponses(TestBase):
+    
+    def _get_create_response(self, data, view):
+        factory = RequestFactory()
+        request = factory.post("/", data, content_type="application/vnd.api+json")
+        grant = self.create_grant()
+        return view(request)
+
+    def test_if_returns_error_on_empty_post(self):
+        view = GrantViewSet.as_view({"post": "create"})
+        response = self._get_create_response("{}", view)
+        self.assertEqual(400, response.status_code)
+        expected = [
+            {
+                "detail": "Received document does not contain primary data",
+                "status": "400",
+                "source": {"pointer": "/data"},
+                "code": "parse_error",
+            }
+        ]
+        self.assertEqual(expected, response.data)
 
 
         
