@@ -91,7 +91,10 @@ class GrantsTable extends Component<GrantsTableProps> {
                         field: "title",
 			width: "50%",
                         render: (row: any) => {
-                            const detail_url = this.props.url.concat('/grants/'+row.id)
+                            let detail_url = this.props.url.concat('/grants/'+row.id)
+                            if (this.props.keyword) {
+                                detail_url = detail_url.concat('?keyword='+this.props.keyword)
+                            }
                             return (<div>
                                         <div>
                                             { this.get_funder_icon(row.funder_name) }
@@ -110,6 +113,9 @@ class GrantsTable extends Component<GrantsTableProps> {
                         title: "Principal Investigator", field: "pi",
                         render: (row: any) => {
                             let pi_detail_url = (row.pi_private_emails) ? row.pi_private_emails : this.props.url.concat('/grants/pi/'+ row.pi_id)
+                            if (this.props.keyword) {
+                                pi_detail_url = pi_detail_url.concat('?keyword='+this.props.keyword)
+                            }
                             return (
                                 <div>
                                     <MaterialLink underline="hover" href={ pi_detail_url }>{ this.highlightText(row.pi) }</MaterialLink>
