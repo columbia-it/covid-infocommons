@@ -266,6 +266,16 @@ class SurveyForm extends Component <any, FormState> {
         }
     }
 
+    validate_dois_string(value:any) {
+        const specialChars = /[`!#$%^&*()_+\=\[\]{};':"\\|<>\?~]/;
+        if (specialChars.test(value)) {
+            return false;
+        }
+        else {
+            return true;
+        }
+    }
+
     validate_email(value: any) {
         if (value != null) {
             value = value.trim()
@@ -453,6 +463,8 @@ class SurveyForm extends Component <any, FormState> {
                                 test('no-special-chars', 'Keywords must be comma separated', this.validate_comma_separated_string),
                             person_kw: Yup.string().
                                 test('no-special-chars', 'Keywords must be comma separated', this.validate_comma_separated_string),
+                            dois: Yup.string().
+                                test('no-special-chars', 'Dois must be comma separated', this.validate_dois_string),
                             orcid: Yup.string().
                                 required('ORCID iD is required').
                                 test('valid-url', 'Please enter ORCID iD as: https://orcid.org/xxxx-xxxx-xxxx-xxxx or xxxx-xxxx-xxxx-xxxx', this.validate_orcid),
@@ -591,7 +603,7 @@ class SurveyForm extends Component <any, FormState> {
                                 <Paper style={{ padding: 16 }}>
                                     <FormControl className="name-input">
                                         <FormLabel id="award-id-label" className="label">
-                                            COVID-19 Research Award Number <span className="required-text">*</span>
+                                            COVID-19 Research Award Number (NSF examples: 2143487, 1449617; NIH examples: 75N94021D01039-0-759402200003-1, 3UL1TR003015-04S1) <span className="required-text">*</span>
                                         </FormLabel>
                                         <TextField 
                                             id="award_id" 
@@ -723,7 +735,9 @@ class SurveyForm extends Component <any, FormState> {
                                             variant="outlined" 
                                             value={ values.dois }
                                             onChange={ handleChange }
+                                            onKeyUp={ handleBlur }
                                         />
+                                        { errors.dois && touched.dois ? (<div className="required-text">{errors.dois}</div>) : null }
                                     </FormControl>
                                     <br/>
                                     <br/>
