@@ -20,7 +20,7 @@ class Survey(models.Model):
     person_keywords = models.TextField(blank=True, null=True)
     desired_collaboration = models.TextField(null=True, blank=True)
     person_comments = models.TextField(null=True, blank=True)
-    person_additional_comments = models.TextField(null=True, blank=True)
+    person_additional_comments = models.TextField(null=True, blank=True, verbose_name='Communication preferences')
     approved = models.BooleanField(default=False)
     submission_date = models.DateField(default=datetime.date.today)
     is_copi = models.BooleanField(default=False)

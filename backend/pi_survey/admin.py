@@ -4,10 +4,29 @@ from .models import Survey
 from apis.models import Person, Funder, Grant, Publication
 from django.core.exceptions import ValidationError
 from simple_history.admin import SimpleHistoryAdmin
+from django.http import HttpResponse
+import csv
 
 
 # Customize the Django admin view to include surveys
 class SurveyAdmin(SimpleHistoryAdmin):
+    actions = ["export_as_csv"]
+
+    def export_as_csv(self, request, queryset):
+        meta = self.model._meta
+        field_names = [field.name for field in meta.fields]
+
+        response = HttpResponse(content_type='text/csv')
+        response['Content-Disposition'] = 'attachment; filename={}.csv'.format(meta)
+        writer = csv.writer(response)
+
+        writer.writerow(field_names)
+        for obj in queryset:
+            row = writer.writerow([getattr(obj, field) for field in field_names])
+
+        return response
+
+    export_as_csv.short_description = "Export Selected"
 
     # Check if a person already exists with the given email. Return the person found.
     # If no person found, create one with the given attributes and return it.
@@ -75,16 +94,16 @@ class SurveyAdmin(SimpleHistoryAdmin):
                 comments += getattr(obj, 'person_additional_comments')
                 desired_collaboration = getattr(obj, 'desired_collaboration')
                 websites = getattr(obj, 'websites')
-                websites = websites.split(',')
+                if websites:
+                    websites = websites.split(',')
                 if person:
                     if not person.orcid:
                         setattr(person, 'orcid', getattr(obj, 'orcid'))
                     original_kws = person.keywords
                     new_kws = getattr(obj, 'person_keywords')
-                    if original_kws:
-                        original_kws.extend(new_kws.split(','))
-                    else:
-                        original_kws = new_kws.split(',')
+                    if new_kws:
+                        new_kws = new_kws.split(',')
+                    original_kws.extend(new_kws)
                     setattr(person, 'keywords', original_kws)
                     setattr(person, 'comments', comments)
                     setattr(person, 'desired_collaboration', desired_collaboration)
@@ -110,7 +129,6 @@ class SurveyAdmin(SimpleHistoryAdmin):
                     if getattr(obj, 'grant_additional_keywords'):
                         grant_keywords.extend(
                             getattr(obj, 'grant_additional_keywords').split(','))
-                    
                     grant = Grant(
                         award_id = getattr(obj, 'award_id'),
                         title = getattr(obj, 'award_title'),
