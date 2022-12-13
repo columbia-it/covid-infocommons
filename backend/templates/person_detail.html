@@ -1,6 +1,7 @@
 {% load static %}
 {% load humanize %}
 {% load my_filters %}
+{% load highlight %}
 
 <!DOCTYPE html>
 <html lang="en">
@@ -9,7 +10,7 @@
     <meta charset="UTF-8">
       <title>
 	{% with person.first_name|add:" "|add:person.last_name as fullname %}
-        CIC - {{ fullname }}
+        CIC - {{ fullname|highlight:keyword }}
         {% endwith %}
       </title>
       <link rel="shortcut icon" href="https://covidinfocommons.datascience.columbia.edu/themes/custom/columbia/favicon-crown.png" type="image/png" />
@@ -33,7 +34,7 @@
     <div>
       <h1>
         {% with person.first_name|add:" "|add:person.last_name as fullname %}
-        {{ fullname }}
+        {{ fullname|highlight:keyword }}
         {% endwith %}
       </h1>
     </div>
@@ -44,7 +45,7 @@
       <section>
         <small>Institution:</small>
         {% for org in person.affiliations.all %}
-        <p>org.name</p>
+        <p>org.name|highlight:keyword</p>
         {% endfor %}
       </section>
       {% endif %}
