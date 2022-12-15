@@ -603,7 +603,7 @@ class SurveyForm extends Component <any, FormState> {
                                 <Paper style={{ padding: 16 }}>
                                     <FormControl className="name-input">
                                         <FormLabel id="award-id-label" className="label">
-                                            COVID-19 Research Award Number (NSF examples: 2143487, 1449617; NIH examples: 75N94021D01039-0-759402200003-1, 3UL1TR003015-04S1) <span className="required-text">*</span>
+                                            COVID-19 Research Award Number (NSF examples: 2028999, 2139391; NIH examples: 1U01CA260508-01, 1R43AI165117-01) <span className="required-text">*</span>
                                         </FormLabel>
                                         <TextField 
                                             id="award_id" 
