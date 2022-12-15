@@ -76,7 +76,7 @@ def detail(request, grant_id):
     return render(request, 'grant_detail.html', {'grant': grant, 'state': state, 'keyword': keyword})
 
 def pi_detail(request, pi_id):
-    keyword = request.GET.get('keyword', None)
+    keyword = request.GET.get('keyword', '')
     person = get_object_or_404(Person, pk=pi_id)
     grants = Grant.objects.filter(principal_investigator__id=pi_id)
     return render(request, 'person_detail.html', {'person': person, 'grants': grants, 'keyword': keyword})
