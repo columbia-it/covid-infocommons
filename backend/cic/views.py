@@ -68,7 +68,7 @@ def detail(request, grant_id):
     grant = get_object_or_404(Grant, pk=grant_id)
     state_abbrev = ""
     state = ""
-    keyword = request.GET.get('keyword', None)
+    keyword = request.GET.get('keyword', '')
     if grant.awardee_organization is not None:
         state_abbrev = grant.awardee_organization.state
     if state_abbrev in states:
