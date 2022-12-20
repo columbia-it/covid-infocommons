@@ -50,6 +50,7 @@ cice-dev-*.json
 # node modules
 frontend/node_modules/
 frontend/survey/node_modules
+frontend/search/node_modules
 
 #static assets
 static/*

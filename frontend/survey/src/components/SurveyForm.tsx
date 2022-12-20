@@ -267,7 +267,7 @@ class SurveyForm extends Component <any, FormState> {
     }
 
     validate_dois_string(value:any) {
-        const specialChars = /[`!#$%^&*()_+\=\[\]{};':"\\|<>\?~]/;
+        const specialChars = /[`!#$%^&*()_+\=\[\]{};'"\\|<>\?~]/;
         if (specialChars.test(value)) {
             return false;
         }
