@@ -150,15 +150,15 @@ class SurveyAdmin(SimpleHistoryAdmin):
                     setattr(grant, 'keywords', grant_keywords)
                 if (not grant.principal_investigator) and (not is_copi):
                     setattr(grant, 'principal_investigator', person)
-                if is_copi:
-                    #Grant.objects.filter(other_investigators__orcid=person.orcid)
-                    grant.other_investigators.add(person)
                 setattr(person, 'approved', True)
                 setattr(funder, 'approved', True)
                 setattr(grant, 'approved', True)
                 person.save()
                 funder.save()
                 grant.save()
+                if is_copi:
+                    grant.other_investigators.add(person)
+                    grant.save()
                 dois = getattr(obj, 'dois')
                 if dois:
                     if ',' in dois:
