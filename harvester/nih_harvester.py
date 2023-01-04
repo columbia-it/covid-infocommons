@@ -51,7 +51,10 @@ def main(max_year = None, start_offset = 0):
             for g in grants:
                 process_grant(g)
             imported_count += len(grants)
-            time.sleep(NIH_API_DELAY) 
+            time.sleep(NIH_API_DELAY)
+            if len(grants) < 25:                
+                break
+
 
     for year in range(max_year, 2020, -1):
         for month in range(12,0,-1):
@@ -92,6 +95,9 @@ def retrieve_subject_grants(year, month, offset):
     response = requests.post(url = NIH_BASE,
                              data = json.dumps(criteria),
                              headers={"Content-Type":"application/vnd.api+json"})
+    if response.status_code == 400 and "exceeded total records count" in response.text:
+        # We're looking past the end of the result set, return an empty list
+        return []
     if response.status_code >= 300:
         logging.error(f"{response} {response.text}")
         print(f"ERROR {response} {response.text}")
