@@ -6,9 +6,10 @@ import imp
 import os
 import logging
 from base64 import urlsafe_b64encode
-from google.auth.credentials import Credentials
+from google.oauth2.credentials import Credentials
 from googleapiclient.discovery import build
 import smtplib
+import ssl
 
 TRUE_VALUES = ['true', 't', '1', 'yes', 'y']
 logger = logging.getLogger(__name__)
@@ -56,6 +57,7 @@ def _send_message_by_gmail_api(email_message):
     user_id = os.getenv('GMAIL_API_USER_ID', 'me')
     creds = Credentials(None, client_id=client_id, client_secret=client_secret, refresh_token=refresh_token, token_uri=token_uri)
     send_error = None
+
     try:
         service = build(service_name, api_version, credentials=creds)
         message = (service.users().messages().send(userId=user_id, body=msg_body).execute())
@@ -88,12 +90,46 @@ def _send_message(email_message):
         # log_send_error(send_error)
     return send_error
 
+def _send_message_ssl(email_message):
+    """
+    Sends an email via SSL to SMTP server
+    """
+    send_error = None
+    smtp = None
+    try:
+        smtp_host = os.getenv('SMTP_SSL_HOST', 'send.columbia.edu')
+        smtp_port = int(os.getenv('SMTP_SSL_PORT', '587'))
+        smtp_username = os.getenv('SMTP_SSL_USERNAME', 'jy2492')
+        smtp_password = os.getenv('SMTP_SSL_PASSWORD', 'academicservices')
+        context = ssl.create_default_context()
+        smtp = smtplib.SMTP(smtp_host, smtp_port)
+        smtp.ehlo()
+        smtp.starttls(context=context)
+        smtp.ehlo()
+        smtp.login(smtp_username, smtp_password)
+        smtp.send_message(email_message)
+    except smtplib.SMTPRecipientsRefused as err:
+        send_error = "Recipients refused - {}".format(err)
+        # log_send_error(send_error)
+    except smtplib.SMTPResponseException as resp_error:
+        send_error = "SMTP error[{}] - {}".format(resp_error.smtp_code, resp_error.smtp_error)
+        # log_send_error(send_error)
+    except smtplib.SMTPException as mail_error:
+        send_error = "SMTP exception - {}".format(mail_error)
+        # log_send_error(send_error)
+    except OSError as os_error:
+        send_error = "SMTP connection failed - {}".format(os_error)
+        # log_send_error(send_error)
+    finally:
+        if smtp:
+            smtp.quit()
+    return send_error
+
 def send_email(from_address, to_addresses, cc_addresses, bcc_addresses, subject, body, attachments=None, reply_to=None):
     """
     Sends an email with the given information such as from address,
     the list of to addresses, the list of cc addresses, subject, and body
     """
-    print('......4.....')
     msg = MIMEMultipart()
     msg['From'] = from_address
     msg['To'] = ', '.join(to_addresses)
@@ -106,7 +142,6 @@ def send_email(from_address, to_addresses, cc_addresses, bcc_addresses, subject,
     msg['Subject'] = '{}'.format(Header(subject, 'utf-8'))
     c_text = MIMEText('', 'html')
     enable_log = check_enable_log()
-    print('......5.....')
     if enable_log:
         c_text.replace_header('content-transfer-encoding', 'quoted-printable')
     c_text.set_payload(body, 'utf-8')

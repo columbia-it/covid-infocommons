@@ -26,7 +26,6 @@ class SurveyAdmin(SimpleHistoryAdmin):
         return [value]
 
     def send_notification_by_smtp(self, notification_data):
-        print('......2.....')
         from_address = notification_data.get('from_address')
         to_addresses = notification_data.get('to_addresses')
         cc_addresses = notification_data.get('cc_addresses')
@@ -34,15 +33,7 @@ class SurveyAdmin(SimpleHistoryAdmin):
         subject = notification_data.get('subject')
         body = notification_data.get('body')
         reply_to = notification_data.get('reply_to')
-        print('......3.....')
-        print('from_address = ')
-        print(from_address)
-        print('to_addresses = ')
-        print(to_addresses)
-        print('subject = ')
-        print(subject)
-        print('body = ')
-        print(body)
+    
         if from_address and to_addresses and subject and body:
             has_error = send_email(from_address, 
                                     self.convert_to_list(to_addresses), 
@@ -132,7 +123,6 @@ class SurveyAdmin(SimpleHistoryAdmin):
     # Override save_model() in ModelAdmin so that we can persist the models and their relationships
     # when approved flag is set to true. 
     def save_model(self, request, obj, form, change):
-        print('///// 1 ///')
         if getattr(obj, 'approved'):
             try:
                 person = self.get_person(obj)
@@ -145,7 +135,6 @@ class SurveyAdmin(SimpleHistoryAdmin):
                 if websites:
                     websites = websites.split(',')
                 if person:
-                    print('///// 2 ///')
                     if not person.orcid:
                         setattr(person, 'orcid', getattr(obj, 'orcid'))
                     original_kws = person.keywords
@@ -158,7 +147,6 @@ class SurveyAdmin(SimpleHistoryAdmin):
                     setattr(person, 'desired_collaboration', desired_collaboration)
                     setattr(person, 'websites', websites)
                 else:
-                    print('///// 3 ///')
                     kws = getattr(obj, 'person_keywords')
                     if kws:
                         kws = getattr(obj, 'person_keywords').split(',')
@@ -173,13 +161,9 @@ class SurveyAdmin(SimpleHistoryAdmin):
                         comments = comments
                     )
                 funder = self.get_funder(getattr(obj, 'funder_name'))
-                print(kws)
-                print('///// 4 ///')
                 if not funder:
-                    print('///// 5 ///')
                     funder = Funder(name=getattr(obj, 'funder_name'))
                 if not grant:
-                    print('///// 6 ///')
                     grant_keywords = []
                     if getattr(obj, 'grant_keywords'):
                         grant_keywords = getattr(obj, 'grant_keywords').split(',')
@@ -204,23 +188,16 @@ class SurveyAdmin(SimpleHistoryAdmin):
                         grant_keywords.extend(
                             getattr(obj, 'grant_additional_keywords').split(',')
                         )
-                    print('///// 7 ///')
                     if grant_keywords:
-                        print(grant_keywords)
                         setattr(grant, 'keywords', grant_keywords)
-                        print('///// 11 ///')
                 setattr(person, 'approved', True)
                 setattr(funder, 'approved', True)
                 setattr(grant, 'approved', True)
                 person.save()
-                print('///// 8 ///')
                 funder.save()
-                print('///// 9 ///')
                 if (not grant.principal_investigator) and (not is_copi):
-                    print('///// 12 ///')
                     setattr(grant, 'principal_investigator', person)
                 grant.save()
-                print('///// 10 ///')
                 if is_copi:
                     grant.other_investigators.add(person)
                     grant.save()
@@ -249,7 +226,6 @@ class SurveyAdmin(SimpleHistoryAdmin):
                     'reply_to': 'covidinfocommons@columbia.edu',
                     'body': 'Test content'
                 }
-                print('......1.....')
                 self.send_notification_by_smtp(notification_data)
             except Exception as e:
                 print(e)
