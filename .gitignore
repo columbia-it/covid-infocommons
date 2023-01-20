@@ -59,3 +59,5 @@ backend/search/static/
 backend/cic/static
 backend/pi_survey/static/
 
+#ids and secrets
+backend/*.json
