@@ -231,3 +231,41 @@ def search_grants(request):
     )
 
     return JsonResponse(response)
+
+def search_publications(request):
+    start = request.GET.get('from', 0)
+    size = request.GET.get('size', 20)
+    query = {
+        'size': size,
+        'from': start,
+        'sort' : [
+            '_score', 
+            { 
+                'publication_date' : 'desc'
+            },
+        ],
+        'query': {
+            'bool': {
+                'must': [],
+                'filter': {
+                    'term': {
+                        'approved': True
+                    }
+                }
+            }
+        }
+    }
+
+    client = OpenSearch(
+        hosts = [{'host': settings.OPENSEARCH_URL, 'port': 443}],
+        use_ssl = True,
+        verify_certs = True,
+    )
+
+    response = client.search(
+        body = query,
+        index = 'publication_index'
+    )
+
+    return JsonResponse(response)
+

@@ -30,7 +30,3 @@ OPENSEARCH_DSL = {
         'headers': {'Content-Type': 'application/json'}
     },
 }
-
-OPENSEARCH_INDEX_NAMES = {
-    'apis.documents.grant': 'grant_index',
-}

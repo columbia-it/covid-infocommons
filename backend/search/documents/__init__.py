@@ -1,1 +1,2 @@
 from search.documents.grant import GrantDocument
+from search.documents.publication import PublicationDocument
