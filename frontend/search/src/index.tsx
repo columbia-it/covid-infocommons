@@ -448,9 +448,15 @@ class App extends Component<any, AppState> {
                     </form>
                     <br/>
                     <div className='flex-container'>
+                    {
+                        this.state.totalCount > 0 ? 
                         <div className='results-row'>
-                            Showing <span style={{fontWeight: 'bold', color: '#000000'}}>{ this.state.totalCount }</span> results.
-                        </div>
+                                Showing <span style={{fontWeight: 'bold', color: '#000000'}}>{ this.state.totalCount }</span> results.
+                        </div> 
+                        : <div className='results-row'>Searching...
+                        </div> 
+                    } 
+                        
                         <div className='download-csv'>                            
                             <Button sx={styles}
 	                            onClick={ this.exportToCsv } 
