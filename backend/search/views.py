@@ -235,6 +235,12 @@ def search_grants(request):
 def search_publications(request):
     start = request.GET.get('from', 0)
     size = request.GET.get('size', 20)
+    
+    keyword = request.GET.get('keyword', None)
+    doi = request.GET.get('doi', None)
+    title = request.GET.get('title', None)
+    author_name = request.GET.get('pi_name', None)
+
     query = {
         'size': size,
         'from': start,
@@ -256,6 +262,44 @@ def search_publications(request):
         }
     }
 
+    if keyword:
+        query['query']['bool']['must'].append({
+            'multi_match': {
+                'query': keyword,
+                'operator': 'and',
+                'fields': [
+                    'title', 
+                    'doi',  
+                    'keywords', 
+                    'authors.full_name'
+                ]
+            }
+        })
+    
+    if doi:
+        query['query']['bool']['must'].append(
+            {
+                'match': {
+                    'doi': doi
+                }
+            }
+        )
+    if author_name:  
+        if 'match_phrase' in query:
+               query['query']['bool']['must']['match_phrase'].append(
+                   {
+                       'principal_investigator.full_name': author_name
+                    }
+               )
+        else:
+            query['query']['bool']['must'].append(
+            {
+                'match_phrase': {
+                    'principal_investigator.full_name': author_name
+                }
+            }
+        )
+
     client = OpenSearch(
         hosts = [{'host': settings.OPENSEARCH_URL, 'port': 443}],
         use_ssl = True,
@@ -268,4 +312,69 @@ def search_publications(request):
     )
 
     return JsonResponse(response)
+
+def search_people(request):
+    start = request.GET.get('from', 0)
+    size = request.GET.get('size', 20)
+
+    # Get filter/search criteria from request
+    keyword = request.GET.get('keyword', None)
+
+    affiliated_org_name = request.GET.get('org_name', None)
+
+    query = {
+        'size': size,
+        'from': start,
+        'query': {
+            'bool': {
+                'must': [],
+                'filter': {
+                    'term': {
+                        'approved': True
+                    }
+                }
+            }
+        }
+    }
+
+    if keyword:
+        query['query']['bool']['must'].append({
+            'multi_match': {
+                'query': keyword,
+                'operator': 'and',
+                'fields': [
+                    'first_name', 
+                    'last_name', 
+                    'orcid', 
+                    'keywords', 
+                    'emails'
+                ]
+            }
+        })
+
+    if affiliated_org_name:
+        query['query']['bool']['must'].append(
+            { 
+                'match_phrase': { 
+                    'awardee_organization.name': affiliated_org_name
+                }
+            },
+        )
+      
+    client = OpenSearch(
+        hosts = [{'host': settings.OPENSEARCH_URL, 'port': 443}],
+        use_ssl = True,
+        verify_certs = True,
+    )
+
+    response = client.search(
+        body = query,
+        index = 'person_index'
+    )
+
+    return JsonResponse(response)
+
+def search_datasets(request):
+    pass
+
 
