@@ -99,7 +99,7 @@ def _send_message_ssl(email_message):
     try:
         smtp_host = os.getenv('SMTP_SSL_HOST', 'send.columbia.edu')
         smtp_port = int(os.getenv('SMTP_SSL_PORT', '587'))
-        smtp_username = os.getenv('SMTP_SSL_USERNAME', 'jy2492')
+        smtp_username = os.getenv('SMTP_SSL_USERNAME', 'sg3847')
         smtp_password = os.getenv('SMTP_SSL_PASSWORD', 'academicservices')
         context = ssl.create_default_context()
         smtp = smtplib.SMTP(smtp_host, smtp_port)

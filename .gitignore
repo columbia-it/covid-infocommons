@@ -60,4 +60,4 @@ backend/cic/static
 backend/pi_survey/static/
 
 #ids and secrets
-backend/*.json
+backend/pi_survey/*.json

@@ -8,6 +8,7 @@ from django.http import HttpResponse
 import csv
 from .email import send_email
 import logging
+import html
 
 logger = logging.getLogger(__name__)
 
@@ -42,6 +43,7 @@ class SurveyAdmin(SimpleHistoryAdmin):
                                     subject, body, attachments=None, 
                                     reply_to=reply_to)
             if has_error:
+                print('has_error is True')
                 msg = 'Error sending email'
                 logger.error(msg)
             else:
@@ -218,13 +220,28 @@ class SurveyAdmin(SimpleHistoryAdmin):
                         p.grants.add(grant)
                         p.save()
                 super().save_model(request, obj, form, change)
+                email_body = """
+                    <html>
+                    <body>
+                    <p>
+                    Thank you for filling out the survey. After our staff reviews it for inclusion in the COVID Information Commons, you can view it <a href="https://cic-apps.datascience.columbia.edu/grants/">here.</a>
+                    </p>
+                    <p>
+                    If you have another award, please fill out the survey form again. 
+                    </p>
+                    <br>
+                    Thanks,<br>
+                    CIC Project Team
+                    </body>
+                    </html>
+                """
                 notification_data = {
                     'from_address': 'covidinfocommons@columbia.edu',
                     'to_addresses': person.emails,
-                    'bcc_addresses': 'sg3847@columbia.edu, rscherle@gmail.com',
+                    'bcc_addresses': 'sg3847@columbia.edu,rs4256@columbia.edu',
                     'subject': 'Thank you for submitting your COVID PI entry',
                     'reply_to': 'covidinfocommons@columbia.edu',
-                    'body': 'Test content'
+                    'body': email_body
                 }
                 self.send_notification_by_smtp(notification_data)
             except Exception as e:

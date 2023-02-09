@@ -1,5 +1,5 @@
 from django.test import TestCase
-from .email import (
+from ..email import (
     check_enable_send, 
     check_use_ssl, 
     check_use_gmail_api,
@@ -21,13 +21,13 @@ class EmailTestCase(TestCase):
 
     def test_check_enable_send_ok(self):
         """Environment variable SMTP_DISABLE_SEND is set to false"""
-        os.environ["SMTP_DISABLE_SEND"] = False
+        os.environ["SMTP_DISABLE_SEND"] = "false"
         is_enabled = check_enable_send()
         self.assertTrue(is_enabled)
 
     def test_check_enable_send_not_sending(self):
         """Environment variable SMTP_DISABLE_SEND is set to true"""
-        os.environ["SMTP_DISABLE_SEND"] = True
+        os.environ["SMTP_DISABLE_SEND"] = "true"
         is_enabled = check_enable_send()
         self.assertFalse(is_enabled)
 
@@ -38,13 +38,13 @@ class EmailTestCase(TestCase):
 
     def test_check_use_ssl_ok(self):
         """Environment variable SMTP_USE_SSL is set to true"""
-        os.environ["SMTP_USE_SSL"] = True
+        os.environ["SMTP_USE_SSL"] = "true"
         use_ssl = check_use_ssl()
         self.assertTrue(use_ssl)
 
     def test_check_use_ssl_not_using(self):
         """Environment variable SMTP_USE_SSL is set to false"""
-        os.environ["SMTP_USE_SSL"] = True
+        os.environ["SMTP_USE_SSL"] = "true"
         use_ssl = check_use_ssl()
         self.assertFalse(use_ssl)
 
@@ -55,13 +55,13 @@ class EmailTestCase(TestCase):
 
     def test_check_use_gmail_api_ok(self):
         """Environment variable SMTP_USE_GMAIL_API is set to true"""
-        os.environ["SMTP_USE_GMAIL_API"] = True
+        os.environ["SMTP_USE_GMAIL_API"] = "true"
         use_gmail_api = check_use_gmail_api()
         self.assertTrue(use_gmail_api)
 
     def test_check_use_gmail_api_not_using(self):
         """Environment variable SMTP_USE_GMAIL_API is set to false"""
-        os.environ["SMTP_USE_GMAIL_API"] = False
+        os.environ["SMTP_USE_GMAIL_API"] = "false"
         use_gmail_api = check_use_gmail_api()
         self.assertFalse(use_gmail_api)
 
@@ -72,21 +72,21 @@ class EmailTestCase(TestCase):
 
     def test_check_enable_log_ok(self):
         """Environment variable SMTP_ENABLE_LOG is set to true"""
-        os.environ["SMTP_ENABLE_LOG"] = True
+        os.environ["SMTP_ENABLE_LOG"] = "true"
         enable_log = check_enable_log()
         self.assertTrue(enable_log)
 
     def test_check_enable_log_not_using(self):
         """Environment variable SMTP_ENABLE_LOG is set to false"""
-        os.environ["SMTP_ENABLE_LOG"] = False
+        os.environ["SMTP_ENABLE_LOG"] = "false"
         enable_log = check_enable_log()
         self.assertFalse(enable_log)
 
-    @patch('backend.pi_survey.email._send_message')
-    @patch('backend.pi_survey.email.check_enable_send')
+    @patch('pi_survey.email._send_message')
+    @patch('pi_survey.email.check_enable_send')
     def test_send_email_disable_send(self, mock_check, mock_send):
         """Email is generated but not sent"""
-        mock_check.return_value = False
+        mock_check.return_value = "false"
         from_address = 'a@xyz.com'
         to_addresses = ['b@xyz.com', 'c@xyz.com']
         cc_addresses = []
