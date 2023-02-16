@@ -1,3 +1,4 @@
+import cic_assets
 import cic_grants
 import cic_orgs
 import cic_people
@@ -50,7 +51,7 @@ def process(person):
             print(" -- skipping")
             return
         response = requests.get(meta['private_emails'])
-        json = build_person_json(response.text)
+        json = build_person_json(response.text, person['id'])
         # Parse into new person object
         # Update the person
 
@@ -111,7 +112,7 @@ def parsit(html):
             print(f" nextline == {lines[idx + 2]}")
      
 
-def build_person_json(html):
+def build_person_json(html, pi_id):
   person_data = {
     "data": {
       "type": "Person",
@@ -135,7 +136,7 @@ def build_person_json(html):
   if profile_image is not None:
     profile_image = DRUPAL_BASE + profile_image[0]
     print(f"TTTT profile {profile_image}")
-  cic_assets.find_or_create(profile_image, pi_id)
+    cic_assets.find_or_create_for_person('profile_image', profile_image, pi_id)
   
   video = get_image_url(html, 'Video:')
   grants = get_urls(html, 'Awarded COVID Grants:')
@@ -164,6 +165,7 @@ def main():
     print(p)
     process(p)
     return
+
     # process all people, one page at a time
     people = cic_people.find_cic_people()
     print(f"Received {len(people)} people")
