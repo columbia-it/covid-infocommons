@@ -33,6 +33,7 @@ def grant_to_lingo(grant):
         "award_amount": g['award_amount'],
         "principal_investigator": grant_pi(g),
         "awardee_organization": grant_org(g),
+        "state": grant_state(g),
         "abstract": g['abstract'],
         "keywords": g['keywords']
     }
@@ -64,6 +65,13 @@ def grant_org(g):
         return ""
     else:
         return g['awardee_organization']['name']
-        
+
+def grant_state(g):
+    if g['awardee_organization'] is None:
+        return ""
+    else:
+        return g['awardee_organization']['state']
+    
+
 if __name__ == "__main__":
     main()
