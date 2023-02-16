@@ -51,10 +51,9 @@ def process(person):
             print(" -- skipping")
             return
         response = requests.get(meta['private_emails'])
-        json = build_person_json(response.text, person['id'])
-        # Parse into new person object
+        json = build_person_json(response.text, int(person['id']))
         # Update the person
-
+        cic_people.update_cic_person(json, person['id'])
         
 def get_values(html, field_head):
     lines = html.splitlines()
@@ -117,7 +116,7 @@ def build_person_json(html, pi_id):
     "data": {
       "type": "Person",
       "attributes": {
-        "private_emails": [] # remove the private_emails
+        "private_emails": "" # remove the private_emails
       }}}
   
   orcid = get_values(html, 'ORCID ID:')
