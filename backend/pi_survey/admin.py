@@ -6,51 +6,13 @@ from django.core.exceptions import ValidationError
 from simple_history.admin import SimpleHistoryAdmin
 from django.http import HttpResponse
 import csv
-from .email import send_email
 import logging
-import html
 
 logger = logging.getLogger(__name__)
 
 # Customize the Django admin view to include surveys
 class SurveyAdmin(SimpleHistoryAdmin):
     actions = ["export_as_csv"]
-    
-    def convert_to_list(self, value):
-        """
-        Converts the given value to a list
-        """
-        if not value:
-            return []
-        if isinstance(value, list):
-            return value
-        return [value]
-
-    def send_notification_by_smtp(self, notification_data):
-        from_address = notification_data.get('from_address')
-        to_addresses = notification_data.get('to_addresses')
-        cc_addresses = notification_data.get('cc_addresses')
-        bcc_addresses = notification_data.get('bcc_addresses')
-        subject = notification_data.get('subject')
-        body = notification_data.get('body')
-        reply_to = notification_data.get('reply_to')
-    
-        if from_address and to_addresses and subject and body:
-            has_error = send_email(from_address, 
-                                    self.convert_to_list(to_addresses), 
-                                    self.convert_to_list(cc_addresses), 
-                                    self.convert_to_list(bcc_addresses), 
-                                    subject, body, attachments=None, 
-                                    reply_to=reply_to)
-            if has_error:
-                print('has_error is True')
-                msg = 'Error sending email'
-                logger.error(msg)
-            else:
-                msg = 'Email sent successfully'
-                logger.info(msg)
-        msg = 'Notification data does not have enough information'
-        logger.error(msg)
 
     def export_as_csv(self, request, queryset):
         meta = self.model._meta
@@ -220,30 +182,6 @@ class SurveyAdmin(SimpleHistoryAdmin):
                         p.grants.add(grant)
                         p.save()
                 super().save_model(request, obj, form, change)
-                email_body = """
-                    <html>
-                    <body>
-                    <p>
-                    Thank you for filling out the survey. After our staff reviews it for inclusion in the COVID Information Commons, you can view it <a href="https://cic-apps.datascience.columbia.edu/grants/">here.</a>
-                    </p>
-                    <p>
-                    If you have another award, please fill out the survey form again. 
-                    </p>
-                    <br>
-                    Thanks,<br>
-                    CIC Project Team
-                    </body>
-                    </html>
-                """
-                notification_data = {
-                    'from_address': 'covidinfocommons@columbia.edu',
-                    'to_addresses': person.emails,
-                    'bcc_addresses': 'sg3847@columbia.edu,rs4256@columbia.edu',
-                    'subject': 'Thank you for submitting your COVID PI entry',
-                    'reply_to': 'covidinfocommons@columbia.edu',
-                    'body': email_body
-                }
-                self.send_notification_by_smtp(notification_data)
             except Exception as e:
                 print(e)
                 print('Error occurred while approving survey')

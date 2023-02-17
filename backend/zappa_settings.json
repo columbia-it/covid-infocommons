@@ -8,7 +8,8 @@
         "s3_bucket": "cuit-infra-cice-dev-s3",
         "role_arn": "arn:aws:iam::305803678806:role/cice-dev-ZappaLambdaExecutionRole",
         "role_name": "cice-dev-ZappaLambdaExecutionRole",
-        "manage_roles": false
+        "manage_roles": false,
+        "slim_handler": true
     },
     "prod": {
         "aws_region": "us-east-1",
@@ -19,6 +20,7 @@
         "s3_bucket": "cuit-infra-cice-prod-s3",
         "role_arn": "arn:aws:iam::031752658700:role/cice-prod-ZappaLambdaExecutionRole",
         "role_name": "cice-prod-ZappaLambdaExecutionRole",
-        "manage_roles": false
+        "manage_roles": false,
+        "slim_handler": true
     }
 }

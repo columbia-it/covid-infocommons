@@ -57,7 +57,6 @@ def _send_message_by_gmail_api(email_message):
     user_id = os.getenv('GMAIL_API_USER_ID', 'me')
     creds = Credentials(None, client_id=client_id, client_secret=client_secret, refresh_token=refresh_token, token_uri=token_uri)
     send_error = None
-
     try:
         service = build(service_name, api_version, credentials=creds)
         message = (service.users().messages().send(userId=user_id, body=msg_body).execute())
