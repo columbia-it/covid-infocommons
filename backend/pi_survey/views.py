@@ -174,7 +174,6 @@ def submitForm(request):
                     'from_address': 'covidinfocommons@columbia.edu',
                     'to_addresses': survey.email,
                     'bcc_addresses': 'sg3847@columbia.edu, rs4256@columbia.edu',
-                    #'bcc_addresses': 'sg3847@columbia.edu',
                     'subject': 'TEST-Thank you for submitting your COVID PI entry',
                     'reply_to': 'covidinfocommons@columbia.edu',
                     'body': create_email_body(survey)
