@@ -55,6 +55,7 @@ def send_notification_by_smtp(notification_data):
         # logger.error(msg)
 
 def create_email_body(survey):
+    pi_or_copi = "Co-PI" if survey.is_copi else "PI"
     email_body = """
         <html>
             <body>
@@ -71,67 +72,67 @@ def create_email_body(survey):
                 <h2>Survey data submitted</h2>
                 <table>
                     <tr>
-                        <th>Your first name: </th>
+                        <th align="left">Your first name: </th>
                         <td>{first_name}</td>
                     </tr>
                     <tr>
-                        <th>Your last name: </th>
+                        <th align="left">Your last name: </th>
                         <td>{last_name}</td>
                     </tr>
                     <tr>
-                        <th>Your email address: </th>
+                        <th align="left">Your email address: </th>
                         <td>{email}</td>
                     </tr>
                     <tr>
-                        <th>Your ORCID iD (type NA if you do not have an ORCID): </th>
+                        <th align="left">Your ORCID iD (type NA if you do not have an ORCID): </th>
                         <td>{orcid}</td>
                     </tr>
                     <tr>
-                        <th>COVID-19 Research Award Number (NSF examples: 2143487, 1449617; NIH examples: 75N94021D01039-0-759402200003-1, 3UL1TR003015-04S1)</th>
+                        <th align="left">COVID-19 Research Award Number (NSF examples: 2143487, 1449617; NIH examples: 75N94021D01039-0-759402200003-1, 3UL1TR003015-04S1)</th>
                         <td>{award_id}</td>
                     </tr>
                     <tr>
-                        <th>COVID-19 Research Award Title: </th>
+                        <th align="left">COVID-19 Research Award Title: </th>
                         <td>{award_title}</td>
                     </tr>
                     <tr>
-                        <th>Are you PI or Co-PI?: </th>
-                        <td>{is_copi}</td>
+                        <th align="left">Are you PI or Co-PI?: </th>
+                        <td>{pi_or_copi}</td>
                     </tr>
                     <tr>
-                        <th>COVID-19 Funding Agency: </th>
+                        <th align="left">COVID-19 Funding Agency: </th>
                         <td>{funder_name}</td>
                     </tr>   
                     <tr>
-                        <th>Please provide suggested keywords for your award, as applicable.: </th>
+                        <th align="left">Please provide suggested keywords for your award, as applicable.: </th>
                         <td>{grant_keywords}</td>
                     </tr>  
                     <tr>
-                        <th>Please list DOIs for any of your published research associated with your COVID award. This can include articles, data sets, software packages, etc.: </th>
+                        <th align="left">Please list DOIs for any of your published research associated with your COVID award. This can include articles, data sets, software packages, etc.: </th>
                         <td>{dois}</td>
                     </tr> 
                     <tr>
-                        <th>Please list any areas of scientific expertise your project could benefit from or is seeking, as keywords.: </th>
+                        <th align="left">Please list any areas of scientific expertise your project could benefit from or is seeking, as keywords.: </th>
                         <td>{grant_additional_keywords}</td>
                     </tr> 
                     <tr>
-                        <th>Please list URLs of any of your professional websites associated with this award.: </th>
+                        <th align="left">Please list URLs of any of your professional websites associated with this award.: </th>
                         <td>{websites}</td>
                     </tr>
                     <tr>
-                        <th>Please list your areas of scientific expertise as keywords.: </th>
+                        <th align="left">Please list your areas of scientific expertise as keywords.: </th>
                         <td>{person_keywords}</td>
                     </tr>
                     <tr>
-                        <th>If applicable, please further specify any collaboration opportunities you are interested in pursuing as related to this award, for instance "looking for predictive analytics experts for collaboration" or "can offer assistance with xxx".: </th>
+                        <th align="left">If applicable, please further specify any collaboration opportunities you are interested in pursuing as related to this award, for instance "looking for predictive analytics experts for collaboration" or "can offer assistance with xxx".: </th>
                         <td>{desired_collaboration}</td>
                     </tr> 
                     <tr>
-                        <th>Where would you like to connect with other COVID-19 researchers? (e.g. Slack, listserv, Google Group, etc.): </th>
+                        <th align="left">Where would you like to connect with other COVID-19 researchers? (e.g. Slack, listserv, Google Group, etc.): </th>
                         <td>{person_comments}</td>
                     </tr>
                     <tr>
-                        <th>Additional comments for CIC staff: </th>
+                        <th align="left">Additional comments for CIC staff: </th>
                         <td>{person_additional_comments}</td>
                     </tr>
                 </table>
@@ -139,7 +140,7 @@ def create_email_body(survey):
         </html>
     """.format(first_name=survey.first_name, last_name=survey.last_name, email=survey.email,
     orcid=survey.orcid, award_id=survey.award_id, award_title=survey.award_title,
-    is_copi=survey.is_copi, funder_name=survey.funder_name, grant_keywords=survey.grant_keywords,
+    pi_or_copi=pi_or_copi, funder_name=survey.funder_name, grant_keywords=survey.grant_keywords,
     dois=survey.dois, grant_additional_keywords=survey.grant_additional_keywords,
     websites=survey.websites, person_keywords=survey.person_keywords, desired_collaboration=survey.desired_collaboration, 
     person_comments=survey.person_comments, person_additional_comments=survey.person_additional_comments)
