@@ -65,6 +65,14 @@ class AssetViewSet(ModelViewSet):
         tags=['assets'],
     )
 
+    filterset_fields = {
+        'author__id': usual_rels + text_rels,
+        'grant__id': usual_rels + text_rels,
+        'publication__id': usual_rels + text_rels,
+        'organization__id': usual_rels + text_rels,
+        'dataset__id': usual_rels + text_rels
+    }
+
 
 class PersonViewSet(ModelViewSet):
     """ View for Person APIs
