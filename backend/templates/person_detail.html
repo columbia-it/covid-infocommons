@@ -10,7 +10,7 @@
     <meta charset="UTF-8">
       <title>
 	{% with person.first_name|add:" "|add:person.last_name as fullname %}
-        CIC - {{ fullname|highlight:keyword }}
+        CIC - {{ fullname }}
         {% endwith %}
       </title>
       <link rel="shortcut icon" href="https://covidinfocommons.datascience.columbia.edu/themes/custom/columbia/favicon-crown.png" type="image/png" />
