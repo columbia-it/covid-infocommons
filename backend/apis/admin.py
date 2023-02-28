@@ -53,7 +53,7 @@ ModelAdmin class to customize Asset model view in Django admin
 """
 class AssetAdmin(admin.ModelAdmin):
     # Add search on fields
-    search_fields = ('doi', 'id', 'author__id', 'grants__id', 'publication__id',)
+    search_fields = ('doi', 'id', 'author__id', 'grant__id', 'publication__id',)
 
 
 admin.site.register(Organization, OrganizationAdmin)
