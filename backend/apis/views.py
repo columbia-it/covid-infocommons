@@ -1,3 +1,4 @@
+import imp
 from urllib import request
 from rest_framework_json_api.views import ModelViewSet, RelationshipView
 from .models import Person, Organization, Grant, Publication, Dataset, Asset
@@ -7,6 +8,8 @@ from django.utils.decorators import method_decorator
 from apis.oauth2_introspection import HasClaim
 import re
 from rest_framework.schemas.openapi import AutoSchema
+from search.utils import update_grant_in_index
+from rest_framework.response import Response
 
 usual_rels = ('exact', 'lt', 'gt', 'gte', 'lte', 'in')
 text_rels = ('icontains', 'iexact', 'contains')
@@ -133,6 +136,17 @@ class GrantViewSet(ModelViewSet):
     schema = AutoSchema(
         tags=['grants'],
     )
+ 
+    def update(self, request, *args, **kwargs):
+        try:
+            super().update(request, *args, **kwargs)
+            instance = self.get_object()
+            print(instance)
+            update_grant_pi_in_index(instance)
+        except:
+            return Response(status_code=400)
+        return Response(GrantSerializer(instance).data)
+
 
 
 class PublicationViewSet(ModelViewSet):
