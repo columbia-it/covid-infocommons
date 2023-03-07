@@ -55,6 +55,7 @@ const nsf_directorates = [
     'Geosciences (GEO)',
     'Mathematical and Physical Sciences (MPS)',
     'Social, Behavioral, and Economic Sciences (SBE)',
+    'STEM Education (EDU)',
     'Technology, Innovation and Partnerships (TIP)',
     'Office of the Director'
 ]

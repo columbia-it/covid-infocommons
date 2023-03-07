@@ -43,6 +43,7 @@ interface AppState {
     filter: Filter
     keyword: string
     funder_names: Facet[]
+    search_in_progress: boolean
 }
 
 interface Filter {
@@ -79,7 +80,8 @@ class App extends Component<any, AppState> {
         po_names: [],
         keyword: (window as any)['keywords'],
         filter: {},
-        funder_names: []
+        funder_names: [],
+        search_in_progress: false
     }
 
     constructor(props:any) {
@@ -205,6 +207,9 @@ class App extends Component<any, AppState> {
         }
 
     get_grants_data = (keyword?:string) => {
+        this.setState({
+            search_in_progress: true
+        })
         var url = this.state.url.concat('/search/grants')
         var params: { [key: string]: any } = {};
 
@@ -229,6 +234,9 @@ class App extends Component<any, AppState> {
         }
         
         axios.get(url, {params: params}).then(results => {
+            this.setState({
+                search_in_progress: false
+            })
             this.setState({ totalCount: results.data.hits.total.value })
 
             var newArray = results.data.hits.hits.map(function(val:any) {
@@ -448,9 +456,15 @@ class App extends Component<any, AppState> {
                     </form>
                     <br/>
                     <div className='flex-container'>
+                    {
+                        this.state.search_in_progress == false ? 
                         <div className='results-row'>
-                            Showing <span style={{fontWeight: 'bold', color: '#000000'}}>{ this.state.totalCount }</span> results.
-                        </div>
+                                Showing <span style={{fontWeight: 'bold', color: '#000000'}}>{ this.state.totalCount }</span> results.
+                        </div> 
+                        : <div className='results-row'>Waiting for results...
+                        </div> 
+                    } 
+                        
                         <div className='download-csv'>                            
                             <Button sx={styles}
 	                            onClick={ this.exportToCsv } 
