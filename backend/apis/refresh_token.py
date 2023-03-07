@@ -32,7 +32,6 @@ def refresh_token():
     response = r.json()
 
     if response.get('access_token'):
-        # don't store creds in plaintext in a real app obviously
         os.environ["ACCESS_TOKEN"] = response.get('access_token')
         os.environ["REFRESH_TOKEN"] = response.get('refresh_token')
 
