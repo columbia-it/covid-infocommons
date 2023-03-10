@@ -62,6 +62,8 @@ def find_cic_grant(award_id):
     logging.debug(f"    -- {CIC_GRANTS_SEARCH_API}?keyword={award_id}")
     response = requests.get(f"{CIC_GRANTS_SEARCH_API}?keyword={award_id}")
     response_json = response.json()
+    if  'hits' not in response_json['hits']:
+        return None
     cic_grants = response_json['hits']['hits']
     for cg in cic_grants:
         logging.debug(f" --  checking {cg['_id']}")
