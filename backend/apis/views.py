@@ -1,4 +1,6 @@
 import imp
+import logging
+from multiprocessing import context
 from urllib import request
 from rest_framework_json_api.views import ModelViewSet, RelationshipView
 from .models import Person, Organization, Grant, Publication, Dataset, Asset
@@ -8,8 +10,11 @@ from django.utils.decorators import method_decorator
 from apis.oauth2_introspection import HasClaim
 import re
 from rest_framework.schemas.openapi import AutoSchema
-from search.utils import update_grant_in_index
+from search.utils import update_person_in_grant_index, update_grant_in_grant_index
 from rest_framework.response import Response
+from rest_framework_json_api.exceptions import exception_handler
+
+logger = logging.getLogger(__name__)
 
 usual_rels = ('exact', 'lt', 'gt', 'gte', 'lte', 'in')
 text_rels = ('icontains', 'iexact', 'contains')
@@ -110,6 +115,19 @@ class PersonViewSet(ModelViewSet):
         'last_name': usual_rels + text_rels
     }
 
+    # Override update/PATCH request so we can update search index
+    def update(self, request, *args, **kwargs):
+        try:
+            instance = self.get_object()
+            serializer = self.get_serializer(instance, data=request.data)
+            serializer.is_valid(raise_exception=True)
+            self.perform_update(serializer)
+            update_person_in_grant_index(instance)
+            return Response(PersonSerializer(instance).data)
+        except Exception as e:
+            logger.error('Error occurred while updating Person')
+            return exception_handler(e, context)
+
 
 class GrantViewSet(ModelViewSet):
     """ View for Grant APIs
@@ -136,17 +154,19 @@ class GrantViewSet(ModelViewSet):
     schema = AutoSchema(
         tags=['grants'],
     )
- 
+
+    # Override update/PATCH request so we can update search index
     def update(self, request, *args, **kwargs):
         try:
-            super().update(request, *args, **kwargs)
             instance = self.get_object()
-            print(instance)
-            update_grant_pi_in_index(instance)
-        except:
-            return Response(status_code=400)
-        return Response(GrantSerializer(instance).data)
-
+            serializer = self.get_serializer(instance, data=request.data)
+            serializer.is_valid(raise_exception=True)
+            self.perform_update(serializer)
+            update_grant_in_grant_index(instance)
+            return Response(GrantSerializer(instance).data)
+        except Exception as e:
+            logger.error('Error occurred while updating Grant')
+            return exception_handler(e, context)
 
 
 class PublicationViewSet(ModelViewSet):

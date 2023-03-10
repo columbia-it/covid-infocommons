@@ -1,6 +1,6 @@
 from django.contrib import admin
 from .models import Organization, Person, Grant, Funder, Publication, Dataset, Asset
-
+from search.utils import update_person_in_grant_index, update_grant_in_grant_index
 
 """
 ModelAdmin class to customize Person model view in Django admin
@@ -11,6 +11,11 @@ class PersonAdmin(admin.ModelAdmin):
     # Add search on fields
     search_fields = ('first_name', 'id', 'last_name', 'emails',)
 
+    # Override model save from admin so we can update the search index with these updates
+    def save_model(self, request, obj, form, change):
+        super().save_model(request, obj, form, change)
+        # Update search index
+        update_person_in_grant_index(obj)
 
 """
 ModelAdmin class to customize Grant model view in Django admin
@@ -23,6 +28,11 @@ class GrantAdmin(admin.ModelAdmin):
     # Show the fields as inputs instead of drop-down lists to avoid overhead
     raw_id_fields = ('principal_investigator', 'awardee_organization', 'program_officials', 'other_investigators', 'funder')
 
+    # Override model save from admin so we can update the search index with these updates
+    def save_model(self, request, obj, form, change):
+        super().save_model(request, obj, form, change)
+        # Update search index
+        update_grant_in_grant_index(obj)
 
 """
 ModelAdmin class to customize Organization model view in Django admin
