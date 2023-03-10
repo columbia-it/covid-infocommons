@@ -13,7 +13,7 @@ def update_grant_in_grant_index(grant):
     query_body = {
         "query": {
             "ids" : {
-                "values" : [12720]
+                "values" : [grant.id]
             }
         }
     }
