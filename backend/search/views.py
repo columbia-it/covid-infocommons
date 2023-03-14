@@ -26,12 +26,13 @@ def get_facet_by_field(request) :
 
     response = client.search(
         body = query,
-        index = 'grant_index'
+        index = 'grant_index',
     )
 
     return JsonResponse(response)
 
 
+# Handle the request to search grants with keyword and/or filter values
 def search_grants(request):
     start = request.GET.get('from', 0)
     size = request.GET.get('size', 20)
@@ -232,6 +233,7 @@ def search_grants(request):
 
     return JsonResponse(response)
 
+# Handle the request to search publications with keyword and/or filter values
 def search_publications(request):
     start = request.GET.get('from', 0)
     size = request.GET.get('size', 20)
@@ -288,14 +290,14 @@ def search_publications(request):
         if 'match_phrase' in query:
                query['query']['bool']['must']['match_phrase'].append(
                    {
-                       'principal_investigator.full_name': author_name
+                       'authors.full_name': author_name
                     }
                )
         else:
             query['query']['bool']['must'].append(
             {
                 'match_phrase': {
-                    'principal_investigator.full_name': author_name
+                    'authors.full_name': author_name
                 }
             }
         )

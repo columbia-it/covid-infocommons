@@ -343,6 +343,7 @@ class PublicationDocument(Document):
     class Index:
         name = 'publication_index'
         settings = {"number_of_shards": 1, "number_of_replicas": 0}
+        auto_refresh = True
 
     class Django:
         model = Publication

@@ -1,0 +1,114 @@
+[
+    {
+        "model": "apis.funder", 
+        "pk": 1, 
+        "fields": {
+            "ror": "https://ror.org/021nxhr62", 
+            "name": "National Science Foundation", 
+            "approved": true
+        }
+    },
+    {
+        "model": "apis.funder", 
+        "pk": 2, 
+        "fields": {
+            "ror": "https://ror.org/01cwqze88", 
+            "name": "https://ror.org/01cwqze88", 
+            "approved": true
+        }
+    },
+    {
+        "model": "apis.organization", 
+        "pk": 1, 
+        "fields": {
+            "ror": "https://ror.org/03efmqc40",
+            "name": "Arizona State University",
+            "address": "4868 Riverwood Drive",
+            "city": "Sacramento",
+            "state": "AZ",
+            "zip": "95814",
+            "country": "United States",
+            "approved": true
+        }
+    },
+    {
+        "model": "apis.organization", 
+        "pk": 2, 
+        "fields": {
+            "ror": "",
+            "name": "Decision Science Research Institute",
+            "address": "2960 James Martin Circle",
+            "city": "Westerville",
+            "state": "OH",
+            "zip": "43081",
+            "country": "United States",
+            "approved": true
+        }
+    },
+    {
+        "model": "apis.person", 
+        "pk": 1, 
+        "fields": {
+            "first_name": "Hassan", 
+            "last_name": "Toomey", 
+            "orcid": "https://orcid.org/0000-0002-1825-0097", 
+            "emails": "HassanNToomey@armyspy.com", 
+            "private_emails": "DonnaKSmith@dayrep.com", 
+            "keywords": "test, index", 
+            "approved": true, 
+            "websites": "", 
+            "desired_collaboration": "", 
+            "comments": "", "affiliations": [1]
+        }
+    }, 
+    {
+        "model": "apis.person", 
+        "pk": 2, 
+        "fields": {
+            "first_name": "Shane", 
+            "last_name": "Williams", 
+            "orcid": "https://orcid.org/0000-0002-1825-0011", 
+            "emails": "LindaJBrown@armyspy.com", 
+            "private_emails": "DarrellJGibbs@armyspy.com", 
+            "keywords": "science, web", 
+            "approved": true, 
+            "websites": "https://www.nsf.gov/pubs/2023/nsf23067/nsf23067.jsp?org=NSF", 
+            "desired_collaboration": "", 
+            "comments": "", 
+            "affiliations": [1]
+        }
+    },
+    {
+        "model": "apis.publication", 
+        "pk": 1, 
+        "fields": {
+            "doi": "10.1093/ajae/aaq001", 
+            "title": "test", 
+            "issn": "1566199093", 
+            "keywords": "a,b,c", 
+            "language": null, 
+            "publication_date": "2023-02-22", 
+            "publication_type": null, 
+            "approved": true, 
+            "authors": [1], 
+            "grants": [1]
+        }
+    }, 
+    {
+        "model": "apis.publication", 
+        "pk": 2, 
+        "fields": {
+            "doi": "10.1093/ajae/aaq000", 
+            "title": "A Cross-Domain Data-driven Approach to Analyzing and Predicting the Impact of COVID-19 on the U.S. Electricity Sector", 
+            "issn": null, 
+            "keywords": "", 
+            "language": null, 
+            "publication_date": null, 
+            "publication_type": null, 
+            "approved": true, 
+            "authors": [2], 
+            "grants": [2]
+        }
+    },
+    {"model": "apis.grant", "pk": 1, "fields": {"award_id": "2030139", "title": "RAPID International Type I: Understanding the Nature of US-China Research Collaborations on COVID-19", "funder": 1, "funder_divisions": "", "program_reference_codes": "", "start_date": "2023-02-22", "end_date": "2024-02-22", "award_amount": 100000, "principal_investigator": 1, "awardee_organization": 1, "abstract": "Part 1.\r\nDuring the SARS-COV-2 pandemic, scientists from the U.S. and China collaborated more frequently on pandemic-related research papers than they had on papers in general over the previous five years, underscoring the value of international collaboration in addressing global crises. What remains largely unknown is how such collaboration occurred. The primary objective of this study is to examine how U.S.-China research collaboration on COVID-19 occurred and, in particular, how scientific nationalism and global competitiveness shaped these collaborations. The project will move beyond standard bibliometric analysis of research collaborations to conduct mixed method survey research to better understand how collaborative relationships were established or maintained and the challenges experienced or overcome by scientists collaborating on COVID-19 research. The findings will generate crucial insights on how to effectively balance the need to rapidly produce knowledge, overcome disruptions to research processes, and ensure research abides by established regulatory protocols. The long-ranging impact will be to enhance understanding of how science and technology cooperation can more effectively be supported in the future, especially in times of global crisis.", "keywords": "", "approved": true, "program_officials": [2], "other_investigators": []}}, {"model": "apis.grant", "pk": 2, "fields": {"award_id": "2031841", "title": "RAPID Choices under Short-Term Threats and Behavioral Response to Social Distancing in the COVID-19 Pandemic", "funder": 1, "funder_divisions": "", "program_reference_codes": "", "start_date": null, "end_date": null, "award_amount": 200000, "principal_investigator": 2, "awardee_organization": 2, "abstract": "Social-interaction restrictions have to be respected to contain the spread of highly contagious diseases such as COVID-19. Ensuring compliance to strict health interventions, however, needs better understanding of individual decisions under risk. Until a vaccine is developed, policy makers not only need to find the best incentives for people to avoid physical proximity, but they also need to create plans for relaxing social distancing in the near future. Behavioral forecasts from the models developed in this project help to guide decisions in both cases. Specifically, this project provides answers to several policy-relevant questions such as: What changes in social behavior are people adopting in response to the disruptions created by the COVID-19 outbreak? Who is more likely to respect health guidelines, including social distancing protocols? What are safety/risk perceptions of physical proximity in public spaces (pharmacies, grocery stores, take-outs at restaurants) and how are these perceptions shaping daily choices? How to create incentives for individuals to sustain social-distancing? How are COVID-19 disruptions causing losses in individual welfare, and how can analysts derive metrics to value such losses?", "keywords": "", "approved": true, "program_officials": [2], "other_investigators": []}}
+]
