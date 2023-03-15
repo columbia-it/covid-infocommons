@@ -1,0 +1,18 @@
+# syntax=docker/dockerfile:1
+FROM python:3.8-alpine
+
+ENV PYTHONBUFFERED=1 
+
+ENV SRCDIR backend
+RUN mkdir -p $SRCDIR
+WORKDIR $SRCDIR
+COPY . .
+RUN python -m pip install --upgrade pip
+RUN pip install --no-cache-dir -r requirements.txt
+
+COPY search/tests/entrypoint.sh search/tests/
+RUN chmod +x search/tests/entrypoint.sh
+
+CMD [ "sh" ]
+
+
