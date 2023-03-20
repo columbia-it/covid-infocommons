@@ -1,7 +1,8 @@
-import { Component, ReactNode } from "react";
+import { Component, ReactNode, lazy } from "react";
 import ReactDOM from 'react-dom';
 import "./main.css"
-import SurveyForm from "./components/SurveyForm";
+
+const SurveyForm = lazy(() => import(/* webpackChunkName: "surveyForm" */ './components/SurveyForm'));
 
 class App extends Component {
     render() {

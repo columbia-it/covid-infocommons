@@ -15,11 +15,7 @@ import {
   } from '@material-ui/pickers';
 import DateFnsUtils from '@date-io/date-fns';
 import regionData from '../data/regions_data.json';
-
-interface Facet {
-    key: string
-    doc_count: number
-}
+import Facet from './Facet';
 
 interface GrantsFilterProps {
     awardee_org_names: Facet[]
@@ -461,6 +457,6 @@ class GrantsFilter extends Component<GrantsFilterProps, GrantFilterState> {
     };
 }
 
-export {GrantsFilter, Facet};
+export default GrantsFilter;
 
 

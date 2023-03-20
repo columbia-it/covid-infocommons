@@ -6,8 +6,8 @@ import sys
 
 def main():
     try:
-        os.stat('cic/settings/local_settings.py')
-        os.environ.setdefault('DJANGO_SETTINGS_MODULE', 'cic.settings.local_settings')
+        os.stat('cic/settings/settings.py')
+        os.environ.setdefault('DJANGO_SETTINGS_MODULE', 'cic.settings.settings')
     except FileNotFoundError:
         os.environ.setdefault('DJANGO_SETTINGS_MODULE', 'cic.settings.settings')
     try:

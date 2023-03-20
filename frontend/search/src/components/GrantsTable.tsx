@@ -1,10 +1,13 @@
-import { Component } from "react";
+import { Component, lazy } from "react";
 import MaterialTable, { MTableToolbar } from "material-table";
 import { TablePagination } from "@material-ui/core";
 import { css } from '@emotion/react'
 import { Link as MaterialLink} from '@mui/material';
 import NumberFormat from 'react-number-format';
-import Highlighter from 'react-highlight-words'
+//import Highlighter from 'react-highlight-words'
+
+//const MaterialTable = lazy(() => import(/* webpackChunkName: "MaterialTable" */ 'material-table'));
+const Highlighter = lazy(() => import(/* webpackChunkName: "Highlighter" */ 'react-highlight-words'));
 
 type Prop = {
     'title': string

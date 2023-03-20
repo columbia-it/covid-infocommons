@@ -9,7 +9,7 @@ module.exports = {
     entry: path.join(__dirname, "src", "index.tsx"),
     output: { 
         path: static_dir,
-        filename: 'main.js'
+        filename: '[name].main.js'
     },
     optimization: {
         minimize: true,
