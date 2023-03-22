@@ -9,11 +9,32 @@ module.exports = {
     entry: path.join(__dirname, "src", "index.tsx"),
     output: { 
         path: static_dir,
-        filename: 'main.js'
+        filename: '[name].bundle.js'
     },
     optimization: {
-        minimize: true,
-    },
+        splitChunks: {
+          chunks: 'async',
+          minSize: 20000,
+          maxSize: 500000,
+          minRemainingSize: 0,
+          minChunks: 1,
+          maxAsyncRequests: 30,
+          maxInitialRequests: 30,
+          enforceSizeThreshold: 50000,
+          cacheGroups: {
+            defaultVendors: {
+              test: /[\\/]node_modules[\\/]/,
+              priority: -10,
+              reuseExistingChunk: true,
+            },
+            default: {
+              minChunks: 2,
+              priority: -20,
+              reuseExistingChunk: true,
+            },
+          },
+        },
+      },
     mode: process.env.NODE_ENV || "development",
     resolve: { 
             extensions: [".tsx", ".ts", ".js"],

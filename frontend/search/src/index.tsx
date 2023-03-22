@@ -1,14 +1,19 @@
 import ReactDOM from 'react-dom';
 import "./main.css"
-import GrantsTable from './components/GrantTable';
-import { GrantsFilter, Facet } from './components/GrantsFilter';
 import Box from '@mui/material/Box';
 import TextField from '@mui/material/TextField';
 import Button from '@mui/material/Button';
-import React, { Component } from "react";
+import React, { Component, lazy, Suspense } from "react";
 import axios from "axios";
 import DownloadIcon from '@mui/icons-material/Download';
+import {Facet} from './components/GrantsFilter';
 
+const GrantsTable = lazy(() => import(/* webpackChunkName: "grantsTable" */ './components/GrantsTable'));
+
+const GrantsFilter = React.lazy(
+    () => import(/* webpackChunkName: "grantsFilter" */ './components/GrantsFilter').then(module => ({ default: module.GrantsFilter }))
+  );
+  
 const styles = {
     // See MUI Button CSS classes at https://mui.com/material-ui/api/button/
     "&.MuiButton-contained": {
@@ -61,7 +66,7 @@ interface Filter {
 
 let url = ''
 if (process.env.NODE_ENV == 'production') {
-    url = "https://cic-apps.datascience.columbia.edu";
+    url = "https://cice-dev.paas.cc.columbia.edu";
 } else if (process.env.NODE_ENV == 'development') {
     url = "https://cice-dev.paas.cc.columbia.edu";
 } else {
@@ -476,6 +481,7 @@ class App extends Component<any, AppState> {
                     <br/>
                     <div className='flex-container'>
                         <div className='flex-child'>
+                            <Suspense fallback={<span>Loading...</span>}>
                             <GrantsTable
                                 totalCount={ this.state.totalCount } 
                                 data={ this.state.data} 
@@ -484,9 +490,11 @@ class App extends Component<any, AppState> {
                                 pageIndex={ this.state.pageIndex }
                                 keyword={ this.state.keyword }
                             />
+                            </Suspense>
                 </div>
                 <div className='flex-child'>
                             <div>
+                                <Suspense fallback={<span>Loading...</span>}>
                                 <GrantsFilter
                                     awardee_org_names={ this.state.awardee_org_names }
                                     funder_divisions={ this.state.funder_divisions }
@@ -495,6 +503,7 @@ class App extends Component<any, AppState> {
                                     funder_names={ this.state.funder_names }
                                     filterChangeHandler={ this.filterChangeHandler }
                                 />
+                                </Suspense>
                             </div>
                         </div>
                 </div>

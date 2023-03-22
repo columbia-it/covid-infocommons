@@ -31,9 +31,25 @@
     <script type="text/javascript">
         var keywords = "{{ keywords }}";
       </script>
-    <script type="text/javascript" src="{% static 'search/main.js'%}">
+    <script type="text/javascript" src="{% static 'search/main.bundle.js'%}">
     </script>
-
+    <!--
+    <script type="text/javascript" src="{% static 'search/120.main.js'%}">
+    </script>
+    <script type="text/javascript" src="{% static 'search/207.main.js'%}">
+    </script>
+    <script type="text/javascript" src="{% static 'search/408.main.js'%}">
+    </script>
+    
+    <script type="text/javascript" src="{% static 'search/856.main.js'%}">
+    </script>
+    <script type="text/javascript" src="{% static 'search/894.main.js'%}">
+    </script>
+    -->
+    <!-- <script type="text/javascript" src="{% static 'search/grantsFilter.main.js'%}">
+    </script>
+    <script type="text/javascript" src="{% static 'search/grantsTable.main.js'%}">
+    </script> -->
     {% include "cic_footer.html" %}
 </body>
 {% endblock content %}

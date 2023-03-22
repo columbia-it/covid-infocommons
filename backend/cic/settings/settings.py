@@ -9,13 +9,18 @@ if ENVIRONMENT == 'dev':
 elif ENVIRONMENT == 'prod':
     from .prod import *  # noqa: F403
     
-AWS_S3_BUCKET_AUTH_STATIC = True
-STATICFILES_STORAGE = "django_s3_storage.storage.StaticS3Storage"
+# AWS_S3_BUCKET_AUTH_STATIC = True
+# STATICFILES_STORAGE = "django_s3_storage.storage.StaticS3Storage"
 
-AWS_S3_CUSTOM_DOMAIN = '%s.s3.amazonaws.com' % AWS_S3_BUCKET_NAME_STATIC  # noqa: F405
-SECURE_REFERRER_POLICY = 'strict-origin-when-cross-origin'
-STATIC_URL = "https://%s.s3.amazonaws.com/" % AWS_S3_BUCKET_NAME_STATIC
+# AWS_S3_CUSTOM_DOMAIN = '%s.s3.amazonaws.com' % AWS_S3_BUCKET_NAME_STATIC  # noqa: F405
+# SECURE_REFERRER_POLICY = 'strict-origin-when-cross-origin'
+# STATIC_URL = "https://%s.s3.amazonaws.com/" % AWS_S3_BUCKET_NAME_STATIC
 
+BASE_DIR = Path(__file__).resolve().parent.parent.parent
+STATIC_URL = '/assets/'
+STATIC_ROOT = BASE_DIR / "static"
+print('********************')
+print(STATIC_ROOT)
 OPENSEARCH_URL = os.getenv('OPENSEARCH_URL')
 
 OPENSEARCH = OpenSearch([OPENSEARCH_URL])
