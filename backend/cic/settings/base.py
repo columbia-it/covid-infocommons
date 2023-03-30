@@ -50,6 +50,7 @@ INSTALLED_APPS = [
     'rest_framework_json_api',
     'corsheaders',
     'simple_history',
+    'import_export',
     # Local apps
     'apis',
     'pi_survey',

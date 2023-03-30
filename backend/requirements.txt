@@ -30,6 +30,7 @@ h11==0.13.0
 hjson==3.0.2
 idna==3.3
 inflection==0.5.1
+import-export==0.3.1
 jmespath==0.10.0
 jwcrypto==1.0
 kappa==0.6.0
