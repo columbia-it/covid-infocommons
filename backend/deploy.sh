@@ -1,43 +1,24 @@
-#!/bin/sh
-
+#!/bin/bash 
+export CICE_ENV=dev
+export AWS_NEW_CRED=Yes
 date +"%Y/%m/%d %H:%M:%S"
-
-source venv/bin/activate
-
-# Verify Python version
-which python
-python -V
-
-# Install dependencies
-ls -al
+which python3
+python3 -V
+python3 -m venv py3_venv
+source py3_venv/bin/activate
 pip install -r requirements.txt
-pip freeze
 
-# Set AWS related environment variables
-export CICE_AWS_ENV=dev
-echo $CICE_AWS_ENV
-export CICE_AWS_ACCOUNT=305803678806
-echo $CICE_AWS_ACCOUNT
-export AWS_PROFILE=cuit-infra-cice-dev
-export PATH=$PATH:/Users/sg3847/Downloads
-export UPDATE_STATIC=false
-
-# Verify AWS credentials
-python saml.py cuit-dev-role 305803678806
-
-# Update Lambda
-zappa status $CICE_AWS_ENV
-zappa update $CICE_AWS_ENV
-zappa manage $CICE_AWS_ENV showmigrations models
-zappa manage $CICE_AWS_ENV migrate models
-zappa manage $CICE_AWS_ENV showmigrations models
-if [ $UPDATE_STATIC ]
+python manage.py collectstatic --noinput
+if [ $AWS_NEW_CRED == "Yes" ]
 then
-  echo "Updating static files"
-  # Collect static files
-  ls -al static/
-  python manage.py collectstatic --noinput
-  ls -al static/
-  zappa manage $CICE_AWS_ENV "collectstatic --noinput"
+  echo "Generating a new AWS credentials"
+  python create_aws_cred.py
 fi
-date +"%Y/%m/%d %H:%M:%S"
+ls -al ~/.aws/
+
+zappa status $CICE_ENV
+zappa update $CICE_ENV
+
+zappa manage $CICE_ENV showmigrations models
+zappa manage $CICE_ENV migrate models
+zappa manage $CICE_ENV showmigrations models
