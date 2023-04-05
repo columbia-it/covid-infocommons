@@ -88,11 +88,13 @@ def person_org_to_cic_format(person, org_id):
     return person_data
 
 
-# Find the first page of people
-def find_cic_people():
+# Find a page of people
+def find_cic_people(page = 1):
     logging.debug(" -- Reading people from CIC API")
-    response = requests.get(CIC_PEOPLE_API)
+    response = requests.get(f"{CIC_PEOPLE_API}?page%5Bnumber%5D={page}")
     response_json = response.json()
+    if response_json is None or 'data' not in response_json:
+        return None
     people = response_json['data']
     return people
 
