@@ -40,3 +40,4 @@ def retrieve_cic_grants(page):
 
 if __name__ == "__main__":
     main()
+

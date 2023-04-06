@@ -89,10 +89,12 @@ def person_org_to_cic_format(person, org_id):
 
 
 # Find the first page of people
-def find_cic_people():
+def find_cic_people(page = 1):
     logging.debug(" -- Reading people from CIC API")
-    response = requests.get(CIC_PEOPLE_API)
+    response = requests.get(f"{CIC_PEOPLE_API}?page%5Bnumber%5D={page}")
     response_json = response.json()
+    if 'data' not in response_json:
+        return []
     people = response_json['data']
     return people
 
@@ -128,7 +130,27 @@ def delete_cic_person(person_id):
     if r.status_code >= 300:
         print(f"ERROR {r} {r.text}")
         logging.error(f"{r} {r.text}")
-            
+
+
+def backup_to_json():
+    print("exporting for backup")
+    with open("cic_people.json", "w") as outfile:
+        outfile.write("[")
+
+        # process all people, one page at a time
+        for page in range(1, 100000):
+            people = find_cic_people(page)
+            if people is None or len(people) == 0:
+                break
+            print(f"Page {page} -- {len(people)} people")
+            for p in people:
+                json_object = json.dumps(p, indent=4)
+                outfile.write(json_object)
+                outfile.write(",")
+
+        outfile.write("]")
+        print("Completed export to \'cic_people.json\'")
+
 
 if __name__ == "__main__":
     main()

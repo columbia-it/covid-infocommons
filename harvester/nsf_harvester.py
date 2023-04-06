@@ -26,6 +26,7 @@ DIRECTORATES = [
 'Geosciences (GEO)',
 'Mathematical and Physical Sciences (MPS)',
 'Social, Behavioral, and Economic Sciences (SBE)',
+'STEM Education (EDU)',
 'Technology, Innovation and Partnerships (TIP)',
 'Office of the Director'
 ]
@@ -39,6 +40,7 @@ DIRECTORATE_ABBREVIATIONS = {
     'Direct For Education and Human Resources': 'Education and Human Resources (EHR)',
     'Directorate For Geosciences': 'Geosciences (GEO)',
     'Dir for Tech, Innovation, & Partnerships': 'Technology, Innovation and Partnerships (TIP)',
+    'Directorate for STEM Education' : 'Directorate for STEM Education (EDU)',
     'Office Of The Director': 'Office Of The Director'
 }
 
