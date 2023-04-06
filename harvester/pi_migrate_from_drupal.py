@@ -122,26 +122,31 @@ def build_person_json(html, pi_id):
   orcid = get_values(html, 'ORCID ID:')
   if orcid is not None:
     orcid = standardize_orcid(orcid[0])
-    person_data['data']['orcid'] = orcid
-    
+    person_data['data']['attributes']['orcid'] = orcid    
   websites = get_values(html, 'Professional Website(s):')
   proj_websites = get_values(html, 'Project-Related Website(s):')
   websites = websites + proj_websites
   if websites is not None:
-    person_data['data']['websites'] = ', '.join(websites)
-
-  ##### 
+    print(f"AAAA {websites}")
+    person_data['data']['attributes']['websites'] = websites
   profile_image = get_image_url(html, 'col-md-2 pull-right')
   if profile_image is not None:
     profile_image = DRUPAL_BASE + profile_image[0]
     print(f"TTTT profile {profile_image}")
     cic_assets.find_or_create_for_person('profile_image', profile_image, pi_id)
-  
+    
   video = get_image_url(html, 'Video:')
-  grants = get_urls(html, 'Awarded COVID Grants:')
-  ignored_proj_keywords = get_values(html, 'Expected Research Output:')
-  proj_keywords = get_values(html, 'Project Keywords:')
+  if video is not None and len(video) > 0:
+    print(f"TTTT video {video[0]}")
+    cic_assets.find_or_create_for_person('cic_video', video[0], pi_id)
+  
+  # grants = get_urls(html, 'Awarded COVID Grants:')
+  # ignored_proj_keywords = get_values(html, 'Expected Research Output:')
+  # proj_keywords = get_values(html, 'Project Keywords:')
   keywords = get_values(html, "PI's Area(s) of Scientific Expertise:")
+#  if keywords is not None:
+#    print(f"AAAA keyw {keywords[0].split()}")
+#    person_data['data']['attributes']['keywords'] = keywords[0].split()
 
   print(f"YYYY {person_data}")
   return person_data
@@ -166,14 +171,14 @@ def main():
     return
 
     # process all people, one page at a time
-    people = cic_people.find_cic_people()
-    print(f"Received {len(people)} people")
     page = 1
     total = 0
+    people = cic_people.find_cic_people(page)
+    print(f"Received {len(people)} people")
     while len(people) > 0:
         total += len(people)
         for p in people:
-            #print(f"Processing {p['id']}")
+            print(f"Processing {p['id']}")
             process(p)
         people = cic_people.find_cic_people(page)
         print(f"Received {len(people)} people -- total {total}")
