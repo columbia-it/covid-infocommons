@@ -2,7 +2,7 @@ import logging
 import os
 import sys
 
-CIC_BASE = "https://cice-prod.paas.cc.columbia.edu"
+CIC_BASE = "https://cice-dev.paas.cc.columbia.edu"
 
 logging.basicConfig(filename='cic_harvester.log', level=logging.DEBUG, format='%(asctime)s - %(message)s', datefmt='%d-%b-%y %H:%M:%S')
 
