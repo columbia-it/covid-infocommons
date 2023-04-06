@@ -23,6 +23,7 @@ django-opensearch-dsl==0.2.0
 django-s3-storage==0.13.6
 djangorestframework==3.13.1
 djangorestframework-jsonapi==5.0.0
+django-simple-history
 durationpy==0.5
 elastic-transport==8.1.0
 future==0.18.2
