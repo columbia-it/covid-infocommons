@@ -5,7 +5,7 @@ import json
 def main():
     with open("cic_grants.json", "w") as outfile:
         outfile.write("[")
-
+        any_written = False
         # process all grants, one page at a time
         for page in range(1, 100000):
             grants = cic_grants.find_cic_grants(page)
@@ -14,8 +14,10 @@ def main():
             print(f"Page {page} -- {len(grants)} grants")
             for g in grants:
                 json_object = json.dumps(grant_to_lingo(g), indent=4)
+                if any_written:
+                    outfile.write(",")
                 outfile.write(json_object)
-                outfile.write(",")
+                any_written = True
 
         outfile.write("]")
         print("Completed grant export to \'cic_grants.json\'")

@@ -72,9 +72,9 @@
       {% if person.websites %}
       <section>
         <small>Websites:</small>
-        {% for grant in grants %}
+        {% for website in websites %}
 	<p>
-          <a href="/grants/{{ grant.id }}">{{ grant.title }}</a>
+          <a href="{{ website }}">{{ website }}</a>
 	</p>
         {% endfor %}
       </section>      
