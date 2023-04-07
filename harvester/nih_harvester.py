@@ -383,6 +383,7 @@ def nih_keywords(s):
         return result
 
 IC_MAPPING = {
+    'Agency for Healthcare Research and Quality': 'Agency for Healthcare Research and Quality (AHRQ)',
     'National Cancer Institute': 'National Cancer Institute (NCI)',
     'National Eye Institute': 'National Eye Institute (NEI)',
     'National Heart Lung and Blood Institute': 'National Heart Lung and Blood Institute (NHLBI)',

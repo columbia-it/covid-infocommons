@@ -8,6 +8,9 @@ import Button from '@mui/material/Button';
 import React, { Component } from "react";
 import axios from "axios";
 import DownloadIcon from '@mui/icons-material/Download';
+import axiosRetry from 'axios-retry';
+
+axiosRetry(axios, {retries: 3});
 
 const styles = {
     // See MUI Button CSS classes at https://mui.com/material-ui/api/button/
@@ -126,7 +129,6 @@ class App extends Component<any, AppState> {
         axios.get(url).then(results => {
             this.setState({ pi_names: results.data.aggregations.patterns.buckets })
             pi_facet = results.data.aggregations.patterns.buckets
-
         })
         return pi_facet;
     }
