@@ -69,10 +69,10 @@
       </section>
       {% endif %}
 
-      {% if person.websites %}
+      {% if person.websites is not None %}
       <section>
         <small>Websites:</small>
-        {% for website in websites %}
+        {% for website in person.websites %}
 	<p>
           <a href="{{ website }}">{{ website }}</a>
 	</p>
