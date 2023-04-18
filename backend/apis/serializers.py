@@ -28,7 +28,7 @@ class PersonSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Person
-        fields = ('id', 'affiliations', 'first_name', 'last_name', 'orcid', 'emails', 'private_emails', 'keywords', 'approved', 'desired_collaboration', 'comments', 'websites')
+        fields = ('id', 'affiliations', 'first_name', 'last_name', 'orcid', 'emails', 'keywords', 'approved', 'desired_collaboration', 'comments', 'websites')
         depth = 2
 
 
