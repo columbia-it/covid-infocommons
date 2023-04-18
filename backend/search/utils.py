@@ -70,7 +70,9 @@ def update_person_in_grant_index(person):
                         'last_name': person.last_name,
                         'emails': person.emails,
                         'private_emails':  person.private_emails,
-                        'full_name': person.first_name + ' ' + person.last_name
+                        'full_name': person.first_name + ' ' + person.last_name,
+                        'websites': person.websites,
+                        'keywords': person.keywords
                     }
                 }
             }
