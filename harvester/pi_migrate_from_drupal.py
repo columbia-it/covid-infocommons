@@ -124,11 +124,15 @@ def build_person_json(html, pi_id):
     person_data['data']['attributes']['orcid'] = orcid    
   websites = get_values(html, 'Professional Website(s):')
   proj_websites = get_values(html, 'Project-Related Website(s):')
-  websites = websites + proj_websites
+  if proj_websites is not None:
+    if websites is None:
+      websites = proj_websites
+    else:
+      websites = websites + proj_websites
   if websites is not None:
     person_data['data']['attributes']['websites'] = websites
   profile_image = get_image_url(html, 'col-md-2 pull-right')
-  if profile_image is not None:
+  if profile_image is not None and len(profile_image) > 0:
     profile_image = DRUPAL_BASE + profile_image[0]
     cic_assets.find_or_create_for_person('profile_image', profile_image, pi_id)
     
@@ -156,29 +160,32 @@ def standardize_orcid(st):
     return "https://orcid.org/" + st
   else:
     mo = re.match(ORCID_RE, st)
+    if mo is None:
+      return None
     return "https://orcid.org/" + mo.group(1) + "-" + mo.group(2) + "-" + mo.group(3) + "-" + mo.group(4)
   
 def main():
-    # for testing, process just florence
-    p = cic_people.find_cic_person("Florence D", "Hudson")
-    print(p)
-    process(p)
-    return
+  # for testing, process just one person
+#  p = cic_people.find_cic_person("Khalid K", "Alam")
+#  print(p)
+#  process(p)
+#  return
 
-    # process all people, one page at a time
-    page = 1
-    total = 0
+  # process all people, one page at a time
+  page = 1
+  total = 0
+  people = cic_people.find_cic_people(page)
+  print(f"Received {len(people)} people")
+  while people is not None and len(people) > 0:
+    total += len(people)
+    for p in people:
+      print(f"Processing {p['id']}")
+      process(p)
+    page += 1
     people = cic_people.find_cic_people(page)
-    print(f"Received {len(people)} people")
-    while len(people) > 0:
-        total += len(people)
-        for p in people:
-            print(f"Processing {p['id']}")
-            process(p)
-        people = cic_people.find_cic_people(page)
-        print(f"Received {len(people)} people -- total {total}")
-        page += 1
-    print("Completed PI processing")
+    if people is not None:
+      print(f"Received {len(people)} people -- total {total}")
+  print("Completed PI processing")
 
 
 if __name__ == "__main__":
