@@ -12,6 +12,8 @@ import csv
 class SurveyAdmin(SimpleHistoryAdmin):
     actions = ["export_as_csv"]
 
+    fields = ['first_name', 'last_name', 'email', 'orcid', 'award_id', 'award_title', 'funder_name', 'grant_keywords', 'dois', 'websites', 'person_keywords', 'approved', 'submission_date', 'is_copi']
+
     def export_as_csv(self, request, queryset):
         meta = self.model._meta
         field_names = [field.name for field in meta.fields]

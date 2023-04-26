@@ -561,6 +561,27 @@ class SurveyForm extends Component <any, FormState> {
                             <div>
                                 <Paper style={{ padding: 16 }}>
                                     <FormControl className="name-input">
+                                        <FormLabel id="orcid-label" className="label">
+                                            Your ORCID iD (type NA if you do not have an ORCID)<span className="required-text">*</span>
+                                        </FormLabel>
+                                        <TextField 
+                                            id="orcid" 
+                                            variant="outlined" 
+                                            value={ values.orcid }
+                                            onChange={ handleChange }
+                                            onKeyUp={ handleBlur }
+                                            onBlur={ handleBlur }
+                                        />
+                                        { errors.orcid && touched.orcid ? (<div className="required-text">{errors.orcid}</div>) : null }
+                                    </FormControl>
+                                    <br/>
+                                    <br/>
+                                </Paper> 
+                            </div>
+                            <br/>
+                            <div>
+                                <Paper style={{ padding: 16 }}>
+                                    <FormControl className="name-input">
                                         <FormLabel id="emails-label" className="label">
                                             Your email address <span className="required-text">*</span>
                                         </FormLabel>
@@ -580,23 +601,39 @@ class SurveyForm extends Component <any, FormState> {
                             <br/>
                             <div>
                                 <Paper style={{ padding: 16 }}>
-                                    <FormControl className="name-input">
-                                        <FormLabel id="orcid-label" className="label">
-                                            Your ORCID iD (type NA if you do not have an ORCID)<span className="required-text">*</span>
-                                        </FormLabel>
-                                        <TextField 
-                                            id="orcid" 
-                                            variant="outlined" 
-                                            value={ values.orcid }
-                                            onChange={ handleChange }
-                                            onKeyUp={ handleBlur }
-                                            onBlur={ handleBlur }
-                                        />
-                                        { errors.orcid && touched.orcid ? (<div className="required-text">{errors.orcid}</div>) : null }
+                                    <FormControl>
+                                        <FormLabel id="funder-label">COVID-19 Funding Agency <span className="required-text">*</span></FormLabel>             
+                                            <RadioGroup
+                                                aria-labelledby="funder-group-label"
+                                                defaultValue="NSF"
+                                                name="funder"
+                                                onChange={ handleChange }
+                                                value={ values.funder.toString() }
+                                            >
+                                            <FormControlLabel 
+                                                value={ Funder.NSF.toString() } 
+                                                control={<Radio />} 
+                                                label="NSF" />
+                                            <FormControlLabel 
+                                                value={ Funder.NIH.toString() } 
+                                                control={<Radio />} 
+                                                label="NIH" />
+                                            <FormControlLabel 
+                                                value={ Funder.OTHER.toString() }
+                                                control={<Radio/>}
+                                                label={
+                                                    <div>
+                                                        <span>Other:</span>&nbsp;
+                                                    </div>
+                                                }/>
+                                            <div><TextField 
+                                                            onChange={ this.handleOtherFunderChange } 
+                                                            id='other_funder_text'
+                                                            value={ this.state.other_funder }/>
+                                            </div>
+                                        </RadioGroup>
                                     </FormControl>
-                                    <br/>
-                                    <br/>
-                                </Paper> 
+                                </Paper>
                             </div>
                             <br/>
                             <div>
@@ -668,46 +705,9 @@ class SurveyForm extends Component <any, FormState> {
                             <br/>
                             <div>
                                 <Paper style={{ padding: 16 }}>
-                                    <FormControl>
-                                        <FormLabel id="funder-label">COVID-19 Funding Agency <span className="required-text">*</span></FormLabel>             
-                                            <RadioGroup
-                                                aria-labelledby="funder-group-label"
-                                                defaultValue="NSF"
-                                                name="funder"
-                                                onChange={ handleChange }
-                                                value={ values.funder.toString() }
-                                            >
-                                            <FormControlLabel 
-                                                value={ Funder.NSF.toString() } 
-                                                control={<Radio />} 
-                                                label="NSF" />
-                                            <FormControlLabel 
-                                                value={ Funder.NIH.toString() } 
-                                                control={<Radio />} 
-                                                label="NIH" />
-                                            <FormControlLabel 
-                                                value={ Funder.OTHER.toString() }
-                                                control={<Radio/>}
-                                                label={
-                                                    <div>
-                                                        <span>Other:</span>&nbsp;
-                                                    </div>
-                                                }/>
-                                            <div><TextField 
-                                                            onChange={ this.handleOtherFunderChange } 
-                                                            id='other_funder_text'
-                                                            value={ this.state.other_funder }/>
-                                            </div>
-                                        </RadioGroup>
-                                    </FormControl>
-                                </Paper>
-                            </div>
-                            <br/>
-                            <div>
-                                <Paper style={{ padding: 16 }}>
                                     <FormControl className="name-input">
                                         <FormLabel id="grant-kw-label" className="label">
-                                            Please provide suggested keywords for your award, as applicable.
+                                            Keywords related to your COVID project
                                         </FormLabel>
                                         <TextField 
                                             id="grant_kw" 
@@ -723,31 +723,11 @@ class SurveyForm extends Component <any, FormState> {
                                 </Paper>
                             </div>
                             <br/>
-                            <br/>
-                            <div>
-                                <Paper style={{ padding: 16 }}>
-                                    <FormControl className="name-input">
-                                        <FormLabel id="dois-label" className="label">
-                                            Please list DOIs for any of your published research associated with your COVID award. This can include articles, data sets, software packages, etc.                                        
-                                        </FormLabel>
-                                        <TextField 
-                                            id="dois" 
-                                            variant="outlined" 
-                                            value={ values.dois }
-                                            onChange={ handleChange }
-                                            onKeyUp={ handleBlur }
-                                        />
-                                        { errors.dois && touched.dois ? (<div className="required-text">{errors.dois}</div>) : null }
-                                    </FormControl>
-                                    <br/>
-                                    <br/>
-                                </Paper>
-                            </div>
                             <div>
                                 <Paper style={{ padding: 16 }}>
                                     <FormControl className="name-input">
                                         <FormLabel id="grant-add-kw-label" className="label">
-                                            Please list any areas of scientific expertise your project could benefit from or is seeking, as keywords.
+                                            Keywords related to your scientific research (COVID or other)
                                         </FormLabel>
                                         <TextField 
                                             id="grant_add_kw" 
@@ -762,11 +742,12 @@ class SurveyForm extends Component <any, FormState> {
                                     <br/>
                                 </Paper>
                             </div>
+                            <br/>
                             <div>
                                 <Paper style={{ padding: 16 }}>
                                     <FormControl className="name-input">
                                         <FormLabel id="websites-label" className="label">
-                                            Please list URLs of any of your professional websites associated with this award.
+                                            PI website and project relevant websites
                                         </FormLabel>
                                         <TextField 
                                             id="websites" 
@@ -780,78 +761,20 @@ class SurveyForm extends Component <any, FormState> {
                                 </Paper>
                             </div>
                             <br/>
-                            <br/>
                             <div>
                                 <Paper style={{ padding: 16 }}>
                                     <FormControl className="name-input">
-                                        <FormLabel id="person-kw-label" className="label">
-                                            Please list your areas of scientific expertise as keywords.
+                                        <FormLabel id="dois-label" className="label">
+                                            DOIs of articles, datasets 
                                         </FormLabel>
                                         <TextField 
-                                            id="person_kw" 
+                                            id="dois" 
                                             variant="outlined" 
+                                            value={ values.dois }
                                             onChange={ handleChange }
-                                            value={ values.person_kw }
                                             onKeyUp={ handleBlur }
                                         />
-                                        { errors.person_kw && touched.person_kw ? (<div className="required-text">{errors.person_kw}</div>) : null }
-                                    </FormControl>
-                                    <br/>
-                                    <br/>
-                                </Paper>
-                            </div>
-                            <br/>
-                            <br/>
-                            <div>
-                                <Paper style={{ padding: 16 }}>
-                                    <FormControl className="name-input">
-                                        <FormLabel id="desired-collaboration-label" className="label">
-                                            If applicable, please further specify any collaboration opportunities you are interested in pursuing as related to this award, for instance "looking for predictive analytics experts for collaboration" or "can offer assistance with xxx".
-                                        </FormLabel>
-                                        <TextField 
-                                            id="desired_collaboration" 
-                                            variant="outlined" 
-                                            onChange={ handleChange }
-                                            value={ values.desired_collaboration }
-                                        />
-                                    </FormControl>
-                                    <br/>
-                                    <br/>
-                                </Paper>
-                            </div>
-                            <br/>
-                            <br/>
-                            <div>
-                                <Paper style={{ padding: 16 }}>
-                                    <FormControl className="name-input">
-                                        <FormLabel id="person-comments-label" className="label">
-                                            Where would you like to connect with other COVID-19 researchers? (e.g. Slack, listserv, Google Group, etc.)
-                                        </FormLabel>
-                                        <TextField 
-                                            id="person_comments" 
-                                            variant="outlined" 
-                                            onChange={ handleChange }
-                                            value={ values.person_comments }
-                                        />
-                                    </FormControl>
-                                    <br/>
-                                    <br/>
-                                </Paper>
-                            </div>
-                            <br/>
-                            <br/>
-                            <div>
-                                <Paper style={{ padding: 16 }}>
-                                    <FormControl className="name-input">
-                                        <FormLabel id="add-comments-label" className="label">
-                                            Additional comments for CIC staff
-                                        </FormLabel>
-                                        <TextField 
-                                            id="additional_comments" 
-                                            variant="outlined" 
-                                            onChange={ handleChange }
-                                            value={ values.additional_comments }
-                                        />
+                                        { errors.dois && touched.dois ? (<div className="required-text">{errors.dois}</div>) : null }
                                     </FormControl>
                                     <br/>
                                     <br/>

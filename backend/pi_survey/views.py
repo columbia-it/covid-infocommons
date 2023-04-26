@@ -36,13 +36,13 @@ def submitForm(request):
                 award_title = data.get('award_title', None),
                 funder_name = data.get('funder', None),
                 grant_keywords = data.get('grant_kw', None),
-                grant_additional_keywords = data.get('grant_add_kw', None),
+                #grant_additional_keywords = data.get('grant_add_kw', None),
                 dois = data.get('dois', None),
                 websites = data.get('websites', None),
                 person_keywords = data.get('person_kw', None),
-                desired_collaboration = data.get('desired_collaboration', None),
-                person_comments = data.get('person_comments', None),
-                person_additional_comments = data.get('additional_comments', None),
+                #desired_collaboration = data.get('desired_collaboration', None),
+                #person_comments = data.get('person_comments', None),
+                #person_additional_comments = data.get('additional_comments', None),
                 is_copi = data.get('is_copi', None)
             )
             survey.save()

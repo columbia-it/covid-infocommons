@@ -1,6 +1,6 @@
+from dataclasses import fields
 from django.db import models
-from django_mysql.models import ListCharField
-import datetime
+from django.utils import timezone
 from simple_history.models import HistoricalRecords
 
 # Model to store the PI survey form data
@@ -22,13 +22,14 @@ class Survey(models.Model):
     person_comments = models.TextField(null=True, blank=True)
     person_additional_comments = models.TextField(null=True, blank=True, verbose_name='Communication preferences')
     approved = models.BooleanField(default=False)
-    submission_date = models.DateTimeField(default=datetime.date.today)
+    submission_date = models.DateTimeField(default=timezone.now)
     is_copi = models.BooleanField(default=False)
     history = HistoricalRecords()
 
     def __str__(self):
         approved_text = 'Approved' if self.approved else 'Not approved'
         return self.first_name + ' ' + self.last_name + ' - Added on: '+ str(self.submission_date) + ' - ' + approved_text
+
     class Meta:
         db_table = 'survey'
         ordering = ['id']
