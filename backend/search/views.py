@@ -240,8 +240,8 @@ def search_publications(request):
     
     keyword = request.GET.get('keyword', None)
     doi = request.GET.get('doi', None)
-    title = request.GET.get('title', None)
     author_name = request.GET.get('pi_name', None)
+    mime_type = request.GET.get('mime_type', None)
 
     query = {
         'size': size,
@@ -272,8 +272,10 @@ def search_publications(request):
                 'fields': [
                     'title', 
                     'doi',  
-                    'keywords', 
-                    'authors.full_name'
+                    'authors.full_name',
+                    'mime_type',
+                    'publications.title',
+                    'grants.title'
                 ]
             }
         })
@@ -376,3 +378,44 @@ def search_people(request):
 
     # return JsonResponse(response)
     return JsonResponse({})
+
+# Handle the request to search datasets with keyword and/or filter values
+def search_datasets(request):
+    client = OpenSearch(
+        hosts = [{'host': settings.OPENSEARCH_URL, 'port': 443}],
+        use_ssl = True,
+        verify_certs = True,
+    )
+    query = {
+        'query': {
+            'match_all': {}
+        }
+    }
+    
+    response = client.search(
+        body = query,
+        index = 'dataset_index'
+    )
+
+    return JsonResponse(response)
+
+# Handle the request to search assets with keyword and/or filter values
+def search_assets(request):
+    client = OpenSearch(
+        hosts = [{'host': settings.OPENSEARCH_URL, 'port': 443}],
+        use_ssl = True,
+        verify_certs = True,
+    )
+    query = {
+        'query': {
+            'match_all': {}
+        }
+    }
+
+    response = client.search(
+        body = query,
+        index = 'asset_index'
+    )
+
+    return JsonResponse(response)
+

@@ -39,7 +39,7 @@ class DatasetDocument(Document):
         return {
             'id': fields.IntegerField(),
             'award_id': fields.TextField(),
-            'title': fields.TextField(),
+            'title': fields.KeywordField(),
             'funder': fields.NestedField(properties = {
                 'id': fields.IntegerField(),
                 'ror': fields.TextField(),
@@ -336,6 +336,7 @@ class DatasetDocument(Document):
              'title',
              'download_path',
              'size',
-             'mime_type'
+             'mime_type',
+             'approved'
          ]
 
