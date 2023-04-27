@@ -241,7 +241,6 @@ def search_publications(request):
     keyword = request.GET.get('keyword', None)
     doi = request.GET.get('doi', None)
     author_name = request.GET.get('pi_name', None)
-    mime_type = request.GET.get('mime_type', None)
 
     query = {
         'size': size,
@@ -273,9 +272,11 @@ def search_publications(request):
                     'title', 
                     'doi',  
                     'authors.full_name',
-                    'mime_type',
-                    'publications.title',
-                    'grants.title'
+                    'authors.first_name', 
+                    'authors.last_name', 
+                    'authors.orcid', 
+                    'keywords', 
+                    'authors.emails'
                 ]
             }
         })
@@ -318,74 +319,120 @@ def search_publications(request):
     return JsonResponse(response)
 
 def search_people(request):
-    # start = request.GET.get('from', 0)
-    # size = request.GET.get('size', 20)
+    start = request.GET.get('from', 0)
+    size = request.GET.get('size', 20)
 
-    # # Get filter/search criteria from request
-    # keyword = request.GET.get('keyword', None)
+    # Get filter/search criteria from request
+    keyword = request.GET.get('keyword', None)
+    affiliated_org_name = request.GET.get('org_name', None)
 
-    # affiliated_org_name = request.GET.get('org_name', None)
+    query = {
+        'size': size,
+        'from': start,
+        'query': {
+            'bool': {
+                'must': [],
+                'filter': {
+                    'term': {
+                        'approved': True
+                    }
+                }
+            }
+        }
+    }
 
-    # query = {
-    #     'size': size,
-    #     'from': start,
-    #     'query': {
-    #         'bool': {
-    #             'must': [],
-    #             'filter': {
-    #                 'term': {
-    #                     'approved': True
-    #                 }
-    #             }
-    #         }
-    #     }
-    # }
+    if keyword:
+        query['query']['bool']['must'].append({
+            'multi_match': {
+                'query': keyword,
+                'operator': 'and',
+                'fields': [
+                    'first_name', 
+                    'last_name', 
+                    'orcid', 
+                    'keywords', 
+                    'emails'
+                ]
+            }
+        })
 
-    # if keyword:
-    #     query['query']['bool']['must'].append({
-    #         'multi_match': {
-    #             'query': keyword,
-    #             'operator': 'and',
-    #             'fields': [
-    #                 'first_name', 
-    #                 'last_name', 
-    #                 'orcid', 
-    #                 'keywords', 
-    #                 'emails'
-    #             ]
-    #         }
-    #     })
-
-    # if affiliated_org_name:
-    #     query['query']['bool']['must'].append(
-    #         { 
-    #             'match_phrase': { 
-    #                 'awardee_organization.name': affiliated_org_name
-    #             }
-    #         },
-    #     )
+    if affiliated_org_name:
+        query['query']['bool']['must'].append(
+            { 
+                'match_phrase': { 
+                    'awardee_organization.name': affiliated_org_name
+                }
+            },
+        )
       
-    # client = OpenSearch(
-    #     hosts = [{'host': settings.OPENSEARCH_URL, 'port': 443}],
-    #     use_ssl = True,
-    #     verify_certs = True,
-    # )
-
-    # response = client.search(
-    #     body = query,
-    #     index = 'person_index'
-    # )
-
-    # return JsonResponse(response)
-    return JsonResponse({})
-
-# Handle the request to search datasets with keyword and/or filter values
-def search_datasets(request):
     client = OpenSearch(
         hosts = [{'host': settings.OPENSEARCH_URL, 'port': 443}],
         use_ssl = True,
         verify_certs = True,
     )
+
+    response = client.search(
+        body = query,
+        index = 'person_index'
+    )
+
+    return JsonResponse(response)
+
+# Handle the request to search datasets with keyword and/or filter values
+def search_datasets(request):
+    start = request.GET.get('from', 0)
+    size = request.GET.get('size', 20)
+
+    # Get filter/search criteria from request
+    keyword = request.GET.get('keyword', None)
+    mime_type = request.GET.get('mime_type', None)
+
+    query = {
+        'size': size,
+        'from': start,
+        'query': {
+            'bool': {
+                'must': [],
+                'filter': {
+                    'term': {
+                        'approved': True
+                    }
+                }
+            }
+        }
+    }
+
+    if keyword:
+        query['query']['bool']['must'].append({
+            'multi_match': {
+                'query': keyword,
+                'operator': 'and',
+                'fields': [
+                    'doi', 
+                    'title', 
+                    'mime_type', 
+                    'keywords', 
+                    'principal_investigator.full_name',
+                    'other_investigators.full_name',
+                    'awardee_organization.name'
+                ]
+            }
+        })
+
+    if mime_type:  
+        query['query']['bool']['must'].append(
+        {
+            'match': {
+                'mime_type': mime_type
+            }
+        })
+
+    client = OpenSearch(
+        hosts = [{'host': settings.OPENSEARCH_URL, 'port': 443}],
+        use_ssl = True,
+        verify_certs = True,
+    )
+
     query = {
         'query': {
             'match_all': {}

@@ -1,5 +1,6 @@
 from django.test import TestCase
-from search.documents import PublicationDocument, GrantDocument, PersonDocument
+from backend.apis.models import Dataset
+from search.documents import PublicationDocument, GrantDocument, PersonDocument, DatasetDocument
 from apis.models import Publication, Grant, Person, Organization, Funder
 from django_opensearch_dsl.registries import registry
 from django_opensearch_dsl import Document
@@ -295,3 +296,17 @@ class PersonDocumentTest(TestCase):
             ordered_continents = list(doc.get_queryset().order_by("id"))
             indexing_continents = list(doc.get_indexing_queryset())
             self.assertEqual(ordered_continents, indexing_continents)
+
+    class DatasetDocumentTest(TestCase):
+
+        def test_model_class_added(self):
+            self.assertEqual(DatasetDocument.Django.model, Dataset)
+
+        def test_related_models_added(self):
+            related_models = DatasetDocument.Django.related_models
+            self.assertEqual([Grant, Person, Publication], related_models)
+
+        def test_model_class_added(self):
+            DatasetDocument._index.create()
+            self.assertEqual(DatasetDocument.Django.model, Dataset)
+
