@@ -17,10 +17,10 @@ def get_credentials(cred_duration):
     """
     Retrieves AWS access key, secret access key, and session token
     """
-    aws_account = os.getenv('ACS_AWS_ACCOUNT')
-    aws_role = os.getenv('ACS_AWS_ROLE', AWS_ROLE)
-    aws_id = os.getenv('ACS_AWS_ID')
-    aws_key = os.getenv('ACS_AWS_KEY')
+    aws_account = os.getenv('CIC_AWS_ACCOUNT')
+    aws_role = os.getenv('CIC_AWS_ROLE', AWS_ROLE)
+    aws_id = os.getenv('CIC_AWS_ID')
+    aws_key = os.getenv('CIC_AWS_KEY')
     if not (aws_account or aws_id or aws_key):
         raise Exception('AWS account or service ID or service key is not provided')
     role_arn = f'arn:aws:iam::{aws_account}:role/{aws_role}'
@@ -58,8 +58,8 @@ def main():
     credentials = get_credentials(cred_duration)
     if not credentials:
         raise Exception('Failed to get AWS credentials')
-    aws_alias = os.getenv('ACS_AWS_ALIAS', AWS_ALIAS)
-    aws_region = os.getenv('ACS_AWS_REGION', AWS_REGION)
+    aws_alias = os.getenv('CIC_AWS_ALIAS', AWS_ALIAS)
+    aws_region = os.getenv('CIC_AWS_REGION', AWS_REGION)
     write_credentials(credentials, aws_alias, aws_region)
 
 
