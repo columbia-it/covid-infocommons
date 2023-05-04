@@ -53,11 +53,9 @@ interface SurveyFormData {
     email: string
     award_id: string
     award_title: string
-    grant_kw: string
     funder: string
     other_funder: string
     dois: string
-    grant_add_kw: string
     websites: string
     person_kw: string
     desired_collaboration: string
@@ -358,10 +356,8 @@ class SurveyForm extends Component <any, FormState> {
             email: values.email,
             award_id: values.award_id,
             award_title: values.award_title,
-            grant_kw: values.grant_kw,
             funder: values.funder,
             dois: values.dois,
-            grant_add_kw: values.grant_add_kw,
             websites: values.websites,
             person_kw: values.person_kw,
             desired_collaboration: values.desired_collaboration,
@@ -405,26 +401,21 @@ class SurveyForm extends Component <any, FormState> {
                 <br/>
                 <Paper style={{ padding: 16, fontFamily: '"proxima-nova","Montserrat",sans-serif' }}>
                 <h1 className="survey-form-heading">
-                    COVID Information Commons PI Survey
+                    COVID Information Commons (CIC) PI Profile Update
                 </h1>
                 <p>
-                    Congratulations on your COVID-19 related research award!         
-                </p>
-                <p>
-                    ⭐ Please fill out this form multiple times for each NSF or NIH individual award you have received ⭐
+                    Please fill out this form for each NSF or NIH individual award you have received
                 </p>
                 <br/>
                 <p>
-                    The <a href="https://covidinfocommons.datascience.columbia.edu/">COVID Information Commons (CIC)</a> website, funded by the National Science Foundation (NSF #2028999 and 2139391) compiles information about COVID-19 related awards and research output from U.S. NSF, NIH and HHS grants. A key objective of this website is to enrich the standard public award information available regarding your research, and enhance opportunities for collaboration. 
+                    Please provide additional information about your COVID research through this form to increase the visibility of your scholarly work. You may use this form to create your PI or coPI profile, or provide updates.                 </p>
+                <br/>
+                <p>
+                    A key objective of the CIC website is to enrich the standard public award information available regarding your research and enhance opportunities for collaboration.
                 </p>
                 <br/>
                 <p>
-                    As a COVID-19 research awardee, we invite you to provide voluntary contributions of additional, applicable public information about your project, beyond the award abstract, which you would like to make openly available via the <a href="https://covidinfocommons.datascience.columbia.edu/">COVID Information Commons (CIC)</a> website in our PI Database. 
-                    After our staff reviews it for inclusion in the COVID Information Commons, you can view it <a href={ url + '/grants' } target="_blank">here. </a>If you have another award, please fill out the survey form again. 
-                </p>
-                <br/>
-                <p>
-                    You can always make changes to the information you provided by filling out the form again. Please email any questions to <a href="mailto:info@covidinfocommons.net">info@covidinfocommons.net</a>. Thank you!
+                    Please email any questions to <a href="mailto:info@covidinfocommons.net">info@covidinfocommons.net</a>. Thank you.
                 </p>
                 </Paper>
                 <br/>
@@ -437,12 +428,10 @@ class SurveyForm extends Component <any, FormState> {
                         email: '',
                         award_id: '',
                         award_title: '',
-                        grant_kw: '',
                         dois: '',
                         funder: Funder.NSF.toString(),
                         pi_or_copi: PI_OR_COPI.PI.toString(),
                         other_funder: '',
-                        grant_add_kw: '',
                         websites: '',
                         person_kw: '',
                         desired_collaboration: '',
@@ -457,10 +446,6 @@ class SurveyForm extends Component <any, FormState> {
                             email: Yup.string().
                                 required('Email address(es) is required').
                                 test('validate_email', 'Email must be a valid email address', this.validate_email),
-                            grant_kw: Yup.string().
-                                test('no-special-chars', 'Keywords must be comma separated', this.validate_comma_separated_string),
-                            grant_add_kw: Yup.string().
-                                test('no-special-chars', 'Keywords must be comma separated', this.validate_comma_separated_string),
                             person_kw: Yup.string().
                                 test('no-special-chars', 'Keywords must be comma separated', this.validate_comma_separated_string),
                             dois: Yup.string().
@@ -480,12 +465,10 @@ class SurveyForm extends Component <any, FormState> {
                             "email": values.email.trim(),
                             "award_id": values.award_id,
                             "award_title": values.award_title,
-                            "grant_kw": values.grant_kw.trim(),
                             "funder": this.get_funder_name(values.funder),
                             "pi_or_copi": this.get_pi_copi_name(values.pi_or_copi),
                             "other_funder": values.other_funder,
                             "dois": values.dois.trim(),
-                            "grant_add_kw": values.grant_add_kw.trim(),
                             "websites": values.websites.trim(),
                             "person_kw": values.person_kw.trim(),
                             "desired_collaboration": values.desired_collaboration.trim(),
@@ -706,37 +689,17 @@ class SurveyForm extends Component <any, FormState> {
                             <div>
                                 <Paper style={{ padding: 16 }}>
                                     <FormControl className="name-input">
-                                        <FormLabel id="grant-kw-label" className="label">
-                                            Keywords related to your COVID project
+                                        <FormLabel id="person-kw-label" className="label">
+                                            Keywords related to your COVID research
                                         </FormLabel>
                                         <TextField 
-                                            id="grant_kw" 
+                                            id="person_kw" 
                                             variant="outlined" 
-                                            value={ values.grant_kw }
                                             onChange={ handleChange }
+                                            value={ values.person_kw }
                                             onKeyUp={ handleBlur }
                                         />
-                                        { errors.grant_kw && touched.grant_kw ? (<div className="required-text">{errors.grant_kw}</div>) : null }
-                                    </FormControl>
-                                    <br/>
-                                    <br/>
-                                </Paper>
-                            </div>
-                            <br/>
-                            <div>
-                                <Paper style={{ padding: 16 }}>
-                                    <FormControl className="name-input">
-                                        <FormLabel id="grant-add-kw-label" className="label">
-                                            Keywords related to your scientific research (COVID or other)
-                                        </FormLabel>
-                                        <TextField 
-                                            id="grant_add_kw" 
-                                            variant="outlined" 
-                                            value={ values.grant_add_kw }
-                                            onChange={ handleChange }
-                                            onKeyUp={ handleBlur }
-                                        />
-                                        { errors.grant_add_kw && touched.grant_add_kw ? (<div className="required-text">{errors.grant_add_kw}</div>) : null }
+                                        { errors.person_kw && touched.person_kw ? (<div className="required-text">{errors.person_kw}</div>) : null }
                                     </FormControl>
                                     <br/>
                                     <br/>
@@ -803,8 +766,8 @@ class SurveyForm extends Component <any, FormState> {
                                         </BootstrapDialogTitle>
                                         <DialogContent dividers>
                                             <Typography gutterBottom>
-                                            Thank you for filling out the survey. After our staff reviews it for inclusion in the COVID Information Commons, you can view it <a href={ url + '/grants' } target="_blank">here.</a>
-                                            If you have another award, please fill out the survey form again. 
+                                                Thank you for submitting your CIC PI profile update. After the CIC team reviews it for inclusion in the <a href={ url + '/grants' } target="_blank">COVID Information Commons</a>, you can view it here.
+                                                If you have another COVID award, please submit an additional PI Profile form. We will combine your submissions into one CIC PI profile.
                                             </Typography>
                                         </DialogContent>
                                         <DialogActions>

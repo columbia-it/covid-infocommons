@@ -196,13 +196,14 @@ class App extends Component<any, AppState> {
                         pi_id: pi_id,
                         pi_private_emails: pi_private_emails,
                         abstract: val['_source']['abstract'],
-                        award_amount: val['_source']['award_amount'],
+                        award_amount: (val['_source']['award_amount'] !== null) ? val['_source']['award_amount'] : 0,
                         funder_name: ('name' in val['_source']['funder']) ? val['_source']['funder']['name'] : '',
                         awardee_org: val['_source']['awardee_organization']['name']
                     }
                 })
                 return newArray
            })
+
            .catch (err => {
                console.error(err)
             })
@@ -259,7 +260,7 @@ class App extends Component<any, AppState> {
                     pi_id: pi_id,
                     pi_private_emails: pi_private_emails,
                     abstract: val['_source']['abstract'],
-                    award_amount: val['_source']['award_amount'],
+                    award_amount: (val['_source']['award_amount'] !== null) ? val['_source']['award_amount'] : 0,
                     funder_name: ('name' in val['_source']['funder']) ? val['_source']['funder']['name'] : '',
                     awardee_org: val['_source']['awardee_organization']['name']
                 }
