@@ -41,7 +41,6 @@ def get_src(raw_html):
 
 
 def process(person):
-    #print(f"Processing {person}")
     meta = person['attributes']
     if meta is None:
         return
@@ -127,28 +126,24 @@ def build_person_json(html, pi_id):
   proj_websites = get_values(html, 'Project-Related Website(s):')
   websites = websites + proj_websites
   if websites is not None:
-    print(f"AAAA {websites}")
     person_data['data']['attributes']['websites'] = websites
   profile_image = get_image_url(html, 'col-md-2 pull-right')
   if profile_image is not None:
     profile_image = DRUPAL_BASE + profile_image[0]
-    print(f"TTTT profile {profile_image}")
     cic_assets.find_or_create_for_person('profile_image', profile_image, pi_id)
     
   video = get_image_url(html, 'Video:')
   if video is not None and len(video) > 0:
-    print(f"TTTT video {video[0]}")
     cic_assets.find_or_create_for_person('cic_video', video[0], pi_id)
   
   # grants = get_urls(html, 'Awarded COVID Grants:')
-  # ignored_proj_keywords = get_values(html, 'Expected Research Output:')
-  # proj_keywords = get_values(html, 'Project Keywords:')
+  # ignored_output_keywords = get_values(html, 'Expected Research Output:')
+  # ignored_proj_keywords = get_values(html, 'Project Keywords:')
   keywords = get_values(html, "PI's Area(s) of Scientific Expertise:")
-#  if keywords is not None:
-#    print(f"AAAA keyw {keywords[0].split()}")
-#    person_data['data']['attributes']['keywords'] = keywords[0].split()
+  if keywords is not None:
+    person_data['data']['attributes']['keywords'] = keywords[0].split(',')
 
-  print(f"YYYY {person_data}")
+  print(f"Person update data: {person_data}")
   return person_data
 
 

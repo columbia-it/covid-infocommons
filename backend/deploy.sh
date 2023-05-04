@@ -24,6 +24,10 @@ then
     echo virtual env exists. deleting existing virtual env.
     rm -r py3_venv/
 fi
+
+git checkout main
+git pull
+
 python3 -m venv py3_venv
 source py3_venv/bin/activate
 pip install -r requirements.txt
@@ -52,6 +56,7 @@ zappa update $CICE_ENV
 zappa manage $CICE_ENV showmigrations
 zappa manage $CICE_ENV migrate
 zappa manage $CICE_ENV showmigrations
+#zappa manage $CICE_ENV "collectstatic --noinput"
 
 date +"%Y/%m/%d %H:%M:%S"
 

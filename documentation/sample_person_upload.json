@@ -3,11 +3,13 @@
         "type": "Person", 
         "attributes": {
 	    "affiliations": [],
-            "first_name": "Erik J.",
-            "last_name": "Stemmy",
+            "first_name": "Someone",
+            "last_name": "Tester",
             "orcid": null,
             "emails": null,
-            "private_emails": null
+            "private_emails": null,
+	    "keywords": ["covid", "research"],
+	    "websites": ["https://fdhint.com/about/", "https://covidinfocommons.net/", "https://nebigdatahub.org/about/"]
         }
     }
 }
