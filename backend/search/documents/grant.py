@@ -13,13 +13,13 @@ class GrantDocument(Document):
     def get_organization_properties():
         return {
             'id': fields.IntegerField(),
-            'ror': fields.KeywordField(),
-            'name': fields.KeywordField(),
-            'address': fields.KeywordField(),
-            'city': fields.KeywordField(),
-            'state': fields.KeywordField(),
-            'zip': fields.KeywordField(),
-            'country': fields.KeywordField(),
+            'ror': fields.TextField(),
+            'name': fields.TextField(),
+            'address': fields.TextField(),
+            'city': fields.TextField(),
+            'state': fields.TextField(),
+            'zip': fields.TextField(),
+            'country': fields.TextField(),
             'approved': fields.BooleanField()
         }
 
@@ -27,47 +27,47 @@ class GrantDocument(Document):
     def get_person_properties():
         return {
             'id': fields.IntegerField(),
-            'first_name': fields.KeywordField(),
-            'last_name': fields.KeywordField(),
-            'full_name': fields.KeywordField(),
-            'orcid': fields.KeywordField(),
-            'emails': fields.KeywordField(),
-            'private_emails': fields.KeywordField(),
-            'keywords': fields.KeywordField(),
-            'full_name': fields.KeywordField(),
+            'first_name': fields.TextField(),
+            'last_name': fields.TextField(),
+            'full_name': fields.TextField(),
+            'orcid': fields.TextField(),
+            'emails': fields.TextField(),
+            'private_emails': fields.TextField(),
+            'keywords': fields.TextField(),
+            'full_name': fields.TextField(),
             'approved': fields.BooleanField(),
-            'websites': fields.KeywordField(),
-            'desired_collaboration': fields.KeywordField(),
-            'comments': fields.KeywordField(),
+            'websites': fields.TextField(),
+            'desired_collaboration': fields.TextField(),
+            'comments': fields.TextField(),
             'affiliations': fields.NestedField(properties = {
                 'id': fields.IntegerField(),
-                'ror': fields.KeywordField(),
-                'name': fields.KeywordField(),
-                'address': fields.KeywordField(),
-                'city': fields.KeywordField(),
-                'state': fields.KeywordField(),
-                'zip': fields.KeywordField(),
-                'country': fields.KeywordField(),
+                'ror': fields.TextField(),
+                'name': fields.TextField(),
+                'address': fields.TextField(),
+                'city': fields.TextField(),
+                'state': fields.TextField(),
+                'zip': fields.TextField(),
+                'country': fields.TextField(),
                 'approved': fields.BooleanField()
             })
         }
 
     funder = fields.ObjectField(properties={
-        'id': fields.KeywordField(),
-        'ror': fields.KeywordField(),
-        'name': fields.KeywordField(),
+        'id': fields.TextField(),
+        'ror': fields.TextField(),
+        'name': fields.TextField(),
         'approved': fields.BooleanField()
     })
 
-    funder_divisions = fields.ListField(fields.KeywordField())
-    program_reference_codes = fields.ListField(fields.KeywordField())
+    funder_divisions = fields.ListField(fields.TextField())
+    program_reference_codes = fields.ListField(fields.TextField())
     program_officials = fields.NestedField(
         properties = get_person_properties.__func__())
     other_investigators = fields.NestedField(
         properties = get_person_properties.__func__())
     principal_investigator = fields.ObjectField(properties = get_person_properties.__func__())
     awardee_organization = fields.ObjectField(properties = get_organization_properties.__func__())
-    keywords = fields.ListField(fields.KeywordField())
+    keywords = fields.ListField(fields.TextField())
 
     class Index:
         name = 'grant_index'
