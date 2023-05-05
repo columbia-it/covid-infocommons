@@ -10,7 +10,7 @@ import sys
 DEFAULT_DURATION_SECONDS = 900
 AWS_REGION = 'us-east-1'
 AWS_ROLE = 'cuit-dev-role'
-AWS_ALIAS = "default"
+AWS_ALIAS = "cuit-infra-cice-dev"
 
 
 def get_credentials(cred_duration):
