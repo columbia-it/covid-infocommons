@@ -35,23 +35,27 @@ class SurveyAdmin(SimpleHistoryAdmin):
     # If no person found, create one with the given attributes and return it.
     def get_person(self,obj):
         orcid = getattr(obj, 'orcid')
+        email = getattr(obj, 'email')
         try:
             if orcid != 'NA':
                 person_result = Person.objects.filter(orcid__contains=orcid)
                 if person_result and person_result.count() > 0:
                     return person_result[0]
-                else:
-                    return None
-            else:
-                email = getattr(obj, 'email')
-                person_result = Person.objects.filter(emails__contains=email)
-                if person_result and person_result.len() > 0:
-                    return person_result[0]
-                person_result = Person.objects.filter(private_emails__contains=email)
-                if person_result and person_result.count() > 0:
-                    return person_result[0]    
+                elif email:
+                    return self.get_person_by_email(email)
+            elif email:
+                return self.get_person_by_email(email)
         except:
             return None
+        return None
+
+    def get_person_by_email(self, email):
+        person_result = Person.objects.filter(emails__contains=email)
+        if person_result and person_result.count() > 0:
+            return person_result[0]
+        person_result = Person.objects.filter(private_emails__contains=email)
+        if person_result and person_result.count() > 0:
+            return person_result[0]   
         return None
 
     # Check if a grant exists with the given award ID. If one is found, return it.
