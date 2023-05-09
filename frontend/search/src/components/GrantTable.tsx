@@ -125,7 +125,13 @@ class GrantsTable extends Component<GrantsTableProps> {
                     },
                     {
                         title: "Award Amount", field: "award_amount", render: (row:any) => 
-                        <div><NumberFormat value={row.award_amount} displayType={ 'text' } thousandSeparator={ true } prefix={'$'} /></div>
+                            {
+                                if (row.award_amount) {
+                                    return (<div><NumberFormat value={row.award_amount} displayType={ 'text' } thousandSeparator={ true } prefix={'$'} /></div>)
+                                } else {
+                                    return (<div></div>)
+                                }
+                            }
                     }
                 ]}
                 options={
