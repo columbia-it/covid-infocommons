@@ -75,7 +75,7 @@ def search_grants(request):
 
     if keyword:
         keyword = keyword.strip()
-        if '-' in keyword:  
+        if '-' in keyword:
             query['query']['bool']['must'].append(
                 {
                     'multi_match': {
@@ -93,22 +93,21 @@ def search_grants(request):
                     }
                 })
         else:
-            query['query']['bool']['must'].append(
-                {
-                    'query_string': {
-                        'query': '*{}*'.format(keyword),
-                        'default_operator': 'AND',
-                        'fields': [
-                            'title', 
-                            'abstract', 
-                            'award_id', 
-                            'keywords', 
-                            'principal_investigator.full_name',
-                            'other_investigators.full_name',
-                            'awardee_organization.name'
-                        ] 
-                    }
-                })
+            query['query']['bool']['must'].append({
+                'query_string': {
+                    'query': '*{}*'.format(keyword),
+                    'default_operator': 'AND',
+                    'fields': [
+                        'title',
+                        'abstract',
+                        'award_id',
+                        'keywords',
+                        'principal_investigator.full_name',
+                        'other_investigators.full_name',
+                        'awardee_organization.name'
+                    ]
+                }
+            })
 
     if awardee_organization:
         query['query']['bool']['must'].append(
@@ -485,4 +484,3 @@ def search_assets(request):
     )
 
     return JsonResponse(response)
-
