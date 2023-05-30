@@ -1,5 +1,6 @@
 import { Component } from "react";
 import MaterialTable, { MTableToolbar } from "material-table";
+//import MaterialTable from '@material-table/core';
 import { TablePagination } from "@material-ui/core";
 import { css } from '@emotion/react'
 import { Link as MaterialLink} from '@mui/material';
@@ -82,9 +83,6 @@ class GrantsTable extends Component<GrantsTableProps> {
                 data={ this.props.data }
                 page={ this.props.pageIndex }
                 totalCount={ this.props.totalCount }
-                onChangePage={ (page, pageSize) => {
-                    this.props.pageChangeHandler(page, pageSize)
-                } }
                 columns={[
                     {
                         title: "Awards", 
@@ -139,7 +137,7 @@ class GrantsTable extends Component<GrantsTableProps> {
                         paging: true, 
                         showTitle: false,
                         search: false,
-                        exportButton: false,
+                        //exportButton: false,
                         pageSize: 20,
                         exportAllData: false
                     }
@@ -150,6 +148,9 @@ class GrantsTable extends Component<GrantsTableProps> {
                             <TablePagination
                                 {...props}
                                 rowsPerPageOptions={[]}
+                                onPageChange={ (page:number, pageSize:number) => {
+                                    this.props.pageChangeHandler(page, pageSize)
+                                } }
                             />
                         ),
                     }

@@ -61,7 +61,7 @@ states = {
 
 def index(request):
     """Home view callable, for the home page."""
-    return render(request, 'index.html', {'keywords': request.GET.get('keywords', '')})
+    return render(request, 'grants/index.html', {'keywords': request.GET.get('keywords', '')})
 
 
 def detail(request, grant_id):

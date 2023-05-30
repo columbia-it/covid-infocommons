@@ -2,6 +2,12 @@ from django.http import JsonResponse
 from django.conf import settings
 from opensearchpy.client import OpenSearch
 from dateutil import parser
+from django.shortcuts import render
+
+
+def index(request):
+    return render(request, 'index.html', {'keywords': request.GET.get('keywords', '')})
+
 
 def get_facet_by_field(request) :
     field_name = request.GET.get('field', None)

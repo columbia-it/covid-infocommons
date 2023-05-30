@@ -1,13 +1,59 @@
 import React, { Component } from "react";
+import TextField from '@mui/material/TextField';
+//import { createContext } from "react";
 
-class SearchBar extends React.Component {
+interface SearchState {
+    keyword: string,
+    search_in_progress: boolean,
+    totalCount: number
+}
+  
+class SearchBar extends React.Component<any, SearchState> {
 
+    state:SearchState = {
+        keyword: (window as any)['keywords'],
+        search_in_progress: false,
+        totalCount: 0
+    }
+
+    enterHandler = (e:any) => {
+        if (e.key === 'Enter') {
+            e.preventDefault();
+            //this.get_grants_data()
+        }
+    }
+
+    searchHandler = (event:any) => {
+        event.preventDefault()
+        const keyword = (document.getElementById('outlined-search') as HTMLInputElement).value;
+        this.setState({'keyword': keyword})
+        //this.get_grants_data(keyword)
+    }
     render() {
         return (
-            <input 
-                type="text" 
-                defaultValue="Search PI Entries"
-                ></input>
+            <div className='search_bar'>
+                <link rel="stylesheet" href="https://fonts.googleapis.com/icon?family=Material+Icons"></link>
+                <form className='search-form'>
+                    <TextField
+                        id="outlined-search" 
+                        label="Search" 
+                        type="search"
+                        value={ this.state.keyword }
+                        onKeyDown={ this.enterHandler }
+                        onChange={ this.searchHandler }/>
+                </form>
+                <br/>
+                <div className='flex-container'>
+                    {
+                    this.state.search_in_progress == false ? 
+                        <div className='results-row'>
+                                Showing <span style={{fontWeight: 'bold', color: '#000000'}}>{ this.state.totalCount }</span> results.
+                        </div> 
+                        : <div className='results-row'>Waiting for results...
+                          </div> 
+                    } 
+                </div>
+            </div>
         );
     }   
 }
