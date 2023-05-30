@@ -111,7 +111,8 @@ class SurveyAdmin(SimpleHistoryAdmin):
 
                 if person:
                     if not person.orcid or person.orcid == 'NA':
-                        setattr(person, 'orcid', getattr(obj, 'orcid'))
+                        orcid = getattr(obj, 'orcid') if (getattr(obj, 'orcid')!= 'NA') else ''
+                        setattr(person, 'orcid', orcid)
                     original_kws = person.keywords
                     if new_kws:
                         original_kws.extend(new_kws)
@@ -121,10 +122,11 @@ class SurveyAdmin(SimpleHistoryAdmin):
                     setattr(person, 'approved', True)
                     person.save()
                 else:
+                    orcid = getattr(obj, 'orcid')
                     person = Person(
                         first_name = getattr(obj, 'first_name'),
                         last_name = getattr(obj, 'last_name'),
-                        orcid = getattr(obj, 'orcid'),
+                        orcid = orcid if (orcid != 'NA') else '',
                         emails = getattr(obj, 'email'),
                         websites = websites,
                         keywords = new_kws,
