@@ -124,16 +124,19 @@ class App extends Component<any, AppState> {
     }
 
     get_pi_name_facet(): Facet[] {
+        console.log('App.get_pi_name_facet() -- Started at: ' + new Date().toLocaleString())
         var url = this.state.url.concat('/search/facets?field=principal_investigator.full_name')
         let pi_facet: Facet[] = [];
         axios.get(url).then(results => {
             this.setState({ pi_names: results.data.aggregations.patterns.buckets })
             pi_facet = results.data.aggregations.patterns.buckets
         })
+        console.log('App.get_pi_name_facet() -- Ended at: ' + new Date().toLocaleString())
         return pi_facet;
     }
 
     get_po_name_facet(): Facet[] {
+        console.log('App.get_po_name_facet() -- Started at: ' + new Date().toLocaleString())
         var url = this.state.url.concat('/search/facets?field=program_officials.full_name')
         let po_facet: Facet[] = [];
         axios.get(url).then(results => {
@@ -141,6 +144,7 @@ class App extends Component<any, AppState> {
             po_facet = results.data.aggregations.patterns.buckets
 
         })
+        console.log('App.get_po_name_facet() -- Ended at: ' + new Date().toLocaleString())
         return po_facet;
     }
 
@@ -178,15 +182,16 @@ class App extends Component<any, AppState> {
                 params: params
             })
            .then(res => {
-               var newArray = res.data.hits.hits.map(function(val:any) {
-                   let pi_name = ''
-                   let pi_id = ''
-                   let funder_name = ''
-                   let pi_private_emails = ''
-                   if (val['_source']['principal_investigator'] != null) {
-                       pi_name = val['_source']['principal_investigator']['full_name']
-                       pi_id = val['_source']['principal_investigator']['id']
-                       pi_private_emails = val['_source']['principal_investigator']['private_emails']
+                console.log('App.getDataPromise() -- Started at: ' + new Date().toLocaleString())
+                var newArray = res.data.hits.hits.map(function(val:any) {
+                    let pi_name = ''
+                    let pi_id = ''
+                    let funder_name = ''
+                    let pi_private_emails = ''
+                    if (val['_source']['principal_investigator'] != null) {
+                        pi_name = val['_source']['principal_investigator']['full_name']
+                        pi_id = val['_source']['principal_investigator']['id']
+                        pi_private_emails = val['_source']['principal_investigator']['private_emails']
                     }
                     return {
                         id: val['_source']['id'],
@@ -201,6 +206,7 @@ class App extends Component<any, AppState> {
                         awardee_org: val['_source']['awardee_organization']['name']
                     }
                 })
+                console.log('App.getDataPromise() -- Ended at: ' + new Date().toLocaleString())
                 return newArray
            })
 
@@ -210,6 +216,7 @@ class App extends Component<any, AppState> {
         }
 
     get_grants_data = (keyword?:string) => {
+        console.log('App.get_grants_data() -- Started at: ' + new Date().toLocaleString())
         this.setState({
             search_in_progress: true
         })
@@ -266,6 +273,8 @@ class App extends Component<any, AppState> {
                 }
             })
             this.setState({ data: newArray })
+            console.log('App.get_grants_data() -- Ended at: ' + new Date().toLocaleString())
+
         })
     }
 

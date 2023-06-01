@@ -10,24 +10,25 @@ class PersonDocument(Document):
     def get_organization_properties():
         return {
             'id': fields.IntegerField(),
-            'ror': fields.KeywordField(),
-            'name': fields.KeywordField(),
-            'address': fields.KeywordField(),
-            'city': fields.KeywordField(),
-            'state': fields.KeywordField(),
-            'zip': fields.KeywordField(),
-            'country': fields.KeywordField(),
+            'ror': fields.TextField(),
+            'name': fields.TextField(),
+            'address': fields.TextField(),
+            'city': fields.TextField(),
+            'state': fields.TextField(),
+            'zip': fields.TextField(),
+            'country': fields.TextField(),
             'approved': fields.BooleanField()
         }
 
     affiliations = fields.NestedField(
         properties = get_organization_properties.__func__())
-    keywords = fields.ListField(fields.KeywordField())
-    websites = fields.ListField(fields.KeywordField())
+    keywords = fields.ListField(fields.TextField())
+    websites = fields.ListField(fields.TextField())
+    full_name = fields.TextField()
 
     class Index:
         name = 'person_index'
-        settings = {"number_of_shards": 1, "number_of_replicas": 0}
+        settings = {"number_of_shards": 2, "number_of_replicas": 0}
         auto_refresh = True
     
     class Django:
@@ -45,3 +46,7 @@ class PersonDocument(Document):
              'comments',
              'approved'
         ]
+    
+    def prepare_full_name(self, instance):
+        return instance.first_name + ' ' + instance.last_name
+

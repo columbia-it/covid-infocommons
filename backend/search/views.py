@@ -2,6 +2,10 @@ from django.http import JsonResponse
 from django.conf import settings
 from opensearchpy.client import OpenSearch
 from dateutil import parser
+from datetime import datetime
+import logging
+
+logger = logging.getLogger('search.view')
 
 def get_facet_by_field(request) :
     field_name = request.GET.get('field', None)
@@ -34,6 +38,7 @@ def get_facet_by_field(request) :
 
 # Handle the request to search grants with keyword and/or filter values
 def search_grants(request):
+    logger.info('View -- Grants search started at: {}'.format(datetime.now()))
     start = request.GET.get('from', 0)
     size = request.GET.get('size', 20)
 
@@ -74,15 +79,23 @@ def search_grants(request):
     }
 
     if keyword:
+        keyword = keyword.strip()
+        # Escape the keyword in case it contains any Elasticsearch reserved characters
+        special_chars = ['-', ':', '/']
+        for s in special_chars:
+            if s in keyword:
+                keyword = '\"{}\"'.format(keyword)
+                break
+
         query['query']['bool']['must'].append({
-            'multi_match': {
-                'query': keyword,
-                'operator': 'and',
+            'query_string': {
+                'query': '*{}*'.format(keyword),
+                'default_operator': 'AND',
                 'fields': [
-                    'title', 
-                    'abstract', 
-                    'award_id', 
-                    'keywords', 
+                    'title',
+                    'abstract',
+                    'award_id',
+                    'keywords',
                     'principal_investigator.full_name',
                     'other_investigators.full_name',
                     'awardee_organization.name'
@@ -230,7 +243,7 @@ def search_grants(request):
         body = query,
         index = 'grant_index'
     )
-
+    logger.info('View -- Grants search ended at: {}'.format(datetime.now()))
     return JsonResponse(response)
 
 # Handle the request to search publications with keyword and/or filter values
@@ -465,4 +478,3 @@ def search_assets(request):
     )
 
     return JsonResponse(response)
-

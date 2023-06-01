@@ -37,7 +37,7 @@ class GrantsTable extends Component<GrantsTableProps> {
             highlightStyle={{
                 fontWeight: "bold",
                 padding: 0,
-                backgroundColor: "#FFFFFF"
+                backgroundColor: "#FFFF00"
             }}
             searchWords={[this.props.keyword]}
             autoEscape={ true }
