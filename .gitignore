@@ -1,6 +1,13 @@
 # Byte-compiled / optimized / DLL files
 __pycache__/
 
+
+# exported backup files
+cic_assets_export.json
+cic_grants_export.json
+cic_orgs_export.json
+cic_people_export.json
+
 # Environments
 .env
 .venv
