@@ -24,6 +24,8 @@ def main():
     print("----")
     asset = find_or_create_for_person('florence_placeholder', 'https://example.com/florence_placeholder_asset', 3099)
     print(f"Placeholder asset {asset}")
+    # Below command will create a new video, linking to author ID
+    # create_cic_asset('cic_video', 'https://www.youtube.com/embed/SYEmX-lOSpc?autoplay=0&start=0&rel=0', 5422)
 
 
 def find_assets_for_person(id):
@@ -82,6 +84,20 @@ def create_cic_asset(filename, download_path, pi_id):
         return None
     logging.info(f" -- created asset {r.json()}")
     return r.json()['data']
+
+
+def update_cic_asset(asset_json, asset_id):
+    asset_json['data']['id'] = asset_id
+    logging.info(f" -- updating asset with {asset_json}")
+    r = requests.patch(url = CIC_ASSETS_API + f"/{asset_id}",
+                      data = json.dumps(asset_json),
+                      headers={"Content-Type":"application/vnd.api+json",
+                               "Authorization": f"access_token {cic_config.CIC_TOKEN}"
+                      })
+    if r.status_code >= 300:
+        logging.error(f"{r} {r.text}")
+        print(f"ERROR {r} {r.text}")
+    return r
 
 
 if __name__ == "__main__":

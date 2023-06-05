@@ -64,7 +64,9 @@ def find_cic_org(name):
     # TODO 127 --- update to use search instead of cycling through all
     logging.info(f" -- find {name} from {CIC_ORGS_API}")
     response = requests.get(f"{CIC_ORGS_API}")
-    response_json = response.json()    
+    response_json = response.json()
+    if 'data' not in response_json:
+        return None
     cic_orgs = response_json['data']
     while(len(cic_orgs) > 0):
         for co in cic_orgs:

@@ -1,13 +1,35 @@
+import cic_assets
 import cic_grants
-import cic_people
 import cic_orgs
+import cic_people
 import requests
 import json
     
 def main():
 #    export_grants()
 #    export_people()
-    export_orgs()
+#    export_orgs()
+    export_assets()
+
+def export_assets():
+    with open("cic_assets_export.json", "w") as outfile:
+        outfile.write("[")
+        any_written = False
+        # process all assets, one page at a time
+        for page in range(1, 100000):
+            assets = cic_assets.find_cic_assets(page)
+            if assets is None or len(assets) == 0:
+                break
+            print(f"Page {page} -- {len(assets)} assets")
+            for a in assets:
+                json_object = json.dumps(a, indent=4)
+                if any_written:
+                    outfile.write(",")
+                outfile.write(json_object)
+                any_written = True
+
+        outfile.write("]")
+        print("Completed asset export to \'cic_assets_export.json\'")
 
     
 def export_grants():
@@ -26,7 +48,6 @@ def export_grants():
                     outfile.write(",")
                 outfile.write(json_object)
                 any_written = True
-
 
         outfile.write("]")
         print("Completed grant export to \'cic_grants_export.json\'")
