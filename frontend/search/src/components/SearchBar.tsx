@@ -1,6 +1,7 @@
 import React, { Component } from "react";
 import TextField from '@mui/material/TextField';
 //import { createContext } from "react";
+import Box from '@mui/material/Box';
 
 interface SearchState {
     keyword: string,
@@ -32,6 +33,15 @@ class SearchBar extends React.Component<any, SearchState> {
     render() {
         return (
             <div className='search_bar'>
+                <Box
+                    sx={{
+                        width: '100%',
+                        '& .MuiTextField-root': { width: '100%' },
+                    }}
+                    component="form"
+                    noValidate
+                    autoComplete="off"
+                >      
                 <link rel="stylesheet" href="https://fonts.googleapis.com/icon?family=Material+Icons"></link>
                 <form className='search-form'>
                     <TextField
@@ -43,7 +53,7 @@ class SearchBar extends React.Component<any, SearchState> {
                         onChange={ this.searchHandler }/>
                 </form>
                 <br/>
-                <div className='flex-container'>
+                {/* <div className='flex-container'>
                     {
                     this.state.search_in_progress == false ? 
                         <div className='results-row'>
@@ -52,7 +62,8 @@ class SearchBar extends React.Component<any, SearchState> {
                         : <div className='results-row'>Waiting for results...
                           </div> 
                     } 
-                </div>
+                </div> */}
+                </Box>
             </div>
         );
     }   
