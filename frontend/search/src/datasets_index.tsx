@@ -1,6 +1,7 @@
 import { Component } from "react";
 import SearchBar from './components/SearchBar';
 import Button from '@mui/material/Button';
+import DownloadIcon from '@mui/icons-material/Download';
 
 const styles = {
     // See MUI Button CSS classes at https://mui.com/material-ui/api/button/
@@ -15,7 +16,6 @@ const styles = {
 
 class Datasets extends Component<any, any> {
     render() {
-
         return (
             <div>
                 <SearchBar/>
@@ -31,12 +31,13 @@ class Datasets extends Component<any, any> {
                     } 
                     <div className='download-csv'>                            
                         <Button sx={styles}
-	                            onClick={ this.exportToCsv } 
-                                className='download-button' 
-                                variant="contained"
-                                endIcon={ <DownloadIcon /> }>Download Results as CSV (up to 1,000 awards)</Button>
-                        </div>
+	                        //onClick={  } 
+                            className='download-button' 
+                            variant="contained"
+                            endIcon={ <DownloadIcon /> }>Download Results as CSV (up to 1,000 awards)
+                        </Button>
                     </div>
+                </div>
             </div>
         )
     }
