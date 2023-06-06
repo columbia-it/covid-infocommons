@@ -114,8 +114,10 @@ class SurveyAdmin(SimpleHistoryAdmin):
                         orcid = getattr(obj, 'orcid') if (getattr(obj, 'orcid')!= 'NA') else ''
                         setattr(person, 'orcid', orcid)
                     original_kws = person.keywords
-                    if new_kws:
-                        original_kws.extend(new_kws)
+                    for word in new_kws:
+                        new_word = word.strip()
+                        if new_word not in original_kws:
+                            original_kws.append(new_word)
                     setattr(person, 'keywords', original_kws)
                     # append websites, not replace
                     setattr(person, 'websites', websites)
