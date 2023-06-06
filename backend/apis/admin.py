@@ -48,7 +48,8 @@ ModelAdmin class to customize Publication model view in Django admin
 class PublicationAdmin(admin.ModelAdmin):
     # Add search on fields
     search_fields = ('doi', 'id', 'title', 'grants__id',)
-
+    # Show the fields as inputs instead of drop-down lists to avoid overhead
+    raw_id_fields = ('authors', 'grants')
 
 """
 ModelAdmin class to customize Dataset model view in Django admin
@@ -56,6 +57,8 @@ ModelAdmin class to customize Dataset model view in Django admin
 class DatasetAdmin(admin.ModelAdmin):
     # Add search on fields
     search_fields = ('doi', 'id', 'title', 'grants__id',)
+    # Show the fields as inputs instead of drop-down lists to avoid overhead
+    raw_id_fields = ('authors', 'grants', 'publications')
 
 
 """
@@ -64,7 +67,8 @@ ModelAdmin class to customize Asset model view in Django admin
 class AssetAdmin(admin.ModelAdmin):
     # Add search on fields
     search_fields = ('doi', 'id', 'author__id', 'grant__id', 'publication__id',)
-
+    # Show the fields as inputs instead of drop-down lists to avoid overhead
+    raw_id_fields = ('author', 'grant', 'publication', 'dataset', 'organization')
 
 admin.site.register(Organization, OrganizationAdmin)
 admin.site.register(Person, PersonAdmin)
