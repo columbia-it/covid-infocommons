@@ -1,6 +1,7 @@
 {% load static %}
 {% load humanize %}
 {% load my_filters %}
+{% load highlight %}
 
 <!DOCTYPE html>
 <html lang="en">
@@ -36,9 +37,9 @@
 	      NIH
 	    </div>
 	    {% endif %}
-            <small>Award Abstract #{{ grant.award_id}}</small>
+            <small>Award Abstract #{{ grant.award_id|highlight:keyword }}</small>
             <h1>
-              <span>{{ grant.title }}</span>
+              <span>{{ grant.title|highlight:keyword }}</span>
             </h1>
 	    {% if grant.funder.name == 'National Science Foundation' %}
 	    <p><a target="_blank" href="https://www.nsf.gov/awardsearch/showAward?AWD_ID={{ grant.award_id }}">See grant description on NSF site</a></p>
@@ -51,7 +52,7 @@
                 {% for program_official in grant.program_officials.all %}
                 <p>
                   {% with program_official.first_name|add:" "|add:program_official.last_name as fullname %}
-                  {{ fullname }}
+                  {{ fullname|highlight:keyword }}
                   {% endwith %}
                 </p>
 		{% endfor %}
@@ -77,7 +78,7 @@
                   {{ grant.principal_investigator.first_name|add:" "|add:grant.principal_investigator.last_name}}</p></a>
                   {% for other_investigator in grant.other_investigators.all %}
                   {% with other_investigator.first_name|add:" "|add:other_investigator.last_name as fullname %}
-                  <p>{{ fullname }}</p>
+                  <p>{{ fullname|highlight:keyword }}</p>
                   {% endwith %}
                   {% endfor %}
             </section>
@@ -85,7 +86,7 @@
 	      {% if grant.awardee_organization %}
                 <small>Awardee Organization:</small>
 		<p>
-                  {{ grant.awardee_organization.name }} <br />
+                  {{ grant.awardee_organization.name|highlight:keyword }} <br />
                   {% with grant.awardee_organization.city|add:" "|add:state|add:" "|add:grant.awardee_organization.zip as address %}
                   {{ address }}
                   {% endwith %}
@@ -161,9 +162,15 @@
             </section>
             <section>
                 <small>Abstract:</small>
+				{% if grant.abstract %}
                 <p>
+                    {{ grant.abstract|highlight:keyword }}
+                </p>
+				{% else %}
+				<p>
                     {{ grant.abstract }}
                 </p>
+				{% endif %}
             </section>
         </div>
 	{% include "cic_footer.html" %}

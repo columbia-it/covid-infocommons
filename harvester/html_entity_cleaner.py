@@ -7,8 +7,10 @@ import requests
 ################################
 # html_entity_cleaner
 #
-# Utility to clean HTML entities from grants. Cycles through all grants in the system. If the grant
-# title or abstract contains an HTML entity, replace it with the equivalent string.
+# Utility to clean HTML entities and similar tags from grants. Cycles through all
+# grants in the system. If the grant title or abstract contains an HTML entity,
+# replace it with the equivalent string.
+#
 ################################
 
 def process(grant):
@@ -43,6 +45,9 @@ def process(grant):
     
 
 def replace_quoted(s):
+    if s is None:
+        return s
+    
     s = s.replace("&amp;", "&")
     s = s.replace("&amp", "&")
     s = s.replace("%amp;", "&")

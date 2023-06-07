@@ -34,7 +34,7 @@ class APIModelsTest(TestCase):
         person.websites.append('https://nsf.gov/awardsearch/showAward?AWD_ID=2116631&HistoricalAwards=false')
         person.save()
         websites = person._meta.get_field('websites')
-        self.assertEqual(websites.max_length, 100)
+        self.assertEqual(websites.max_length, 1000)
         self.assertEqual(len(person.websites), 1)
 
     def test_affiliations(self):

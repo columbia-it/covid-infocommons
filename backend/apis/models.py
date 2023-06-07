@@ -51,11 +51,11 @@ class Person(models.Model):
     orcid = models.CharField(max_length=1000, null=True, blank=True)
     emails = models.TextField(null=True, blank=True)
     private_emails = models.CharField(max_length=1000, null=True, blank=True)
-    keywords = ListCharField(base_field=models.CharField(max_length=1000, null=True, blank=True), max_length=100, null=True, blank=True)
+    keywords = ListCharField(base_field=models.CharField(max_length=1000, null=True, blank=True), max_length=1000, null=True, blank=True)
 
     affiliations = models.ManyToManyField(Organization, blank=True)
     approved = models.BooleanField(default=True)
-    websites = ListCharField(base_field=models.CharField(max_length=1000, null=True, blank=True), max_length=100, null=True, blank=True)
+    websites = ListCharField(base_field=models.CharField(max_length=1000, null=True, blank=True), max_length=1000, null=True, blank=True)
     desired_collaboration = models.TextField(null=True, blank=True)
     comments = models.TextField(null=True, blank=True)
 

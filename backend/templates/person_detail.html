@@ -1,6 +1,7 @@
 {% load static %}
 {% load humanize %}
 {% load my_filters %}
+{% load highlight %}
 
 <!DOCTYPE html>
 <html lang="en">
@@ -33,18 +34,23 @@
     <div>
       <h1>
         {% with person.first_name|add:" "|add:person.last_name as fullname %}
-        {{ fullname }}
+        {{ fullname|highlight:keyword }}
         {% endwith %}
       </h1>
     </div>
     
+    {% if profile_pic is not None %}
     <div>
-      <!-- TODO determine how to test for presence of the affiliations object -->
-      {% if person.affiliations == 'TODO add a real test' %}
+      <img src="{{ profile_pic }}" alt="picture of {{ person.first_name }} {{ person.last_name }}" style="float: right; padding-right: 30px;"/>
+    </div>
+    {% endif %}
+    
+    <div>
+      {% if person.affiliations is not None %}
       <section>
         <small>Institution:</small>
         {% for org in person.affiliations.all %}
-        <p>org.name</p>
+        <p>{{ org.name|highlight:keyword }}</p>
         {% endfor %}
       </section>
       {% endif %}
@@ -59,18 +65,53 @@
       {% if person.orcid is not None %}
       <section>
         <small>ORCID ID:</small>
-        <p><a href="https://orcid.org/{{ person.orcid }}"></a></p>
+          <p><a href={{ person.orcid }}>{{ person.orcid }}</a></p>
       </section>
       {% endif %}
 
+      {% if person.websites is not None %}
+      <section>
+        <small>Websites:</small>
+        {% for website in person.websites %}
+	<p>
+          <a href="{{ website }}">{{ website }}</a>
+	</p>
+        {% endfor %}
+      </section>      
+      {% endif %}
+      
+      {% if videos %}
+      <section>
+        <small>Video:</small>
+        {% for video in videos %}
+	<p>
+	  <iframe width="854" height="480"
+		  src="{{ video }}" title="YouTube video player" frameborder="0"
+		  allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" allowfullscreen></iframe>
+	</p>
+        {% endfor %}
+      </section>      
+      {% endif %}
+      
       {% if grants %}
       <section>
         <small>Awarded COVID Grants:</small>
         {% for grant in grants %}
-        <ul>
+	<p>
           <a href="/grants/{{ grant.id }}">{{ grant.title }}</a>
-        </ul>
+	</p>
         {% endfor %}
+      </section>
+      {% endif %}
+
+      {% if person.keywords is not None %}
+      <section>
+        <small>Keywords:</small>
+	<div class="btns">
+	  {% for w in person.keywords %}
+	  <a href="/grants/?keywords={{w}}">{{ w }}</a>
+	  {% endfor %}
+	</div>
       </section>
       {% endif %}
       

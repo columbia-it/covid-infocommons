@@ -8,6 +8,9 @@ import Button from '@mui/material/Button';
 import React, { Component } from "react";
 import axios from "axios";
 import DownloadIcon from '@mui/icons-material/Download';
+import axiosRetry from 'axios-retry';
+
+axiosRetry(axios, {retries: 3});
 
 const styles = {
     // See MUI Button CSS classes at https://mui.com/material-ui/api/button/
@@ -43,6 +46,7 @@ interface AppState {
     filter: Filter
     keyword: string
     funder_names: Facet[]
+    search_in_progress: boolean
 }
 
 interface Filter {
@@ -79,7 +83,8 @@ class App extends Component<any, AppState> {
         po_names: [],
         keyword: (window as any)['keywords'],
         filter: {},
-        funder_names: []
+        funder_names: [],
+        search_in_progress: false
     }
 
     constructor(props:any) {
@@ -119,17 +124,19 @@ class App extends Component<any, AppState> {
     }
 
     get_pi_name_facet(): Facet[] {
+        console.log('App.get_pi_name_facet() -- Started at: ' + new Date().toLocaleString())
         var url = this.state.url.concat('/search/facets?field=principal_investigator.full_name')
         let pi_facet: Facet[] = [];
         axios.get(url).then(results => {
             this.setState({ pi_names: results.data.aggregations.patterns.buckets })
             pi_facet = results.data.aggregations.patterns.buckets
-
         })
+        console.log('App.get_pi_name_facet() -- Ended at: ' + new Date().toLocaleString())
         return pi_facet;
     }
 
     get_po_name_facet(): Facet[] {
+        console.log('App.get_po_name_facet() -- Started at: ' + new Date().toLocaleString())
         var url = this.state.url.concat('/search/facets?field=program_officials.full_name')
         let po_facet: Facet[] = [];
         axios.get(url).then(results => {
@@ -137,6 +144,7 @@ class App extends Component<any, AppState> {
             po_facet = results.data.aggregations.patterns.buckets
 
         })
+        console.log('App.get_po_name_facet() -- Ended at: ' + new Date().toLocaleString())
         return po_facet;
     }
 
@@ -174,15 +182,16 @@ class App extends Component<any, AppState> {
                 params: params
             })
            .then(res => {
-               var newArray = res.data.hits.hits.map(function(val:any) {
-                   let pi_name = ''
-                   let pi_id = ''
-                   let funder_name = ''
-                   let pi_private_emails = ''
-                   if (val['_source']['principal_investigator'] != null) {
-                       pi_name = val['_source']['principal_investigator']['full_name']
-                       pi_id = val['_source']['principal_investigator']['id']
-                       pi_private_emails = val['_source']['principal_investigator']['private_emails']
+                console.log('App.getDataPromise() -- Started at: ' + new Date().toLocaleString())
+                var newArray = res.data.hits.hits.map(function(val:any) {
+                    let pi_name = ''
+                    let pi_id = ''
+                    let funder_name = ''
+                    let pi_private_emails = ''
+                    if (val['_source']['principal_investigator'] != null) {
+                        pi_name = val['_source']['principal_investigator']['full_name']
+                        pi_id = val['_source']['principal_investigator']['id']
+                        pi_private_emails = val['_source']['principal_investigator']['private_emails']
                     }
                     return {
                         id: val['_source']['id'],
@@ -192,19 +201,25 @@ class App extends Component<any, AppState> {
                         pi_id: pi_id,
                         pi_private_emails: pi_private_emails,
                         abstract: val['_source']['abstract'],
-                        award_amount: val['_source']['award_amount'],
+                        award_amount: (val['_source']['award_amount'] !== null) ? val['_source']['award_amount'] : 0,
                         funder_name: ('name' in val['_source']['funder']) ? val['_source']['funder']['name'] : '',
                         awardee_org: val['_source']['awardee_organization']['name']
                     }
                 })
+                console.log('App.getDataPromise() -- Ended at: ' + new Date().toLocaleString())
                 return newArray
            })
+
            .catch (err => {
                console.error(err)
             })
         }
 
     get_grants_data = (keyword?:string) => {
+        console.log('App.get_grants_data() -- Started at: ' + new Date().toLocaleString())
+        this.setState({
+            search_in_progress: true
+        })
         var url = this.state.url.concat('/search/grants')
         var params: { [key: string]: any } = {};
 
@@ -229,6 +244,9 @@ class App extends Component<any, AppState> {
         }
         
         axios.get(url, {params: params}).then(results => {
+            this.setState({
+                search_in_progress: false
+            })
             this.setState({ totalCount: results.data.hits.total.value })
 
             var newArray = results.data.hits.hits.map(function(val:any) {
@@ -249,12 +267,14 @@ class App extends Component<any, AppState> {
                     pi_id: pi_id,
                     pi_private_emails: pi_private_emails,
                     abstract: val['_source']['abstract'],
-                    award_amount: val['_source']['award_amount'],
+                    award_amount: (val['_source']['award_amount'] !== null) ? val['_source']['award_amount'] : 0,
                     funder_name: ('name' in val['_source']['funder']) ? val['_source']['funder']['name'] : '',
                     awardee_org: val['_source']['awardee_organization']['name']
                 }
             })
             this.setState({ data: newArray })
+            console.log('App.get_grants_data() -- Ended at: ' + new Date().toLocaleString())
+
         })
     }
 
@@ -448,9 +468,15 @@ class App extends Component<any, AppState> {
                     </form>
                     <br/>
                     <div className='flex-container'>
+                    {
+                        this.state.search_in_progress == false ? 
                         <div className='results-row'>
-                            Showing <span style={{fontWeight: 'bold', color: '#000000'}}>{ this.state.totalCount }</span> results.
-                        </div>
+                                Showing <span style={{fontWeight: 'bold', color: '#000000'}}>{ this.state.totalCount }</span> results.
+                        </div> 
+                        : <div className='results-row'>Waiting for results...
+                        </div> 
+                    } 
+                        
                         <div className='download-csv'>                            
                             <Button sx={styles}
 	                            onClick={ this.exportToCsv } 

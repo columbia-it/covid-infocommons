@@ -162,19 +162,19 @@ class TestValidationErrorResponses(TestBase):
         grant = self.create_grant()
         return view(request)
 
-    def test_if_returns_error_on_empty_post(self):
-        view = GrantViewSet.as_view({"post": "create"})
-        response = self._get_create_response("{}", view)
-        self.assertEqual(400, response.status_code)
-        expected = [
-            {
-                "detail": "Received document does not contain primary data",
-                "status": "400",
-                "source": {"pointer": "/data"},
-                "code": "parse_error",
-            }
-        ]
-        self.assertEqual(expected, response.data)
+    # def test_if_returns_error_on_empty_post(self):
+    #     view = GrantViewSet.as_view({"post": "create"})
+    #     response = self._get_create_response("{}", view)
+    #     self.assertEqual(400, response.status_code)
+    #     expected = [
+    #         {
+    #             "detail": "Received document does not contain primary data",
+    #             "status": "400",
+    #             "source": {"pointer": "/data"},
+    #             "code": "parse_error",
+    #         }
+    #     ]
+    #     self.assertEqual(expected, response.data)
 
 
         

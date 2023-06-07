@@ -25,6 +25,10 @@
     <title>Covid Information Commons</title>
 </head>
 <body>
+    <script type="text/javascript">
+        var start_time = new Date().toLocaleTimeString()
+        console.log('Index Template -- Started at: ' + start_time)
+      </script>
     {% include "cic_header.html" %}
     <div id="root">
     </div>
@@ -35,6 +39,10 @@
     </script>
 
     {% include "cic_footer.html" %}
+    <script type="text/javascript">
+        var end_time = new Date().toLocaleTimeString()
+        console.log('Index Template -- Ended at: ' + end_time)
+      </script>
 </body>
 {% endblock content %}
 </html>

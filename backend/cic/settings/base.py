@@ -84,6 +84,7 @@ TEMPLATES = [
             ],
             'libraries':{
                 'my_filters': 'cic.templatetags.my_filters',
+                'highlight': 'cic.templatetags.highlight'
             }
         },
     },

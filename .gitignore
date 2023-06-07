@@ -1,11 +1,19 @@
 # Byte-compiled / optimized / DLL files
 __pycache__/
 
+
+# exported backup files
+cic_assets_export.json
+cic_grants_export.json
+cic_orgs_export.json
+cic_people_export.json
+
 # Environments
 .env
 .venv
 env/
 venv/
+py3_venv/
 ENV/
 env.bak/
 venv.bak/
@@ -50,6 +58,7 @@ cice-dev-*.json
 # node modules
 frontend/node_modules/
 frontend/survey/node_modules
+frontend/search/node_modules
 
 #static assets
 static/*

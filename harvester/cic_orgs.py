@@ -45,12 +45,13 @@ def init_names_seen():
         else:
             return None
 
-
-# Find the first page of orgs
-def find_cic_orgs():
+# Find a page of orgs
+def find_cic_orgs(page = 1):
     logging.info(" -- Reading orgs from CIC API")
-    response = requests.get(CIC_ORGS_API)
+    response = requests.get(f"{CIC_ORGS_API}?page%5Bnumber%5D={page}")
     response_json = response.json()
+    if response_json is None or 'data' not in response_json:
+        return None
     orgs = response_json['data']
     return orgs
 
@@ -63,7 +64,9 @@ def find_cic_org(name):
     # TODO 127 --- update to use search instead of cycling through all
     logging.info(f" -- find {name} from {CIC_ORGS_API}")
     response = requests.get(f"{CIC_ORGS_API}")
-    response_json = response.json()    
+    response_json = response.json()
+    if 'data' not in response_json:
+        return None
     cic_orgs = response_json['data']
     while(len(cic_orgs) > 0):
         for co in cic_orgs:
@@ -74,6 +77,8 @@ def find_cic_org(name):
             print('.', end='', flush=True)
             response = requests.get(f"{response_json['links']['next']}")
             response_json = response.json()
+            if 'data' not in response_json:
+                return None
             cic_orgs = response_json['data']
         else:
             return None

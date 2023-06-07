@@ -32,7 +32,6 @@ def create_cic_grant(grant_json):
     logging.info(f" -- created grant {r.json()}")
     return r.json()['data']
 
-
 def update_cic_grant(grant_json, grant_id):
     grant_json['data']['id'] = grant_id
     logging.info(f" -- updating grant with {grant_json}")
@@ -62,6 +61,10 @@ def find_cic_grant(award_id):
     logging.debug(f"    -- {CIC_GRANTS_SEARCH_API}?keyword={award_id}")
     response = requests.get(f"{CIC_GRANTS_SEARCH_API}?keyword={award_id}")
     response_json = response.json()
+    if  'hits' not in response_json:
+        return None
+    if  'hits' not in response_json['hits']:
+        return None
     cic_grants = response_json['hits']['hits']
     for cg in cic_grants:
         logging.debug(f" --  checking {cg['_id']}")

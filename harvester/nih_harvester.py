@@ -2,6 +2,7 @@ from datetime import date, datetime
 import cic_grants
 import cic_orgs
 import cic_people
+import html_entity_cleaner
 import json
 import logging
 import requests
@@ -50,10 +51,13 @@ def main(max_year = None, start_offset = 0):
             for g in grants:
                 process_grant(g)
             imported_count += len(grants)
-            time.sleep(NIH_API_DELAY) 
+            time.sleep(NIH_API_DELAY)
+            if len(grants) < 25:                
+                break
+
 
     for year in range(max_year, 2020, -1):
-        for month in range(1,13):
+        for month in range(12,0,-1):
             # grants that explicitly mention COVID
             offset = start_offset
             processed_count = 0
@@ -86,11 +90,14 @@ def retrieve_nih_grant(award_id):
 def retrieve_subject_grants(year, month, offset):
     # Since NIH doesn't allow us to query directly by subject, we query for everything
     # and then filter the results.
-    logging.info("Reading grants from NIH API")
+    logging.info(f"Reading grants from NIH API for {year}-{month}, offset {offset}")
     criteria = nih_all_grants_criteria(year, month, offset)
     response = requests.post(url = NIH_BASE,
                              data = json.dumps(criteria),
                              headers={"Content-Type":"application/vnd.api+json"})
+    if response.status_code == 400 and "exceeded total records count" in response.text:
+        # We're looking past the end of the result set, return an empty list
+        return []
     if response.status_code >= 300:
         logging.error(f"{response} {response.text}")
         print(f"ERROR {response} {response.text}")
@@ -238,11 +245,11 @@ def nih_to_cic_format(grant):
                 },
                 "awardee_organization": nih_awardee_org(grant['org_name'],grant['org_country'], grant['org_state']),
                 "award_id": grant['project_num'],
-                "title": grant['project_title'],
+                "title": html_entity_cleaner.replace_quoted(grant['project_title']),
                 "start_date": nih_to_cic_date(grant['project_start_date']),
                 "end_date": nih_to_cic_date(grant['project_end_date']),
                 "award_amount": grant['award_amount'],
-                "abstract": nih_abstract(grant['abstract_text'])
+                "abstract": html_entity_cleaner.replace_quoted(nih_abstract(grant['abstract_text']))
             }
         }
     }
@@ -376,6 +383,7 @@ def nih_keywords(s):
         return result
 
 IC_MAPPING = {
+    'Agency for Healthcare Research and Quality': 'Agency for Healthcare Research and Quality (AHRQ)',
     'National Cancer Institute': 'National Cancer Institute (NCI)',
     'National Eye Institute': 'National Eye Institute (NEI)',
     'National Heart Lung and Blood Institute': 'National Heart Lung and Blood Institute (NHLBI)',

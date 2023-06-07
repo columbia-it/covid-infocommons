@@ -53,11 +53,9 @@ interface SurveyFormData {
     email: string
     award_id: string
     award_title: string
-    grant_kw: string
     funder: string
     other_funder: string
     dois: string
-    grant_add_kw: string
     websites: string
     person_kw: string
     desired_collaboration: string
@@ -266,6 +264,16 @@ class SurveyForm extends Component <any, FormState> {
         }
     }
 
+    validate_dois_string(value:any) {
+        const specialChars = /[`!#$%^&*()_+\=\[\]{};'"\\|<>\?~]/;
+        if (specialChars.test(value)) {
+            return false;
+        }
+        else {
+            return true;
+        }
+    }
+
     validate_email(value: any) {
         if (value != null) {
             value = value.trim()
@@ -348,10 +356,8 @@ class SurveyForm extends Component <any, FormState> {
             email: values.email,
             award_id: values.award_id,
             award_title: values.award_title,
-            grant_kw: values.grant_kw,
             funder: values.funder,
             dois: values.dois,
-            grant_add_kw: values.grant_add_kw,
             websites: values.websites,
             person_kw: values.person_kw,
             desired_collaboration: values.desired_collaboration,
@@ -395,26 +401,21 @@ class SurveyForm extends Component <any, FormState> {
                 <br/>
                 <Paper style={{ padding: 16, fontFamily: '"proxima-nova","Montserrat",sans-serif' }}>
                 <h1 className="survey-form-heading">
-                    COVID Information Commons PI Survey
+                    COVID Information Commons (CIC) PI Profile Update
                 </h1>
                 <p>
-                    Congratulations on your COVID-19 related research award!         
-                </p>
-                <p>
-                    ⭐ Please fill out this form multiple times for each NSF or NIH individual award you have received ⭐
+                    Please fill out this form for each NSF or NIH individual award you have received
                 </p>
                 <br/>
                 <p>
-                    The <a href="https://covidinfocommons.datascience.columbia.edu/">COVID Information Commons (CIC)</a> website, funded by the National Science Foundation (NSF #2028999 and 2139391) compiles information about COVID-19 related awards and research output from U.S. NSF, NIH and HHS grants. A key objective of this website is to enrich the standard public award information available regarding your research, and enhance opportunities for collaboration. 
+                    Please provide additional information about your COVID research through this form to increase the visibility of your scholarly work. You may use this form to create your PI or coPI profile, or provide updates.                 </p>
+                <br/>
+                <p>
+                    A key objective of the CIC website is to enrich the standard public award information available regarding your research and enhance opportunities for collaboration.
                 </p>
                 <br/>
                 <p>
-                    As a COVID-19 research awardee, we invite you to provide voluntary contributions of additional, applicable public information about your project, beyond the award abstract, which you would like to make openly available via the <a href="https://covidinfocommons.datascience.columbia.edu/">COVID Information Commons (CIC)</a> website in our PI Database. 
-                    After our staff reviews it for inclusion in the COVID Information Commons, you can view it <a href={ url + '/grants' } target="_blank">here. </a>If you have another award, please fill out the survey form again. 
-                </p>
-                <br/>
-                <p>
-                    You can always make changes to the information you provided by filling out the form again. Please email any questions to <a href="mailto:info@covidinfocommons.net">info@covidinfocommons.net</a>. Thank you!
+                    Please email any questions to <a href="mailto:info@covidinfocommons.net">info@covidinfocommons.net</a>. Thank you.
                 </p>
                 </Paper>
                 <br/>
@@ -427,12 +428,10 @@ class SurveyForm extends Component <any, FormState> {
                         email: '',
                         award_id: '',
                         award_title: '',
-                        grant_kw: '',
                         dois: '',
                         funder: Funder.NSF.toString(),
                         pi_or_copi: PI_OR_COPI.PI.toString(),
                         other_funder: '',
-                        grant_add_kw: '',
                         websites: '',
                         person_kw: '',
                         desired_collaboration: '',
@@ -447,12 +446,10 @@ class SurveyForm extends Component <any, FormState> {
                             email: Yup.string().
                                 required('Email address(es) is required').
                                 test('validate_email', 'Email must be a valid email address', this.validate_email),
-                            grant_kw: Yup.string().
-                                test('no-special-chars', 'Keywords must be comma separated', this.validate_comma_separated_string),
-                            grant_add_kw: Yup.string().
-                                test('no-special-chars', 'Keywords must be comma separated', this.validate_comma_separated_string),
                             person_kw: Yup.string().
                                 test('no-special-chars', 'Keywords must be comma separated', this.validate_comma_separated_string),
+                            dois: Yup.string().
+                                test('no-special-chars', 'Dois must be comma separated', this.validate_dois_string),
                             orcid: Yup.string().
                                 required('ORCID iD is required').
                                 test('valid-url', 'Please enter ORCID iD as: https://orcid.org/xxxx-xxxx-xxxx-xxxx or xxxx-xxxx-xxxx-xxxx', this.validate_orcid),
@@ -468,12 +465,10 @@ class SurveyForm extends Component <any, FormState> {
                             "email": values.email.trim(),
                             "award_id": values.award_id,
                             "award_title": values.award_title,
-                            "grant_kw": values.grant_kw.trim(),
                             "funder": this.get_funder_name(values.funder),
                             "pi_or_copi": this.get_pi_copi_name(values.pi_or_copi),
                             "other_funder": values.other_funder,
                             "dois": values.dois.trim(),
-                            "grant_add_kw": values.grant_add_kw.trim(),
                             "websites": values.websites.trim(),
                             "person_kw": values.person_kw.trim(),
                             "desired_collaboration": values.desired_collaboration.trim(),
@@ -549,26 +544,6 @@ class SurveyForm extends Component <any, FormState> {
                             <div>
                                 <Paper style={{ padding: 16 }}>
                                     <FormControl className="name-input">
-                                        <FormLabel id="emails-label" className="label">
-                                            Your email address <span className="required-text">*</span>
-                                        </FormLabel>
-                                        <TextField 
-                                            id="email" 
-                                            variant="outlined" 
-                                            value={ values.email }
-                                            onChange={ handleChange }
-                                            onKeyUp={ handleBlur }
-                                            onBlur={ handleBlur }
-                                        />
-                                        {errors.email && touched.email ? (<div className="required-text">{errors.email}</div>) : null}
-                                    </FormControl>
-                                    <br/>
-                                </Paper> 
-                            </div>
-                            <br/>
-                            <div>
-                                <Paper style={{ padding: 16 }}>
-                                    <FormControl className="name-input">
                                         <FormLabel id="orcid-label" className="label">
                                             Your ORCID iD (type NA if you do not have an ORCID)<span className="required-text">*</span>
                                         </FormLabel>
@@ -590,8 +565,65 @@ class SurveyForm extends Component <any, FormState> {
                             <div>
                                 <Paper style={{ padding: 16 }}>
                                     <FormControl className="name-input">
+                                        <FormLabel id="emails-label" className="label">
+                                            Your email address <span className="required-text">*</span>
+                                        </FormLabel>
+                                        <TextField 
+                                            id="email" 
+                                            variant="outlined" 
+                                            value={ values.email }
+                                            onChange={ handleChange }
+                                            onKeyUp={ handleBlur }
+                                            onBlur={ handleBlur }
+                                        />
+                                        {errors.email && touched.email ? (<div className="required-text">{errors.email}</div>) : null}
+                                    </FormControl>
+                                    <br/>
+                                </Paper> 
+                            </div>
+                            <br/>
+                            <div>
+                                <Paper style={{ padding: 16 }}>
+                                    <FormControl>
+                                        <FormLabel id="funder-label">COVID-19 Funding Agency <span className="required-text">*</span></FormLabel>             
+                                            <RadioGroup
+                                                aria-labelledby="funder-group-label"
+                                                defaultValue="NSF"
+                                                name="funder"
+                                                onChange={ handleChange }
+                                                value={ values.funder.toString() }
+                                            >
+                                            <FormControlLabel 
+                                                value={ Funder.NSF.toString() } 
+                                                control={<Radio />} 
+                                                label="NSF" />
+                                            <FormControlLabel 
+                                                value={ Funder.NIH.toString() } 
+                                                control={<Radio />} 
+                                                label="NIH" />
+                                            <FormControlLabel 
+                                                value={ Funder.OTHER.toString() }
+                                                control={<Radio/>}
+                                                label={
+                                                    <div>
+                                                        <span>Other:</span>&nbsp;
+                                                    </div>
+                                                }/>
+                                            <div><TextField 
+                                                            onChange={ this.handleOtherFunderChange } 
+                                                            id='other_funder_text'
+                                                            value={ this.state.other_funder }/>
+                                            </div>
+                                        </RadioGroup>
+                                    </FormControl>
+                                </Paper>
+                            </div>
+                            <br/>
+                            <div>
+                                <Paper style={{ padding: 16 }}>
+                                    <FormControl className="name-input">
                                         <FormLabel id="award-id-label" className="label">
-                                            COVID-19 Research Award Number <span className="required-text">*</span>
+                                            COVID-19 Research Award Number (NSF examples: 2028999, 2139391; NIH examples: 1U01CA260508-01, 1R43AI165117-01) <span className="required-text">*</span>
                                         </FormLabel>
                                         <TextField 
                                             id="award_id" 
@@ -656,122 +688,9 @@ class SurveyForm extends Component <any, FormState> {
                             <br/>
                             <div>
                                 <Paper style={{ padding: 16 }}>
-                                    <FormControl>
-                                        <FormLabel id="funder-label">COVID-19 Funding Agency <span className="required-text">*</span></FormLabel>             
-                                            <RadioGroup
-                                                aria-labelledby="funder-group-label"
-                                                defaultValue="NSF"
-                                                name="funder"
-                                                onChange={ handleChange }
-                                                value={ values.funder.toString() }
-                                            >
-                                            <FormControlLabel 
-                                                value={ Funder.NSF.toString() } 
-                                                control={<Radio />} 
-                                                label="NSF" />
-                                            <FormControlLabel 
-                                                value={ Funder.NIH.toString() } 
-                                                control={<Radio />} 
-                                                label="NIH" />
-                                            <FormControlLabel 
-                                                value={ Funder.OTHER.toString() }
-                                                control={<Radio/>}
-                                                label={
-                                                    <div>
-                                                        <span>Other:</span>&nbsp;
-                                                    </div>
-                                                }/>
-                                            <div><TextField 
-                                                            onChange={ this.handleOtherFunderChange } 
-                                                            id='other_funder_text'
-                                                            value={ this.state.other_funder }/>
-                                            </div>
-                                        </RadioGroup>
-                                    </FormControl>
-                                </Paper>
-                            </div>
-                            <br/>
-                            <div>
-                                <Paper style={{ padding: 16 }}>
-                                    <FormControl className="name-input">
-                                        <FormLabel id="grant-kw-label" className="label">
-                                            Please provide suggested keywords for your award, as applicable.
-                                        </FormLabel>
-                                        <TextField 
-                                            id="grant_kw" 
-                                            variant="outlined" 
-                                            value={ values.grant_kw }
-                                            onChange={ handleChange }
-                                            onKeyUp={ handleBlur }
-                                        />
-                                        { errors.grant_kw && touched.grant_kw ? (<div className="required-text">{errors.grant_kw}</div>) : null }
-                                    </FormControl>
-                                    <br/>
-                                    <br/>
-                                </Paper>
-                            </div>
-                            <br/>
-                            <br/>
-                            <div>
-                                <Paper style={{ padding: 16 }}>
-                                    <FormControl className="name-input">
-                                        <FormLabel id="dois-label" className="label">
-                                            Please list DOIs for any of your published research associated with your COVID award. This can include articles, data sets, software packages, etc.                                        
-                                        </FormLabel>
-                                        <TextField 
-                                            id="dois" 
-                                            variant="outlined" 
-                                            value={ values.dois }
-                                            onChange={ handleChange }
-                                        />
-                                    </FormControl>
-                                    <br/>
-                                    <br/>
-                                </Paper>
-                            </div>
-                            <div>
-                                <Paper style={{ padding: 16 }}>
-                                    <FormControl className="name-input">
-                                        <FormLabel id="grant-add-kw-label" className="label">
-                                            Please list any areas of scientific expertise your project could benefit from or is seeking, as keywords.
-                                        </FormLabel>
-                                        <TextField 
-                                            id="grant_add_kw" 
-                                            variant="outlined" 
-                                            value={ values.grant_add_kw }
-                                            onChange={ handleChange }
-                                            onKeyUp={ handleBlur }
-                                        />
-                                        { errors.grant_add_kw && touched.grant_add_kw ? (<div className="required-text">{errors.grant_add_kw}</div>) : null }
-                                    </FormControl>
-                                    <br/>
-                                    <br/>
-                                </Paper>
-                            </div>
-                            <div>
-                                <Paper style={{ padding: 16 }}>
-                                    <FormControl className="name-input">
-                                        <FormLabel id="websites-label" className="label">
-                                            Please list URLs of any of your professional websites associated with this award.
-                                        </FormLabel>
-                                        <TextField 
-                                            id="websites" 
-                                            variant="outlined" 
-                                            value={ values.websites }
-                                            onChange={ handleChange }
-                                        />
-                                    </FormControl>
-                                    <br/>
-                                    <br/>
-                                </Paper>
-                            </div>
-                            <br/>
-                            <br/>
-                            <div>
-                                <Paper style={{ padding: 16 }}>
                                     <FormControl className="name-input">
                                         <FormLabel id="person-kw-label" className="label">
-                                            Please list your areas of scientific expertise as keywords.
+                                            Keywords related to your COVID research
                                         </FormLabel>
                                         <TextField 
                                             id="person_kw" 
@@ -787,18 +706,17 @@ class SurveyForm extends Component <any, FormState> {
                                 </Paper>
                             </div>
                             <br/>
-                            <br/>
                             <div>
                                 <Paper style={{ padding: 16 }}>
                                     <FormControl className="name-input">
-                                        <FormLabel id="desired-collaboration-label" className="label">
-                                            If applicable, please further specify any collaboration opportunities you are interested in pursuing as related to this award, for instance "looking for predictive analytics experts for collaboration" or "can offer assistance with xxx".
+                                        <FormLabel id="websites-label" className="label">
+                                            PI website and project relevant websites
                                         </FormLabel>
                                         <TextField 
-                                            id="desired_collaboration" 
+                                            id="websites" 
                                             variant="outlined" 
+                                            value={ values.websites }
                                             onChange={ handleChange }
-                                            value={ values.desired_collaboration }
                                         />
                                     </FormControl>
                                     <br/>
@@ -806,38 +724,20 @@ class SurveyForm extends Component <any, FormState> {
                                 </Paper>
                             </div>
                             <br/>
-                            <br/>
                             <div>
                                 <Paper style={{ padding: 16 }}>
                                     <FormControl className="name-input">
-                                        <FormLabel id="person-comments-label" className="label">
-                                            Where would you like to connect with other COVID-19 researchers? (e.g. Slack, listserv, Google Group, etc.)
+                                        <FormLabel id="dois-label" className="label">
+                                            DOIs of articles, datasets 
                                         </FormLabel>
                                         <TextField 
-                                            id="person_comments" 
+                                            id="dois" 
                                             variant="outlined" 
+                                            value={ values.dois }
                                             onChange={ handleChange }
-                                            value={ values.person_comments }
+                                            onKeyUp={ handleBlur }
                                         />
-                                    </FormControl>
-                                    <br/>
-                                    <br/>
-                                </Paper>
-                            </div>
-                            <br/>
-                            <br/>
-                            <div>
-                                <Paper style={{ padding: 16 }}>
-                                    <FormControl className="name-input">
-                                        <FormLabel id="add-comments-label" className="label">
-                                            Additional comments for CIC staff
-                                        </FormLabel>
-                                        <TextField 
-                                            id="additional_comments" 
-                                            variant="outlined" 
-                                            onChange={ handleChange }
-                                            value={ values.additional_comments }
-                                        />
+                                        { errors.dois && touched.dois ? (<div className="required-text">{errors.dois}</div>) : null }
                                     </FormControl>
                                     <br/>
                                     <br/>
@@ -866,8 +766,8 @@ class SurveyForm extends Component <any, FormState> {
                                         </BootstrapDialogTitle>
                                         <DialogContent dividers>
                                             <Typography gutterBottom>
-                                            Thank you for filling out the survey. After our staff reviews it for inclusion in the COVID Information Commons, you can view it <a href={ url + '/grants' } target="_blank">here.</a>
-                                            If you have another award, please fill out the survey form again. 
+                                                Thank you for submitting your CIC PI profile update. After the CIC team reviews it for inclusion in the <a href={ url + '/grants' } target="_blank">COVID Information Commons</a>, you can view it here.
+                                                If you have another COVID award, please submit an additional PI Profile form. We will combine your submissions into one CIC PI profile.
                                             </Typography>
                                         </DialogContent>
                                         <DialogActions>

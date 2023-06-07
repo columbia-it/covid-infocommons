@@ -21,26 +21,28 @@ class FunderSerializer(serializers.ModelSerializer):
 class PersonSerializer(serializers.ModelSerializer):
     """Serializer for Person model"""
     keywords = serializers.ListField(child=serializers.CharField(), required=False)
+    websites = serializers.ListField(child=serializers.CharField(), required=False)
 
     def get_emails(self, obj):
         return ""
 
     class Meta:
         model = Person
-        fields = ('id', 'affiliations', 'first_name', 'last_name', 'orcid', 'emails', 'private_emails', 'keywords', 'approved', 'desired_collaboration', 'comments')
+        fields = ('id', 'affiliations', 'first_name', 'last_name', 'orcid', 'emails', 'keywords', 'approved', 'desired_collaboration', 'comments', 'websites')
         depth = 2
 
 
 class CreatePersonSerializer(serializers.ModelSerializer):
     """Serializer for Person model"""
     keywords = serializers.ListField(child=serializers.CharField(), required=False)
+    websites = serializers.ListField(child=serializers.CharField(), required=False)
 
     def get_emails(self, obj):
         return ""
 
     class Meta:
         model = Person
-        fields = ('id', 'affiliations', 'first_name', 'last_name', 'orcid', 'emails', 'private_emails', 'keywords', 'approved', 'desired_collaboration', 'comments')
+        fields = ('id', 'affiliations', 'first_name', 'last_name', 'orcid', 'emails', 'private_emails', 'keywords', 'approved', 'desired_collaboration', 'comments', 'websites')
 
 
 class FunderDivisionListField(serializers.Field):

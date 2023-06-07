@@ -4,7 +4,9 @@ import cic_people
 import json
 import logging
 import requests
-    
+
+# Removes grants that were imported by too-permissive harvesting settings
+
 def main():
     # process all grants, one page at a time
     page = 1

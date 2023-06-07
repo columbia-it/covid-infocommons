@@ -3,6 +3,7 @@ from pyquery import PyQuery
 import cic_grants
 import cic_orgs
 import cic_people
+import html_entity_cleaner
 import json
 import logging
 import requests
@@ -25,6 +26,7 @@ DIRECTORATES = [
 'Geosciences (GEO)',
 'Mathematical and Physical Sciences (MPS)',
 'Social, Behavioral, and Economic Sciences (SBE)',
+'STEM Education (EDU)',
 'Technology, Innovation and Partnerships (TIP)',
 'Office of the Director'
 ]
@@ -37,7 +39,9 @@ DIRECTORATE_ABBREVIATIONS = {
     'Direct For Mathematical & Physical Scien': 'Mathematical and Physical Sciences (MPS)',
     'Direct For Education and Human Resources': 'Education and Human Resources (EHR)',
     'Directorate For Geosciences': 'Geosciences (GEO)',
+    'Directorate for STEM Education': 'STEM Eductation (EDU)',
     'Dir for Tech, Innovation, & Partnerships': 'Technology, Innovation and Partnerships (TIP)',
+    'Directorate for STEM Education' : 'Directorate for STEM Education (EDU)',
     'Office Of The Director': 'Office Of The Director'
 }
 
@@ -93,7 +97,7 @@ def main():
     # The NSF API will only return a max of 3000 grants per request, and the default page size is 25
     # So we request one month at a time, and step through each page
     for year in range(max_year, 2020, -1):
-        for month in range(1, 13):
+        for month in range(12, 0, -1):
             print(f'==================== Imported so far: {imported_count} ==========================')
             print(f'==================== Retrieving month {year}-{month} ======================')
 
@@ -175,11 +179,11 @@ def nsf_to_cic_format(grant):
                 },
                 "awardee_organization": nsf_awardee_org(grant),
                 "award_id": grant['id'],
-                "title": grant['title'],
+                "title": html_entity_cleaner.replace_quoted(grant['title']),
                 "start_date": nsf_to_cic_date(grant['startDate']),
                 "end_date": nsf_to_cic_date(grant['expDate']),
                 "award_amount": nsf_award_amount(grant),
-                "abstract": grant['abstractText']
+                "abstract": html_entity_cleaner.replace_quoted(grant['abstractText'])
             }
         }
     }
