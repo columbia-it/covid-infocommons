@@ -24,12 +24,26 @@ const Home = () => {
 
         const handleModelChange = (e:any) => {
             console.log(e.target.value)
-            navigate('/search/grants')
+            switch (Number(e.target.value)) {
+                case 0:
+                    navigate('/search');
+                    break;
+                case 1:
+                    navigate('/search/grants');
+                    break;
+                case 2:
+                    navigate('/search/people');
+                    break;
+                case 3:
+                    navigate('/search/publications');
+                    break;
+                case 4:
+                    navigate('/search/datasets');
+                    break;
+            }
         }
 
         const routeParams = useParams();
-        console.log('****')
-        console.log(routeParams)
         return (
             <div className='root'>
                 {/* <Box
@@ -57,11 +71,11 @@ const Home = () => {
                                 }}
                                 onChange={ handleModelChange }
                             >
-                                <option value={1}>All</option>
-                                <option value={'grants'}>Grants</option>
-                                <option value={'people'}>People</option>
-                                <option value={'publications'}>Publications</option>
-                                <option value={'datasets'}>Datasets</option>
+                                <option value={0}>All</option>
+                                <option value={1}>Grants</option>
+                                <option value={2}>People</option>
+                                <option value={3}>Publications</option>
+                                <option value={4}>Datasets</option>
                             </NativeSelect>
                         </FormControl>
                     </div>

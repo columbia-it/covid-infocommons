@@ -14,7 +14,19 @@ const styles = {
     },
 };
 
-class People extends Component<any, any> {
+interface AppState {
+    totalCount: number
+    search_in_progress: boolean
+
+}
+
+class People extends Component<any, AppState> {
+    
+    state:AppState = {
+        totalCount: 0,
+        search_in_progress: false
+    }
+    
     render() {
         return (
             <div>
