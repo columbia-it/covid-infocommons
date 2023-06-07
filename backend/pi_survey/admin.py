@@ -108,14 +108,14 @@ class SurveyAdmin(SimpleHistoryAdmin):
                 new_kws =  getattr(obj, 'person_keywords')
                 if new_kws:
                     new_kws = new_kws.split(',')
-
+                    new_words = [word.strip() for word in new_kws]
+        
                 if person:
                     if not person.orcid or person.orcid == 'NA':
                         orcid = getattr(obj, 'orcid') if (getattr(obj, 'orcid')!= 'NA') else ''
                         setattr(person, 'orcid', orcid)
-                    original_kws = person.keywords
-                    if new_kws:
-                        original_kws.extend(new_kws)
+                    original_kws = person.keywords             
+                    original_kws += [word for word in new_words if word not in original_kws]
                     setattr(person, 'keywords', original_kws)
                     # append websites, not replace
                     setattr(person, 'websites', websites)
@@ -129,7 +129,7 @@ class SurveyAdmin(SimpleHistoryAdmin):
                         orcid = orcid if (orcid != 'NA') else '',
                         emails = getattr(obj, 'email'),
                         websites = websites,
-                        keywords = new_kws,
+                        keywords = new_words,
                         approved = True
                     )
                     person.save()
