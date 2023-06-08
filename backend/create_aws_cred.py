@@ -20,10 +20,8 @@ def get_credentials(cred_duration):
     #aws_account = os.getenv('ACS_AWS_ACCOUNT')
     aws_account = 305803678806
     aws_role = os.getenv('ACS_AWS_ROLE', AWS_ROLE)
-    #aws_id = os.getenv('ACS_AWS_ID')
-    aws_id = 'AKIA4SD4X4BEINFPTA25'
-    #aws_key = os.getenv('ACS_AWS_KEY')
-    aws_key = '0UWt4JIAuJEEJSuS4eYSUSbkwteHtmrXQMDHtcQr'
+    aws_id = os.getenv('ACS_AWS_ID')
+    aws_key = os.getenv('ACS_AWS_KEY')
     if not (aws_account or aws_id or aws_key):
         raise Exception('AWS account or service ID or service key is not provided')
     role_arn = f'arn:aws:iam::{aws_account}:role/{aws_role}'
