@@ -1,11 +1,9 @@
 #!/bin/bash 
 date +"%Y/%m/%d %H:%M:%S"
 
-export CICE_ENV=dev
-export AWS_NEW_CRED=Yes
-
 which python3
 python3 -V
+
 python3 -m venv py3_venv
 source py3_venv/bin/activate
 
@@ -17,12 +15,9 @@ python manage.py test --pattern="test_*.py"
 if [ $AWS_NEW_CRED == "Yes" ]
 then
   echo "Generating a new AWS credentials"
-  python create_aws_cred.py
+  python create_aws_creds.py
 fi
 ls -al ~/.aws/
 
 zappa status $CICE_ENV
 zappa update $CICE_ENV
-
-date +"%Y/%m/%d %H:%M:%S"
-
