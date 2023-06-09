@@ -43,7 +43,14 @@ class SearchBar extends React.Component<any, SearchState> {
                     autoComplete="off"
                 >      
                 <link rel="stylesheet" href="https://fonts.googleapis.com/icon?family=Material+Icons"></link>
-                <form className='search-form'>
+                <TextField
+                        id="outlined-search" 
+                        label="Search" 
+                        type="search"
+                        value={ this.state.keyword }
+                        onKeyDown={ this.enterHandler }
+                        onChange={ this.searchHandler }/>
+                {/* <form className='search-form'>
                     <TextField
                         id="outlined-search" 
                         label="Search" 
@@ -51,7 +58,7 @@ class SearchBar extends React.Component<any, SearchState> {
                         value={ this.state.keyword }
                         onKeyDown={ this.enterHandler }
                         onChange={ this.searchHandler }/>
-                </form>
+                </form> */}
                 <br/>
                 {/* <div className='flex-container'>
                     {

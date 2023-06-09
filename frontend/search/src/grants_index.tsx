@@ -6,6 +6,7 @@ import DownloadIcon from '@mui/icons-material/Download';
 import axiosRetry from 'axios-retry';
 import GrantsTable from './components/GrantTable';
 import SearchBar from './components/SearchBar';
+import ModelSelect from './components/ModelSelect';
 
 interface Filter {
     nsf_division?: string
@@ -419,10 +420,6 @@ class Grants extends Component<any, AppState> {
     }
 
     render() {
-        console.log('...1...')
-        console.log('...2...')
-        console.log('...3...')
-
         return (
             <div>
                 <SearchBar/>
@@ -436,16 +433,20 @@ class Grants extends Component<any, AppState> {
                         : <div className='results-row'>Waiting for results...
                         </div> 
                     } 
-                        
-                        <div className='download-csv'>                            
+                    <div><ModelSelect
+                            selected_model={ 1 }
+                            selected_value={ 1 }/>
+                    </div>
+                    <div>                            
                             <Button sx={styles}
 	                            onClick={ this.exportToCsv } 
                                 className='download-button' 
                                 variant="contained"
                                 endIcon={ <DownloadIcon /> }>Download Results as CSV (up to 1,000 awards)</Button>
-                        </div>
-                    </div>    
-                    <br/>
+                    </div>
+                </div>
+                <br/>
+                <div>  
                     <div className='flex-container'>
                         <div className='flex-child'>
                         <GrantsTable
@@ -470,6 +471,7 @@ class Grants extends Component<any, AppState> {
                         </div>
                     </div>
                 </div>
+            </div>
             </div>
         );
     }

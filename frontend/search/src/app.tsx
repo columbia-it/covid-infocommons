@@ -6,17 +6,6 @@ import Publications from "./publications_index";
 import Datasets from "./datasets_index";
 
 export default function App() {
-    // const navigate = useNavigate();
-
-    // function handleChange(event:any) {
-    //     console.log('//////')
-    //     console.log(event)
-    //     const params = new URLSearchParams(window.location.search)
-    //     console.log(params.get('keyword'))
-    //     let url = '/search/grants?keyword='+params.get('keyword')
-    //     navigate(url)
-    // }
-    
     return (
         <div>
           <Routes>

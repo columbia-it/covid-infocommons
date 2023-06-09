@@ -110,7 +110,7 @@ class GrantsTable extends Component<GrantsTableProps> {
                     {
                         title: "Principal Investigator", field: "pi",
                         render: (row: any) => {
-                            let pi_detail_url = (row.pi_private_emails) ? row.pi_private_emails : this.props.url.concat('/grants/pi/'+ row.pi_id)
+                            let pi_detail_url = (row.pi_private_emails) ? row.pi_private_emails : this.props.url.concat('/search/pi/'+ row.pi_id)
                             if (this.props.keyword) {
                                 pi_detail_url = pi_detail_url.concat('?keyword='+this.props.keyword)
                             }
