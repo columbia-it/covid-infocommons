@@ -38,7 +38,7 @@ def get_facet_by_field(request) :
 
 # Handle the request to search grants with keyword and/or filter values
 def search_grants(request):
-    logger.info('View -- Grants search started at: {}'.format(datetime.now()))
+    logger.info('View--Grants search started at: {}'.format(datetime.now()))
     start = request.GET.get('from', 0)
     size = request.GET.get('size', 20)
 
@@ -243,7 +243,7 @@ def search_grants(request):
         body = query,
         index = 'grant_index'
     )
-    logger.info('View -- Grants search ended at: {}'.format(datetime.now()))
+    logger.info('View--Grants search ended at: {}'.format(datetime.now()))
     return JsonResponse(response)
 
 # Handle the request to search publications with keyword and/or filter values
