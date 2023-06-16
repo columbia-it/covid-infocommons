@@ -6,7 +6,7 @@ import { useState } from "react";
 
 const ModelSelect = (props:any) => {
 
-    const [selectedModel,setSelectedModel] = useState([]);
+    const [selectedModel,setSelectedModel] = useState();
 
     const navigate = useNavigate();
 

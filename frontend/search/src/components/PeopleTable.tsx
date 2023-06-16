@@ -2,7 +2,7 @@ import { Component } from "react";
 import MaterialTable from "material-table";
 import { Link as MaterialLink} from '@mui/material';
 import Highlighter from 'react-highlight-words'
-import { TablePagination } from "@material-ui/core";
+import { TablePagination, TablePaginationProps } from '@material-ui/core';
 
 type Prop = {
     'full_name': string
@@ -15,8 +15,37 @@ type PeopleTableProps = {
     keyword: string | ''
     url: string
     pageIndex: number
-    pageChangeHandler: (page:number, pageSize: number) => void 
+    pageChangeHandler?: (page:number, pageSize: number) => void 
+    paging: boolean
 }
+
+function PatchedPagination(props: TablePaginationProps) {
+    const {
+      ActionsComponent,
+      onChangePage,
+      onChangeRowsPerPage,
+      ...tablePaginationProps
+    } = props;
+  
+    return (
+      <TablePagination
+        {...tablePaginationProps}
+        // @ts-expect-error onChangePage was renamed to onPageChange
+        onPageChange={onChangePage}
+        onRowsPerPageChange={onChangeRowsPerPage}
+        ActionsComponent={(subprops) => {
+          const { onPageChange, ...actionsComponentProps } = subprops;
+          return (
+            // @ts-expect-error ActionsComponent is provided by material-table
+            <ActionsComponent
+              {...actionsComponentProps}
+              onChangePage={onPageChange}
+            />
+          );
+        }}
+      />
+    );
+  }
 
 class PeopleTable extends Component<PeopleTableProps> {
     
@@ -53,11 +82,32 @@ class PeopleTable extends Component<PeopleTableProps> {
                                 </div>
                             )
                         }
+                    },
+                    {
+                        title: 'Institutions',
+                        field: 'affiliations',
+                        render: (row: any) => {
+                            console.log('row.affiliations = ')
+                            console.log(row.affiliations)
+                            let org_names = []
+                            for (let i = 0; i < row.affiliations.length; i++) {
+                                console.log('row.affiliations[i] = ')
+                                console.log(row.affiliations[i])
+                                org_names.push(row.affiliations[i]['name'])
+                            }
+                            console.log('org names = ')
+                            console.log(org_names)
+                            return (
+                                <div>
+                                    { org_names }
+                                </div>
+                            )
+                        }
                     }
                 ]}
                 options={
                     { 
-                        paging: true, 
+                        paging: this.props.paging ,
                         showTitle: false,
                         search: false,
                         pageSize: 20,
@@ -66,15 +116,7 @@ class PeopleTable extends Component<PeopleTableProps> {
                 }
                 components={
                     {
-                        Pagination: props => (
-                            <TablePagination
-                                {...props}
-                                rowsPerPageOptions={[]}
-                                onPageChange={ (page:number, pageSize:number) => {
-                                    this.props.pageChangeHandler(page, pageSize)
-                                } }
-                            />
-                        ),
+                        Pagination: PatchedPagination
                     }
                 }
             >

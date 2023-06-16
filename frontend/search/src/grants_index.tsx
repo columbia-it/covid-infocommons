@@ -5,8 +5,8 @@ import Button from '@mui/material/Button';
 import DownloadIcon from '@mui/icons-material/Download';
 import axiosRetry from 'axios-retry';
 import GrantsTable from './components/GrantTable';
-import SearchBar from './components/SearchBar';
 import ModelSelect from './components/ModelSelect';
+import {SearchContext} from './search_context';
 
 interface Filter {
     nsf_division?: string
@@ -70,7 +70,7 @@ const styles = {
 };
 
 class Grants extends Component<any, AppState> {
-
+    static context = SearchContext;
     state:AppState = {
         data: [],
         url: url,
@@ -240,8 +240,9 @@ class Grants extends Component<any, AppState> {
     }
 
     get_grants_data = (kw?:string) => {
-        console.log('***** ');
-        kw = 'covid'
+        console.log('=======');
+        console.log(this.context)
+        kw = this.context;
         this.setState({
             search_in_progress: true
         })
@@ -419,10 +420,16 @@ class Grants extends Component<any, AppState> {
         )
     }
 
+    searchHandler = (event:any) => {
+        event.preventDefault()
+        const keyword = (document.getElementById('outlined-search') as HTMLInputElement).value;
+        this.setState({'keyword': keyword})
+        this.get_grants_data(keyword)
+    }
+
     render() {
         return (
             <div>
-                <SearchBar/>
                 <br/>
                 <div className='flex-container'>
                     {
@@ -434,8 +441,7 @@ class Grants extends Component<any, AppState> {
                         </div> 
                     } 
                     <div><ModelSelect
-                            selected_model={ 1 }
-                            selected_value={ 1 }/>
+                            selected_model={ 1 }/>
                     </div>
                     <div>                            
                             <Button sx={styles}
@@ -456,6 +462,7 @@ class Grants extends Component<any, AppState> {
                             pageChangeHandler={ this.pageChangeHandler }
                             pageIndex={ this.state.pageIndex }
                             keyword={ this.state.keyword }
+                            paging={ true }
                         />
                     </div>
                     <div className='flex-child'>

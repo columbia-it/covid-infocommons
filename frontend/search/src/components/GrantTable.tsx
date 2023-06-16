@@ -1,11 +1,11 @@
 import { Component } from "react";
 import MaterialTable, { MTableToolbar } from "material-table";
 //import MaterialTable from '@material-table/core';
-import { TablePagination } from "@material-ui/core";
 import { css } from '@emotion/react'
 import { Link as MaterialLink} from '@mui/material';
 import NumberFormat from 'react-number-format';
 import Highlighter from 'react-highlight-words'
+import { TablePagination, TablePaginationProps } from '@material-ui/core';
 
 type Prop = {
     'title': string
@@ -17,11 +17,39 @@ type GrantsTableProps = {
     data: Prop[],
     url: string
     totalCount: number
-    pageChangeHandler: (page:number, pageSize: number) => void 
+    pageChangeHandler?: (page:number, pageSize: number) => void 
     pageIndex: number
-    keyword: string | ''
+    keyword: string | '',
+    paging: boolean
 }
 
+function PatchedPagination(props: TablePaginationProps) {
+  const {
+    ActionsComponent,
+    onChangePage,
+    onChangeRowsPerPage,
+    ...tablePaginationProps
+  } = props;
+
+  return (
+    <TablePagination
+      {...tablePaginationProps}
+      // @ts-expect-error onChangePage was renamed to onPageChange
+      onPageChange={onChangePage}
+      onRowsPerPageChange={onChangeRowsPerPage}
+      ActionsComponent={(subprops) => {
+        const { onPageChange, ...actionsComponentProps } = subprops;
+        return (
+          // @ts-expect-error ActionsComponent is provided by material-table
+          <ActionsComponent
+            {...actionsComponentProps}
+            onChangePage={onPageChange}
+          />
+        );
+      }}
+    />
+  );
+}
 
 class GrantsTable extends Component<GrantsTableProps> {
     truncate = (str:string, n:number) => {
@@ -134,7 +162,7 @@ class GrantsTable extends Component<GrantsTableProps> {
                 ]}
                 options={
                     { 
-                        paging: true, 
+                        paging: this.props.paging, 
                         showTitle: false,
                         search: false,
                         //exportButton: false,
@@ -144,15 +172,16 @@ class GrantsTable extends Component<GrantsTableProps> {
                 }
                 components={
                     {
-                        Pagination: props => (
-                            <TablePagination
-                                {...props}
-                                rowsPerPageOptions={[]}
-                                onPageChange={ (page:number, pageSize:number) => {
-                                    this.props.pageChangeHandler(page, pageSize)
-                                } }
-                            />
-                        ),
+                        // Pagination: props => (
+                        //     <TablePagination
+                        //         {...props}
+                        //         rowsPerPageOptions={[]}
+                        //         onPageChange={ (page:number, pageSize:number) => {
+                        //             this.props.pageChangeHandler(page, pageSize)
+                        //         } }
+                        //     />
+                        // ),
+                        Pagination: PatchedPagination
                     }
                 }
             />

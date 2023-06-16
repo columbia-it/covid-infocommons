@@ -422,7 +422,8 @@ def search_people(request):
 
     response = client.search(
         body = query,
-        index = 'person_index'
+        index = 'person_index',
+        scroll = '1s'
     )
 
     return JsonResponse(response)

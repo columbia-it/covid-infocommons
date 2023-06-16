@@ -156,8 +156,6 @@ class People extends Component<any, AppState> {
     render() {
         return (
             <div>
-                <SearchBar/>
-                <br/>
                 <div className='flex-container'>
                     {
                         this.state.search_in_progress == false ? 
@@ -167,7 +165,9 @@ class People extends Component<any, AppState> {
                         : <div className='results-row'>Waiting for results...
                         </div> 
                     } 
-                    <div><ModelSelect/></div>
+                    <div><ModelSelect
+                        selected_model={ 2 }
+                    /></div>
                     <div>                            
                             <Button sx={styles}
 	                            onClick={ this.exportToCsv } 
@@ -187,8 +187,8 @@ class People extends Component<any, AppState> {
                             pageChangeHandler={ this.pageChangeHandler }
                             pageIndex={ this.state.pageIndex }
                             keyword={ this.state.keyword }
+                            paging={ true }
                         >
-
                         </PeopleTable>
                     </div>
                     <div className='flex-child'>
