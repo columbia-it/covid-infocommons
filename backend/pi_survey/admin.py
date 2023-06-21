@@ -55,7 +55,7 @@ class SurveyAdmin(SimpleHistoryAdmin):
             return person_result[0]
         person_result = Person.objects.filter(private_emails__contains=email)
         if person_result and person_result.count() > 0:
-            return person_result[0]   
+            return person_result[0] 
         return None
 
     # Check if a grant exists with the given award ID. If one is found, return it.
@@ -75,6 +75,10 @@ class SurveyAdmin(SimpleHistoryAdmin):
     # If none is found, create a new funder with the given name and return it.
     def get_funder(self, name):
         try:
+            if name == 'NSF':
+                name = 'National Science Foundation'
+            if name == 'NIH':
+                name = 'National Institutes of Health'
             funder = Funder.objects.get(name=name)
             return funder
         except:
@@ -98,7 +102,7 @@ class SurveyAdmin(SimpleHistoryAdmin):
             try:
                 person = self.get_person(obj)
                 grant = self.get_grant(obj)
-                
+
                 is_copi = getattr(obj, 'is_copi')
                 
                 websites = getattr(obj, 'websites')
@@ -106,6 +110,7 @@ class SurveyAdmin(SimpleHistoryAdmin):
                     websites = websites.split(',')
                 
                 new_kws =  getattr(obj, 'person_keywords')
+                new_words = []
                 if new_kws:
                     new_kws = new_kws.split(',')
                     new_words = [word.strip() for word in new_kws]
@@ -133,7 +138,6 @@ class SurveyAdmin(SimpleHistoryAdmin):
                         approved = True
                     )
                     person.save()
-
                 funder = self.get_funder(getattr(obj, 'funder_name'))
                 if not funder:
                     funder = Funder(name=getattr(obj, 'funder_name'), approved=True)
