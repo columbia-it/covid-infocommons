@@ -96,17 +96,13 @@ class Grants extends Component<any, AppState> {
 
     componentDidMount = () => {
         this.get_grants_data()
-        this.get_org_name_facet()
-        this.get_pi_name_facet()    
-        this.get_po_name_facet()
-        this.get_funder_division_facet()
-        this.get_funder_facet()
     }
 
     get_org_name_facet() {
         var url = this.state.url.concat('/search/facets?field=awardee_organization.name')
         axios.get(url).then(results => {
             this.setState({ awardee_org_names: results.data.aggregations.patterns.buckets })
+            this.get_pi_name_facet()    
         })
     }
 
@@ -114,6 +110,7 @@ class Grants extends Component<any, AppState> {
         var url = this.state.url.concat('/search/facets?field=funder_divisions')
         axios.get(url).then(results => {
             this.setState({ funder_divisions: results.data.aggregations.patterns.buckets })
+            this.get_funder_facet()
         })
     }
 
@@ -123,6 +120,7 @@ class Grants extends Component<any, AppState> {
         axios.get(url).then(results => {
             this.setState({ pi_names: results.data.aggregations.patterns.buckets })
             pi_facet = results.data.aggregations.patterns.buckets
+            this.get_po_name_facet()
         })
         return pi_facet;
     }
@@ -133,7 +131,7 @@ class Grants extends Component<any, AppState> {
         axios.get(url).then(results => {
             this.setState({ po_names: results.data.aggregations.patterns.buckets })
             po_facet = results.data.aggregations.patterns.buckets
-
+            this.get_funder_division_facet()
         })
         return po_facet;
     }
@@ -240,8 +238,6 @@ class Grants extends Component<any, AppState> {
     }
 
     get_grants_data = (kw?:string) => {
-        console.log('=======');
-        console.log(this.context)
         kw = this.context;
         this.setState({
             search_in_progress: true
@@ -299,6 +295,7 @@ class Grants extends Component<any, AppState> {
                 }
             })
             this.setState({ data: newArray })
+            this.get_org_name_facet()
         })
     }
 

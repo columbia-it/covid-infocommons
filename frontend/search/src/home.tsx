@@ -6,6 +6,13 @@ import { SearchContext } from './search_context';
 import GrantsTable from './components/GrantTable';
 import axios from "axios";
 import PeopleTable from './components/PeopleTable';
+import Link from '@mui/material/Link';
+import {
+    Link as RouterLink,
+    LinkProps as RouterLinkProps,
+    MemoryRouter,
+  } from 'react-router-dom';
+import { styled } from '@mui/material/styles';
 
 interface HomeState {
     url: string
@@ -42,6 +49,7 @@ if (process.env.NODE_ENV == 'production') {
 } else {
     url = "http://127.0.0.1:8000"
 }
+
 class Home extends Component<any, HomeState> {
 
     state:HomeState = {
@@ -150,7 +158,21 @@ class Home extends Component<any, HomeState> {
                         pageIndex={ 0 }
                         keyword={ '' }
                     />
+                    <br/>
+                    <div className='flex-container'>
+                        <div className='flex-child'></div>
+                        <div className='flex-child'>
+                            <Link 
+                                component={RouterLink} 
+                                to="/search/grants"
+                                sx={{ fontSize: "18px", fontFamily: "proxima-nova, Montserrat, sans-serif;" }}>
+                                See all grants
+                            </Link>                        
+                        </div>
+                    </div>
+                    <br/>
                 </div>
+                <br/>
                 <div>
                     <PeopleTable
                         paging={ false }

@@ -378,6 +378,7 @@ def search_people(request):
     query = {
         'size': size,
         'from': start,
+        'scroll': '1m',
         'query': {
             'bool': {
                 'must': [],

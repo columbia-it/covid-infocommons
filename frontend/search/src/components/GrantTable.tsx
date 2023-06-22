@@ -107,6 +107,7 @@ class GrantsTable extends Component<GrantsTableProps> {
 
     render() {
         return (
+            <div>
             <MaterialTable
                 data={ this.props.data }
                 page={ this.props.pageIndex }
@@ -185,6 +186,7 @@ class GrantsTable extends Component<GrantsTableProps> {
                     }
                 }
             />
+            </div>
         )
     }
 }
