@@ -55,7 +55,7 @@ class SurveyAdmin(SimpleHistoryAdmin):
             return person_result[0]
         person_result = Person.objects.filter(private_emails__contains=email)
         if person_result and person_result.count() > 0:
-            return person_result[0]   
+            return person_result[0] 
         return None
 
     # Check if a grant exists with the given award ID. If one is found, return it.
@@ -63,19 +63,28 @@ class SurveyAdmin(SimpleHistoryAdmin):
     def get_grant(self, obj):
         award_id = getattr(obj, 'award_id')
         funder = getattr(obj, 'funder_name')
+        funder_name = self.get_funder_name(funder)
         grants = Grant.objects.filter(
             award_id__contains=award_id, 
-            funder__name=funder)
+            funder__name=funder_name)
         if grants and grants.count() > 0:
             return grants[0]
         else:
             return None
         
+    def get_funder_name(self, funder):
+        if funder == 'NSF':
+            return 'National Science Foundation'
+        if funder == 'NIH':
+            return 'National Institutes of Health'
+        return funder
+
     # Check if a funder exists with the given name. If one is found, return it.
     # If none is found, create a new funder with the given name and return it.
     def get_funder(self, name):
         try:
-            funder = Funder.objects.get(name=name)
+            funder_name = self.get_funder_name(name)
+            funder = Funder.objects.get(name=funder_name)
             return funder
         except:
             return None
@@ -98,7 +107,7 @@ class SurveyAdmin(SimpleHistoryAdmin):
             try:
                 person = self.get_person(obj)
                 grant = self.get_grant(obj)
-                
+
                 is_copi = getattr(obj, 'is_copi')
                 
                 websites = getattr(obj, 'websites')
@@ -106,6 +115,7 @@ class SurveyAdmin(SimpleHistoryAdmin):
                     websites = websites.split(',')
                 
                 new_kws =  getattr(obj, 'person_keywords')
+                new_words = []
                 if new_kws:
                     new_kws = new_kws.split(',')
                     new_words = [word.strip() for word in new_kws]
@@ -133,7 +143,6 @@ class SurveyAdmin(SimpleHistoryAdmin):
                         approved = True
                     )
                     person.save()
-
                 funder = self.get_funder(getattr(obj, 'funder_name'))
                 if not funder:
                     funder = Funder(name=getattr(obj, 'funder_name'), approved=True)

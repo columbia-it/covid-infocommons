@@ -95,11 +95,6 @@ class App extends Component<any, AppState> {
 
     componentDidMount = () => {
         this.get_grants_data()
-        this.get_org_name_facet()
-        this.get_pi_name_facet()    
-        this.get_po_name_facet()
-        this.get_funder_division_facet()
-        this.get_funder_facet()
     }
 
     searchHandler = (event:any) => {
@@ -113,6 +108,7 @@ class App extends Component<any, AppState> {
         var url = this.state.url.concat('/search/facets?field=awardee_organization.name')
         axios.get(url).then(results => {
             this.setState({ awardee_org_names: results.data.aggregations.patterns.buckets })
+            this.get_pi_name_facet()    
         })
     }
 
@@ -130,6 +126,7 @@ class App extends Component<any, AppState> {
         axios.get(url).then(results => {
             this.setState({ pi_names: results.data.aggregations.patterns.buckets })
             pi_facet = results.data.aggregations.patterns.buckets
+            this.get_po_name_facet()
         })
         console.log('App.get_pi_name_facet()--Ended at: ' + new Date().toLocaleString())
         return pi_facet;
@@ -142,7 +139,7 @@ class App extends Component<any, AppState> {
         axios.get(url).then(results => {
             this.setState({ po_names: results.data.aggregations.patterns.buckets })
             po_facet = results.data.aggregations.patterns.buckets
-
+            this.get_funder_division_facet()
         })
         console.log('App.get_po_name_facet()--Ended at: ' + new Date().toLocaleString())
         return po_facet;
@@ -154,7 +151,7 @@ class App extends Component<any, AppState> {
         axios.get(url).then(results => {
             this.setState({ funder_names: results.data.aggregations.patterns.buckets })
             funder_facet = results.data.aggregations.patterns.buckets
-
+            this.get_org_name_facet()
         })
         return funder_facet;
     }
@@ -275,6 +272,7 @@ class App extends Component<any, AppState> {
                 }
             })
             this.setState({ data: newArray })
+            this.get_funder_facet()
             console.log('App.get_grants_data()--Ended at: ' + new Date().toLocaleString())
 
         })
