@@ -63,23 +63,28 @@ class SurveyAdmin(SimpleHistoryAdmin):
     def get_grant(self, obj):
         award_id = getattr(obj, 'award_id')
         funder = getattr(obj, 'funder_name')
+        funder_name = self.get_funder_name(funder)
         grants = Grant.objects.filter(
             award_id__contains=award_id, 
-            funder__name=funder)
+            funder__name=funder_name)
         if grants and grants.count() > 0:
             return grants[0]
         else:
             return None
         
+    def get_funder_name(self, funder):
+        if funder == 'NSF':
+            return 'National Science Foundation'
+        if funder == 'NIH':
+            return 'National Institutes of Health'
+        return funder
+
     # Check if a funder exists with the given name. If one is found, return it.
     # If none is found, create a new funder with the given name and return it.
     def get_funder(self, name):
         try:
-            if name == 'NSF':
-                name = 'National Science Foundation'
-            if name == 'NIH':
-                name = 'National Institutes of Health'
-            funder = Funder.objects.get(name=name)
+            funder_name = self.get_funder_name(name)
+            funder = Funder.objects.get(name=funder_name)
             return funder
         except:
             return None
