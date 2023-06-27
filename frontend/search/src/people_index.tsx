@@ -6,6 +6,7 @@ import PeopleTable from "./components/PeopleTable";
 import axios from "axios";
 import ModelSelect from "./components/ModelSelect";
 import { PeopleFilter, Facet } from "./components/PeopleFilter";
+import {SearchContext} from './search_context';
 
 const styles = {
     // See MUI Button CSS classes at https://mui.com/material-ui/api/button/
@@ -26,7 +27,7 @@ interface Person {
     institutions: string[]
 }
 
-interface AppState {
+interface PeopleState {
     totalCount: number
     search_in_progress: boolean
     data: Person[]
@@ -38,8 +39,14 @@ interface AppState {
 }
 
 interface Filter {
-    institution_name?: string
+    org_name?: string
     org_state?: string
+}
+
+interface PeopleTableProps {
+    keyword: string
+    data: Person[]
+    totalCount: number
 }
 
 let url = ''
@@ -51,22 +58,54 @@ if (process.env.NODE_ENV == 'production') {
     url = "http://127.0.0.1:8000"
 }
 
-class People extends Component<any, AppState> {
-    
-    state:AppState = {
-        totalCount: 0,
+class People extends Component<PeopleTableProps, PeopleState> {
+    static context = SearchContext;
+
+    state:PeopleState = {
+        totalCount: this.props.totalCount,
         search_in_progress: false,
-        data: [],
+        data: this.props.data,
         pageIndex: 0,
-        keyword: '',
+        keyword: this.props.keyword,
         url: url,
         filter: {},
         institution_names: []
     }
 
+    constructor(props:any) {
+        super(props)
+        this.pageChangeHandler = this.pageChangeHandler.bind(this)
+        this.filterChangeHandler = this.filterChangeHandler.bind(this)
+    }
+
     componentDidMount = () => {
         this.get_people_data()
-        this.get_institution_facet()
+    }
+
+    componentDidUpdate = (prevProps:PeopleTableProps) => {
+        if(this.props.keyword != prevProps.keyword) // Check if it's a new user, you can also use some unique property, like the ID  (this.props.user.id !== prevProps.user.id)
+        {
+            this.setState({
+                keyword: this.props.keyword
+            })
+        }
+        if(this.props.totalCount != prevProps.totalCount) // Check if it's a new user, you can also use some unique property, like the ID  (this.props.user.id !== prevProps.user.id)
+        {
+          this.setState({
+              totalCount: this.props.totalCount,
+              data: this.props.data,
+              keyword: this.props.keyword
+          })
+        }
+        if(this.props.data != prevProps.data) // Check if it's a new user, you can also use some unique property, like the ID  (this.props.user.id !== prevProps.user.id)
+        {
+          this.setState({
+              totalCount: this.props.totalCount,
+              data: this.props.data,
+              keyword: this.props.keyword
+          })
+        }
+
     }
 
     get_institution_facet() {
@@ -77,6 +116,9 @@ class People extends Component<any, AppState> {
     }
 
     get_people_data = (kw?:string) => {
+        kw = this.props.keyword;
+        console.log('people...kw = ')
+        console.log(kw)
         this.setState({
             search_in_progress: true
         })
@@ -95,12 +137,18 @@ class People extends Component<any, AppState> {
         if (kw && kw.length > 0) {
             params.keyword = kw
         }
+
+        let property: keyof typeof this.state.filter
+        for (property in this.state.filter) {
+            if (this.state.filter[property]) {
+                params[property] = this.state.filter[property]
+            }
+        }
         axios.get(url, {params: params}).then(results => {
             this.setState({
                 search_in_progress: false
             })
             this.setState({ totalCount: results.data.hits.total.value })
-
             var newArray = results.data.hits.hits.map(function(val:any) {
                 return {
                     id: val['_source']['id'],
@@ -111,6 +159,10 @@ class People extends Component<any, AppState> {
                 }
             })
             this.setState({ data: newArray })
+            console.log('totalCount for people = ')
+            console.log(this.state.totalCount)
+            this.get_institution_facet()
+            
         })
     }
     
@@ -132,12 +184,15 @@ class People extends Component<any, AppState> {
             return
         }
         var currentFilter = this.state.filter
-        
-        if (fieldName == 'awardee_organization') {
+        console.log('Current filter for people = ')
+        console.log(currentFilter)
+        console.log('field name = ')
+        console.log(fieldName)
+        if (fieldName == 'org_name') {
             if (!value || value.length === 0) {
-                delete currentFilter.institution_name;
+                delete currentFilter.org_name;
             } else {
-                currentFilter['institution_name'] = value
+                currentFilter['org_name'] = value
             }
         }
         
@@ -156,6 +211,7 @@ class People extends Component<any, AppState> {
     render() {
         return (
             <div>
+                <br/>
                 <div className='flex-container'>
                     {
                         this.state.search_in_progress == false ? 

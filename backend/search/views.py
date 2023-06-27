@@ -261,7 +261,7 @@ def search_publications(request):
     
     keyword = request.GET.get('keyword', None)
     doi = request.GET.get('doi', None)
-    author_name = request.GET.get('pi_name', None)
+    author_name = request.GET.get('author_name', None)
 
     query = {
         'size': size,
@@ -339,6 +339,59 @@ def search_publications(request):
 
     return JsonResponse(response)
 
+def get_pub_author_facet(request):
+    client = OpenSearch(
+        hosts = [{'host': settings.OPENSEARCH_URL, 'port': 443}],
+        use_ssl = True,
+        verify_certs = True,
+    )
+
+    query = {
+        "size": 0,
+        "aggs" : {
+            "patterns" : {
+                "terms" : { 
+                    "field" : "authors.full_name.keyword",
+                    "size": 10000,
+                    "order": { "_key" : "asc" }
+                }
+            }
+        }
+    }
+    response = client.search(
+        body = query,
+        index = 'publication_index',
+    )
+
+    return JsonResponse(response)
+
+
+def get_dataset_author_facet(request):
+    client = OpenSearch(
+        hosts = [{'host': settings.OPENSEARCH_URL, 'port': 443}],
+        use_ssl = True,
+        verify_certs = True,
+    )
+
+    query = {
+        "size": 0,
+        "aggs" : {
+            "patterns" : {
+                "terms" : { 
+                    "field" : "authors.full_name.keyword",
+                    "size": 10000,
+                    "order": { "_key" : "asc" }
+                }
+            }
+        }
+    }
+    response = client.search(
+        body = query,
+        index = 'dataset_index',
+    )
+
+    return JsonResponse(response)
+    
 def get_people_facet_by_field(request):
     field_name = request.GET.get('field', None)
     client = OpenSearch(
@@ -378,7 +431,6 @@ def search_people(request):
     query = {
         'size': size,
         'from': start,
-        'scroll': '1m',
         'query': {
             'bool': {
                 'must': [],
@@ -410,7 +462,7 @@ def search_people(request):
         query['query']['bool']['must'].append(
             { 
                 'match_phrase': { 
-                    'awardee_organization.name': affiliated_org_name
+                    'affiliations.name': affiliated_org_name
                 }
             },
         )
@@ -424,7 +476,7 @@ def search_people(request):
     response = client.search(
         body = query,
         index = 'person_index',
-        scroll = '1s'
+        scroll = '1m'
     )
 
     return JsonResponse(response)
@@ -437,6 +489,7 @@ def search_datasets(request):
     # Get filter/search criteria from request
     keyword = request.GET.get('keyword', None)
     mime_type = request.GET.get('mime_type', None)
+    author_name = request.GET.get('author_name', None)
 
     query = {
         'size': size,
@@ -470,6 +523,22 @@ def search_datasets(request):
             }
         })
 
+    if author_name:  
+        if 'match_phrase' in query:
+               query['query']['bool']['must']['match_phrase'].append(
+                   {
+                       'authors.full_name': author_name
+                    }
+               )
+        else:
+            query['query']['bool']['must'].append(
+            {
+                'match_phrase': {
+                    'authors.full_name': author_name
+                }
+            }
+        )
+
     if mime_type:  
         query['query']['bool']['must'].append(
         {
@@ -492,7 +561,8 @@ def search_datasets(request):
     
     response = client.search(
         body = query,
-        index = 'dataset_index'
+        index = 'dataset_index',
+        scroll='1m'
     )
 
     return JsonResponse(response)

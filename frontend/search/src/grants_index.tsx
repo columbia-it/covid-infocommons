@@ -32,7 +32,7 @@ interface Grant {
     awardee_org: string
 }
 
-interface AppState {
+interface GrantsState {
     data: Grant[]
     url: string
     totalCount: number
@@ -69,19 +69,25 @@ const styles = {
     },
 };
 
-class Grants extends Component<any, AppState> {
+interface GrantTableProps {
+    keyword: string,
+    data: Grant[]
+    totalCount: number
+}
+
+class Grants extends Component<GrantTableProps, GrantsState> {
     static context = SearchContext;
-    state:AppState = {
-        data: [],
+    state:GrantsState = {
+        data: this.props.data,
         url: url,
-        totalCount: 0,
+        totalCount: this.props.totalCount,
         pageIndex: 0,
         awardee_org_names: [],
         funder_divisions: [],
         pi_names: [],
         po_names: [],
         //keyword: (window as any)['keywords'],
-        keyword: '',
+        keyword: this.props.keyword,
         filter: {},
         funder_names: [],
         search_in_progress: false
@@ -97,6 +103,33 @@ class Grants extends Component<any, AppState> {
     componentDidMount = () => {
         this.get_grants_data()
     }
+
+    componentDidUpdate = (prevProps:GrantTableProps) => {
+        if(this.props.keyword != prevProps.keyword) // Check if it's a new user, you can also use some unique property, like the ID  (this.props.user.id !== prevProps.user.id)
+        {
+            this.setState({
+                keyword: this.props.keyword
+            })
+        }
+        if(this.props.totalCount != prevProps.totalCount) // Check if it's a new user, you can also use some unique property, like the ID  (this.props.user.id !== prevProps.user.id)
+        {
+          this.setState({
+              totalCount: this.props.totalCount,
+              data: this.props.data,
+              keyword: this.props.keyword
+          })
+        }
+        if(this.props.data != prevProps.data) // Check if it's a new user, you can also use some unique property, like the ID  (this.props.user.id !== prevProps.user.id)
+        {
+          this.setState({
+              totalCount: this.props.totalCount,
+              data: this.props.data,
+              keyword: this.props.keyword
+          })
+        }
+
+    }
+
 
     get_org_name_facet() {
         var url = this.state.url.concat('/search/facets?field=awardee_organization.name')
@@ -232,13 +265,12 @@ class Grants extends Component<any, AppState> {
                 currentFilter['funder_name'] = value
             }
         }
-        console.log(currentFilter)
         this.setState({filter: currentFilter})
         this.get_grants_data()
     }
 
     get_grants_data = (kw?:string) => {
-        kw = this.context;
+        kw = this.props.keyword;
         this.setState({
             search_in_progress: true
         })
@@ -453,13 +485,14 @@ class Grants extends Component<any, AppState> {
                     <div className='flex-container'>
                         <div className='flex-child'>
                         <GrantsTable
+                            paging={ true }
                             totalCount={ this.state.totalCount } 
                             data={ this.state.data} 
                             url={ this.state.url }
-                            pageChangeHandler={ this.pageChangeHandler }
                             pageIndex={ this.state.pageIndex }
                             keyword={ this.state.keyword }
-                            paging={ true }
+                            pageChangeHandler={ this.pageChangeHandler }
+
                         />
                     </div>
                     <div className='flex-child'>

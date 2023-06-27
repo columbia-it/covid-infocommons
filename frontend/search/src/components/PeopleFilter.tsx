@@ -1,4 +1,4 @@
-import {Component} from "react";
+import { Component } from "react";
 import Accordion from '@mui/material/Accordion';
 import AccordionDetails from '@mui/material/AccordionDetails';
 import AccordionSummary from '@mui/material/AccordionSummary';
@@ -27,8 +27,8 @@ interface PeopleFilterProps {
 }
 
 interface PeopleFilterState {
-    institution_name?: string | null
-    region?: string | null    
+    org_name?: string | null
+    org_state?: string | null    
     clearSelectedValue: boolean
 }
 
@@ -36,16 +36,16 @@ class PeopleFilter extends Component<PeopleFilterProps, PeopleFilterState> {
     constructor(props:PeopleFilterProps) {
         super(props)
         this.state = {
-            institution_name: null,
-            region: null,
+            org_name: null,
+            org_state: null,
             clearSelectedValue: false
         }
         this.clearFilter = this.clearFilter.bind(this)
     }
 
     clearFilter() {
-        this.setState( {institution_name: ''} )
-        this.setState( {region: ''} )
+        this.setState( {org_name: ''} )
+        this.setState( {org_state: ''} )
         this.props.filterChangeHandler('', '', true)
     }
     render() {
@@ -71,15 +71,15 @@ class PeopleFilter extends Component<PeopleFilterProps, PeopleFilterState> {
                     <AccordionDetails>
                         <Autocomplete
                             id="org_selector"
-                            value={ this.state.institution_name }
+                            value={ this.state.org_name }
                             options={ this.props.institution_names.map((option) => option.key) }
                             onInputChange={(event, value) => {
-                                this.setState({institution_name: value})
-                                this.props.filterChangeHandler('awardee_organization', value, false)
+                                this.setState({org_name: value})
+                                this.props.filterChangeHandler('org_name', value, false)
                             }}
                             onChange={ (event, value) => {
-                                this.setState({institution_name: value})
-                                this.props.filterChangeHandler('awardee_organization', value, false)
+                                this.setState({org_name: value})
+                                this.props.filterChangeHandler('org_name', value, false)
                             }}
                             clearOnBlur={ false }
                             renderInput={(params) => 
@@ -100,14 +100,14 @@ class PeopleFilter extends Component<PeopleFilterProps, PeopleFilterState> {
                     <AccordionDetails>
                         <Autocomplete
                             id="state_selector"
-                            value={ this.state.region }
+                            value={ this.state.org_state }
                             options={ regionData.map((option) => option.shortCode) }
                             onInputChange={(event, value) => {
-                                this.setState({region: value})
+                                this.setState({org_state: value})
                                 this.props.filterChangeHandler('org_state', value, false)
                             }}
                             onChange={ (event, value) => {
-                                this.setState({region: value})
+                                this.setState({org_state: value})
                                 this.props.filterChangeHandler('org_state', value, false)
                             }}
                             clearOnBlur={ false }

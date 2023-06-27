@@ -64,9 +64,14 @@ class PeopleTable extends Component<PeopleTableProps> {
 
     render() {
         return (
+            <div>
             <MaterialTable
                 data={ this.props.data }
+                page={ this.props.pageIndex }
                 totalCount={ this.props.totalCount }
+                onChangePage={ (page, pageSize) => {
+                    if (this.props.pageChangeHandler) this.props.pageChangeHandler(page, pageSize); 
+                } }
                 columns={[
                     {
                         title: "Name", 
@@ -87,16 +92,12 @@ class PeopleTable extends Component<PeopleTableProps> {
                         title: 'Institutions',
                         field: 'affiliations',
                         render: (row: any) => {
-                            console.log('row.affiliations = ')
-                            console.log(row.affiliations)
                             let org_names = []
-                            for (let i = 0; i < row.affiliations.length; i++) {
-                                console.log('row.affiliations[i] = ')
-                                console.log(row.affiliations[i])
-                                org_names.push(row.affiliations[i]['name'])
+                            if (row.affiliations) {
+                                for (let i = 0; i < row.affiliations.length; i++) {
+                                    org_names.push(row.affiliations[i]['name'])
+                                }
                             }
-                            console.log('org names = ')
-                            console.log(org_names)
                             return (
                                 <div>
                                     { org_names }
@@ -107,7 +108,7 @@ class PeopleTable extends Component<PeopleTableProps> {
                 ]}
                 options={
                     { 
-                        paging: this.props.paging ,
+                        paging: this.props.paging,
                         showTitle: false,
                         search: false,
                         pageSize: 20,
@@ -122,6 +123,7 @@ class PeopleTable extends Component<PeopleTableProps> {
             >
 
             </MaterialTable>
+            </div>
         )}
 }
 

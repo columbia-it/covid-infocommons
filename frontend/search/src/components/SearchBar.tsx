@@ -29,17 +29,12 @@ class SearchBar extends React.Component<any, SearchState> {
     }
 
     searchHandler = (event:any) => {
-        console.log('---------')
-        console.log(this.context);
-        console.log(this.state.keyword)
         event.preventDefault()
         const keyword = (document.getElementById('outlined-search') as HTMLInputElement).value;
         this.setState({'keyword': keyword})
         //this.get_grants_data(keyword)
     }
     render() {
-        console.log('///////')
-        console.log(this.state.keyword)
         return (
             <SearchContext.Provider value={{keyword: this.state.keyword}}>
 

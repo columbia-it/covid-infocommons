@@ -23,35 +23,39 @@ type GrantsTableProps = {
     paging: boolean
 }
 
-function PatchedPagination(props: TablePaginationProps) {
-  const {
-    ActionsComponent,
-    onChangePage,
-    onChangeRowsPerPage,
-    ...tablePaginationProps
-  } = props;
-
-  return (
-    <TablePagination
-      {...tablePaginationProps}
-      // @ts-expect-error onChangePage was renamed to onPageChange
-      onPageChange={onChangePage}
-      onRowsPerPageChange={onChangeRowsPerPage}
-      ActionsComponent={(subprops) => {
-        const { onPageChange, ...actionsComponentProps } = subprops;
-        return (
-          // @ts-expect-error ActionsComponent is provided by material-table
-          <ActionsComponent
-            {...actionsComponentProps}
-            onChangePage={onPageChange}
-          />
-        );
-      }}
-    />
-  );
-}
-
 class GrantsTable extends Component<GrantsTableProps> {
+
+    // PatchedPagination = (props: TablePaginationProps) => {
+    //     const {
+    //       ActionsComponent,
+    //       onChangePage,
+    //       onChangeRowsPerPage,
+    //       ...tablePaginationProps
+    //     } = props;
+      
+    //     return (
+    //       <TablePagination
+    //         {...tablePaginationProps}
+    //         // @ts-expect-error onChangePage was renamed to onPageChange
+    //         onPageChange={(page:number, pageSize:number) => {
+    //             this.props.pageChangeHandler(page, pageSize)
+    //               //this.props.pageChangeHandler(page, pageSize)
+    //         }}
+    //         onRowsPerPageChange={onChangeRowsPerPage}
+    //         ActionsComponent={(subprops) => {
+    //           const { onPageChange, ...actionsComponentProps } = subprops;
+    //           return (
+    //             // @ts-expect-error ActionsComponent is provided by material-table
+    //             <ActionsComponent
+    //               {...actionsComponentProps}
+    //               onChangePage={onPageChange}
+    //             />
+    //           );
+    //         }}
+    //       />
+    //     );
+    //   }
+
     truncate = (str:string, n:number) => {
 		return str?.length > n ? str.substring(0, n - 1) + "..." : str;
 	}
@@ -112,13 +116,16 @@ class GrantsTable extends Component<GrantsTableProps> {
                 data={ this.props.data }
                 page={ this.props.pageIndex }
                 totalCount={ this.props.totalCount }
+                onChangePage={ (page, pageSize) => {
+                    if (this.props.pageChangeHandler) this.props.pageChangeHandler(page, pageSize); 
+                } }
                 columns={[
                     {
                         title: "Awards", 
                         field: "title",
-			width: "50%",
+			            width: "50%",
                         render: (row: any) => {
-                            let detail_url = this.props.url.concat('/grants/'+row.id)
+                            let detail_url = this.props.url.concat('/search/grants/'+row.id)
                             if (this.props.keyword) {
                                 detail_url = detail_url.concat('?keyword='+this.props.keyword)
                             }
@@ -173,17 +180,24 @@ class GrantsTable extends Component<GrantsTableProps> {
                 }
                 components={
                     {
-                        // Pagination: props => (
-                        //     <TablePagination
-                        //         {...props}
-                        //         rowsPerPageOptions={[]}
-                        //         onPageChange={ (page:number, pageSize:number) => {
-                        //             this.props.pageChangeHandler(page, pageSize)
-                        //         } }
-                        //     />
-                        // ),
-                        Pagination: PatchedPagination
+                        Pagination: props => (
+                            <TablePagination
+                                {...props}
+                                rowsPerPageOptions={[]}
+                            />
+                        ),
                     }
+                    // {
+                    //     Pagination: props => (
+                    //         <TablePagination
+                    //             {...props}
+                    //             rowsPerPageOptions={[]}
+                    //             onPageChange={ (page:number, pageSize:number) => {
+                    //                 this.props.pageChangeHandler(page, pageSize)
+                    //             } }
+                    //         />
+                    //     ),
+                        //Pagination: PatchedPagination
                 }
             />
             </div>

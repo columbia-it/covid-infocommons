@@ -23,7 +23,7 @@ from django.contrib.auth.views import LoginView
 urlpatterns = [
     path('admin/', admin.site.urls),
     path('grants/', index, name='index'),
-    path('grants/<int:grant_id>', detail),
+    path('search/grants/<int:grant_id>', detail),
     path('search/pi/<int:pi_id>', pi_detail),
     path('v1/', include('apis.urls')),
     path('survey/', include('pi_survey.urls')),
