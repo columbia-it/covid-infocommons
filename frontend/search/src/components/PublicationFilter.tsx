@@ -62,7 +62,7 @@ class PublicationFilter extends Component<PublicationFilterProps, PublicationFil
                             </AccordionSummary>
                             <AccordionDetails>
                                 <Autocomplete
-                                    id="author_selector"
+                                    id="publication_author_selector"
                                     value={ this.state.author_name }
                                     options={ this.props.author_names.map((option) => option.key) }
                                     onInputChange={(event, value) => {
@@ -90,4 +90,4 @@ class PublicationFilter extends Component<PublicationFilterProps, PublicationFil
     }
 }
 
-export {PublicationFilter, Facet};
+export { PublicationFilter, Facet };

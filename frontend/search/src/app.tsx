@@ -210,8 +210,6 @@ class App extends Component<any, AppState> {
           }
         })
         this.setState({ publications: newArray })
-        console.log('totalCount for publications = ')
-        console.log(this.state.total_publications)
         this.get_datasets()
     })
   }

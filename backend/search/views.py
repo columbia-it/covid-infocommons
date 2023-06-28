@@ -526,9 +526,7 @@ def search_datasets(request):
                     'title', 
                     'mime_type', 
                     'keywords', 
-                    'principal_investigator.full_name',
-                    'other_investigators.full_name',
-                    'awardee_organization.name'
+                    'authors.full_name'
                 ]
             }
         })
@@ -562,12 +560,6 @@ def search_datasets(request):
         use_ssl = True,
         verify_certs = True,
     )
-
-    query = {
-        'query': {
-            'match_all': {}
-        }
-    }
     
     response = client.search(
         body = query,

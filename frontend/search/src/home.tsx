@@ -275,8 +275,6 @@ class Home extends Component<HomeProps, HomeState> {
 
     get_datasets = (kw?:string) => {
         kw = this.props.keyword;
-        console.log('dataset...kw = ')
-        console.log(kw)
         var url = this.state.url.concat('/search/datasets')
         var params: { [key: string]: any } = {};
 

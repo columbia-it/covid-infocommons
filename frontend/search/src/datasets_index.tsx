@@ -97,7 +97,6 @@ class Datasets extends Component<DatasetsTableProps, DatasetsState> {
             }
         }
         
-        console.log(currentFilter)
         this.setState({filter: currentFilter})
         this.get_datasets()
     }
@@ -121,6 +120,12 @@ class Datasets extends Component<DatasetsTableProps, DatasetsState> {
         }
         if (kw && kw.length > 0) {
             params.keyword = kw
+        }
+        let property: keyof typeof this.state.filter
+        for (property in this.state.filter) {
+            if (this.state.filter[property]) {
+                params[property] = this.state.filter[property]
+            }
         }
         axios.get(url, {params: params}).then(results => {
             this.setState({

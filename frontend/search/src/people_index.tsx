@@ -179,8 +179,6 @@ class People extends Component<PeopleTableProps, PeopleState> {
             return
         }
         var currentFilter = this.state.filter
-        console.log('Field name in PeopleFilter = ')
-        console.log(fieldName)
         if (fieldName == 'org_name') {
             if (!value || value.length === 0) {
                 delete currentFilter.org_name;
@@ -196,7 +194,6 @@ class People extends Component<PeopleTableProps, PeopleState> {
                 currentFilter['org_state'] = value
             }
         }
-        console.log(currentFilter)
         this.setState({filter: currentFilter})
         this.get_people_data()
     }
