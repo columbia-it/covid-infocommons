@@ -72,6 +72,10 @@ class DatasetsTable extends Component<DatasetsTableProps> {
                                     for (let i = 0; i < row.authors.length; i++) {
                                         author_names.push(row.authors[i]['full_name'])
                                     }
+                                    if (author_names.length > 1) {
+                                        let separated_names = author_names.join(', ');
+                                        author_names = [separated_names];
+                                    }
                                 }
                                 return ( 
                                     <div>
