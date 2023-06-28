@@ -117,8 +117,6 @@ class People extends Component<PeopleTableProps, PeopleState> {
 
     get_people_data = (kw?:string) => {
         kw = this.props.keyword;
-        console.log('people...kw = ')
-        console.log(kw)
         this.setState({
             search_in_progress: true
         })
@@ -159,10 +157,7 @@ class People extends Component<PeopleTableProps, PeopleState> {
                 }
             })
             this.setState({ data: newArray })
-            console.log('totalCount for people = ')
-            console.log(this.state.totalCount)
             this.get_institution_facet()
-            
         })
     }
     
@@ -184,9 +179,7 @@ class People extends Component<PeopleTableProps, PeopleState> {
             return
         }
         var currentFilter = this.state.filter
-        console.log('Current filter for people = ')
-        console.log(currentFilter)
-        console.log('field name = ')
+        console.log('Field name in PeopleFilter = ')
         console.log(fieldName)
         if (fieldName == 'org_name') {
             if (!value || value.length === 0) {
@@ -215,22 +208,23 @@ class People extends Component<PeopleTableProps, PeopleState> {
                 <div className='flex-container'>
                     {
                         this.state.search_in_progress == false ? 
-                        <div className='results-row'>
+                        <div className='results-row flex-child'>
                                 Showing <span style={{fontWeight: 'bold', color: '#000000'}}>{ this.state.totalCount }</span> results.
                         </div> 
-                        : <div className='results-row'>Waiting for results...
+                        : <div className='results-row flex-child'>Waiting for results...
                         </div> 
                     } 
-                    <div><ModelSelect
-                        selected_model={ 2 }
-                    /></div>
-                    <div>                            
+                    <div className="flex-child">                            
                             <Button sx={styles}
 	                            onClick={ this.exportToCsv } 
                                 className='download-button' 
                                 variant="contained"
                                 endIcon={ <DownloadIcon /> }>Download Results as CSV (up to 1,000 people)</Button>
                     </div>
+                    <div className="flex-child">
+                        <ModelSelect
+                        selected_model={ 2 }
+                    /></div>
                 </div>
                 <br/>
                 <div>  

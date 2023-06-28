@@ -23,6 +23,7 @@ type GrantsTableProps = {
     paging: boolean
 }
 
+
 class GrantsTable extends Component<GrantsTableProps> {
 
     // PatchedPagination = (props: TablePaginationProps) => {
@@ -177,27 +178,6 @@ class GrantsTable extends Component<GrantsTableProps> {
                         pageSize: 20,
                         exportAllData: false
                     }
-                }
-                components={
-                    {
-                        Pagination: props => (
-                            <TablePagination
-                                {...props}
-                                rowsPerPageOptions={[]}
-                            />
-                        ),
-                    }
-                    // {
-                    //     Pagination: props => (
-                    //         <TablePagination
-                    //             {...props}
-                    //             rowsPerPageOptions={[]}
-                    //             onPageChange={ (page:number, pageSize:number) => {
-                    //                 this.props.pageChangeHandler(page, pageSize)
-                    //             } }
-                    //         />
-                    //     ),
-                        //Pagination: PatchedPagination
                 }
             />
             </div>

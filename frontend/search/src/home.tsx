@@ -152,8 +152,8 @@ class Home extends Component<HomeProps, HomeState> {
         if(this.props.datasets != prevProps.datasets) // Check if datasets have changed
         {
           this.setState({
-              total_publications: this.props.total_datasets,
-              publications: this.props.datasets,
+              total_datasets: this.props.total_datasets,
+              datasets: this.props.datasets,
               keyword: this.props.keyword
           })
         }
@@ -161,8 +161,8 @@ class Home extends Component<HomeProps, HomeState> {
         if(this.props.total_datasets != prevProps.total_datasets) // Check if the total number of datasets has changed
         {
           this.setState({
-              total_publications: this.props.total_datasets,
-              publications: this.props.datasets,
+              total_datasets: this.props.total_datasets,
+              datasets: this.props.datasets,
               keyword: this.props.keyword
           })
         }
@@ -309,8 +309,11 @@ class Home extends Component<HomeProps, HomeState> {
             <div>
                 <div className='flex-container'>
                     <div className='flex-child'></div>
-                    <ModelSelect
-                        selected_model={ 0 }/>
+                    <div className='flex-child'></div>
+                    <div className='flex-child'>
+                        <ModelSelect
+                            selected_model={ 0 }/>
+                    </div>
                 </div>
                 <div>
                     <GrantsTable

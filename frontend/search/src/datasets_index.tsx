@@ -104,8 +104,6 @@ class Datasets extends Component<DatasetsTableProps, DatasetsState> {
 
     get_datasets = (kw?:string) => {
         kw = this.props.keyword;
-        console.log('dataset...kw = ')
-        console.log(kw)
         this.setState({
             search_in_progress: true
         })
@@ -186,20 +184,21 @@ class Datasets extends Component<DatasetsTableProps, DatasetsState> {
                 <div className='flex-container'>
                     {
                         this.state.search_in_progress == false ? 
-                        <div className='results-row'>
+                        <div className='results-row flex-child'>
                                 Showing <span style={{fontWeight: 'bold', color: '#000000'}}>{ this.state.totalCount }</span> results.
                         </div> 
-                        : <div className='results-row'>Waiting for results...
+                        : <div className='results-row flex-child'>Waiting for results...
                         </div> 
                     }
-                    <div className='flex-child'><ModelSelect
+                    <div className='flex-child'></div>
+                    <div className='flex-child'>
+                        <ModelSelect
                             selected_model={ 4 }
                         />
                     </div>
-                    <div className='flex-child'></div>
                 </div>
                 <div>  
-                    <div className='flex-container'>
+                    <div className='flex-table-container'>
                         <div className='flex-child'>
                             <DatasetsTable
                                 totalCount={ this.state.totalCount } 

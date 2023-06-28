@@ -463,27 +463,27 @@ class Grants extends Component<GrantTableProps, GrantsState> {
                 <div className='flex-container'>
                     {
                         this.state.search_in_progress == false ? 
-                        <div className='results-row'>
+                        <div className='results-row flex-child'>
                                 Showing <span style={{fontWeight: 'bold', color: '#000000'}}>{ this.state.totalCount }</span> results.
                         </div> 
-                        : <div className='results-row'>Waiting for results...
+                        : <div className='results-row flex-child'>Waiting for results...
                         </div> 
                     } 
-                    <div><ModelSelect
-                            selected_model={ 1 }/>
-                    </div>
-                    <div>                            
-                            <Button sx={styles}
+                    <div className="flex-child">                            
+                        <Button sx={styles}
 	                            onClick={ this.exportToCsv } 
                                 className='download-button' 
                                 variant="contained"
                                 endIcon={ <DownloadIcon /> }>Download Results as CSV (up to 1,000 awards)</Button>
                     </div>
+                    <div className='flex-child'><ModelSelect
+                            selected_model={ 1 }/>
+                    </div>
                 </div>
                 <br/>
                 <div>  
-                    <div className='flex-container'>
-                        <div className='flex-child'>
+                    <div className='flex-table-container'>
+                        <div className='flex-table-child'>
                         <GrantsTable
                             paging={ true }
                             totalCount={ this.state.totalCount } 
@@ -495,7 +495,7 @@ class Grants extends Component<GrantTableProps, GrantsState> {
 
                         />
                     </div>
-                    <div className='flex-child'>
+                    <div className='flex-table-child'>
                         <div>
                             <GrantsFilter
                                 awardee_org_names={ this.state.awardee_org_names }

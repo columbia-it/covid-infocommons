@@ -183,8 +183,6 @@ class App extends Component<any, AppState> {
 
   get_publications = (kw?:string) => {
     kw = this.props.keyword;
-    console.log('pubs...kw = ')
-    console.log(kw)
     
     var url = this.state.url.concat('/search/publications')
     var params: { [key: string]: any } = {};
@@ -220,8 +218,6 @@ class App extends Component<any, AppState> {
 
   get_datasets = (kw?:string) => {
     kw = this.props.keyword;
-    console.log('dataset...kw = ')
-    console.log(kw)
     
     var url = this.state.url.concat('/search/datasets')
     var params: { [key: string]: any } = {};

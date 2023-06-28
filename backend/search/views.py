@@ -427,6 +427,7 @@ def search_people(request):
     # Get filter/search criteria from request
     keyword = request.GET.get('keyword', None)
     affiliated_org_name = request.GET.get('org_name', None)
+    affiliated_org_state = request.GET.get('org_state', None)
 
     query = {
         'size': size,
@@ -465,6 +466,15 @@ def search_people(request):
                     'affiliations.name': affiliated_org_name
                 }
             },
+        )
+
+    if affiliated_org_state:
+        query['query']['bool']['must'].append(
+            {
+                'match': {
+                    'affiliations.state': affiliated_org_state
+                }
+            }
         )
       
     client = OpenSearch(

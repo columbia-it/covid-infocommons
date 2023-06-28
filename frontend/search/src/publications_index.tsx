@@ -113,8 +113,6 @@ class Publications extends Component<PublicationsTableProps, PublicationsState> 
 
     get_publications_data = (kw?:string) => {
         kw = this.props.keyword;
-        console.log('pubs...kw = ')
-        console.log(kw)
         this.setState({
             search_in_progress: true
         })
@@ -189,16 +187,13 @@ class Publications extends Component<PublicationsTableProps, PublicationsState> 
                 <div className='flex-container'>
                     {
                         this.state.search_in_progress == false ? 
-                        <div className='results-row'>
+                        <div className='results-row flex-child'>
                                 Showing <span style={{fontWeight: 'bold', color: '#000000'}}>{ this.state.totalCount }</span> results.
                         </div> 
-                        : <div className='results-row'>Waiting for results...
+                        : <div className='results-row flex-child'>Waiting for results...
                         </div> 
                     } 
-                    <div><ModelSelect
-                        selected_model={ 3 }
-                    /></div>
-                    <div>
+                    <div className="flex-child">
                         <Button 
                             sx={styles}
 	                        onClick={ this.exportToCsv } 
@@ -206,6 +201,11 @@ class Publications extends Component<PublicationsTableProps, PublicationsState> 
                             variant="contained"
                             endIcon={ <DownloadIcon /> }>Download Results as CSV (up to 1,000 publications)</Button>
                     </div>
+                    <div className="flex-child">
+                        <ModelSelect
+                        selected_model={ 3 }
+                    /></div>
+                    
                 </div>
                 <br/>
                 <div>  

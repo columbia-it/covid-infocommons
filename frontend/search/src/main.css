@@ -200,7 +200,6 @@ header h1 {
 }
 
 .download-button {
-  width: 15%;
   height: 40px;
 }
 
@@ -221,16 +220,17 @@ header h1 {
 }
 
 .flex-child {
-  display: inline-block;
+  flex-grow: 1;
 }
 
-.flex-child:first-child {
-  width: 70%;
+.flex-table-container {
+  display: flex;
 }
 
-.flex-child:not(:first-child)  {
-  flex: 1;
+.flex-table-child {
+  flex-grow: 1;
 }
+
 
 .filter-div {
   background-color: aqua;

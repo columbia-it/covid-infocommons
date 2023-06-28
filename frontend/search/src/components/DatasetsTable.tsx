@@ -49,15 +49,13 @@ class DatasetsTable extends Component<DatasetsTableProps> {
                             field: "title",
                             width: "60%",
                             render: (row: any) => {
-                                console.log('....')
-                                console.log(row.doi)
                                 return (
                                     <div>
                                         <div>
                                             { row.title }
                                         </div>
                                         <div className="titleLink">
-                                            <MaterialLink underline="hover" href={ row.doi }>{ row.doi }</MaterialLink>
+                                            <MaterialLink target="_blank" underline="hover" href={ row.doi }>{ row.doi }</MaterialLink>
                                         </div>
                                     </div>)
                             }
