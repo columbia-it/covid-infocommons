@@ -57,7 +57,7 @@ class DatasetsTable extends Component<DatasetsTableProps> {
                                             { row.title }
                                         </div>
                                         <div className="titleLink">
-                                            <MaterialLink underline="hover" href={ row.doi }>{ row.doi }</MaterialLink>
+                                            <MaterialLink underline="hover" href={ row.doi } target="_blank">{ row.doi }</MaterialLink>
                                         </div>
                                     </div>)
                             }
