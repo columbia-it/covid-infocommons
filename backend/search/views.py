@@ -5,10 +5,11 @@ from dateutil import parser
 from django.shortcuts import render, get_object_or_404
 from apis.models import Person, Grant, Asset
 
-
+# home page
 def index(request):
     return render(request, 'index.html', {'keywords': request.GET.get('keywords', '')})
 
+# PI details page
 def pi_detail(request, pi_id): 
     keyword = request.GET.get('keyword', '')
     person = get_object_or_404(Person, pk=pi_id)
@@ -23,7 +24,7 @@ def pi_detail(request, pi_id):
             videos.append(asset.download_path)
     return render(request, 'person_detail.html', {'person': person, 'grants': grants, 'keyword': keyword, 'profile_pic': profile_pic, 'videos': videos })
 
-
+# Get facet by field name in grants index
 def get_facet_by_field(request) :
     field_name = request.GET.get('field', None)
     client = OpenSearch(
@@ -52,11 +53,26 @@ def get_facet_by_field(request) :
 
     return JsonResponse(response)
 
+# Get total number of grants in grants index
+def get_grants_count(request):
+    client = OpenSearch(
+        hosts = [{'host': settings.OPENSEARCH_URL, 'port': 443}],
+        use_ssl = True,
+        verify_certs = True,
+    )
+
+    response = client.count(
+        body = None,
+        index = 'grant_index'
+    )
+
+    return JsonResponse(response)
 
 # Handle the request to search grants with keyword and/or filter values
 def search_grants(request):
     start = request.GET.get('from', 0)
     size = request.GET.get('size', 20)
+    get_count = request.GET.get('get_count', False)
 
     # Get filter/search criteria from request
     keyword = request.GET.get('keyword', None)
@@ -247,11 +263,19 @@ def search_grants(request):
         verify_certs = True,
     )
 
-    response = client.search(
-        body = query,
-        index = 'grant_index'
-    )
-
+    if not get_count:
+        response = client.search(
+            body = query,
+            index = 'grant_index'
+        )
+    else:
+        query.pop('size')
+        query.pop('from')
+        query.pop('sort')
+        response = client.count(
+            body = query,
+            index = 'grant_index'
+        )
     return JsonResponse(response)
 
 # Handle the request to search publications with keyword and/or filter values
@@ -339,6 +363,7 @@ def search_publications(request):
 
     return JsonResponse(response)
 
+# Get author facet from publications index
 def get_pub_author_facet(request):
     client = OpenSearch(
         hosts = [{'host': settings.OPENSEARCH_URL, 'port': 443}],
@@ -365,7 +390,7 @@ def get_pub_author_facet(request):
 
     return JsonResponse(response)
 
-
+# Get author facet from dataset index
 def get_dataset_author_facet(request):
     client = OpenSearch(
         hosts = [{'host': settings.OPENSEARCH_URL, 'port': 443}],
@@ -391,7 +416,8 @@ def get_dataset_author_facet(request):
     )
 
     return JsonResponse(response)
-    
+
+# Get full names facet from person index  
 def get_people_facet_by_field(request):
     field_name = request.GET.get('field', None)
     client = OpenSearch(
@@ -406,7 +432,7 @@ def get_people_facet_by_field(request):
             "patterns" : {
                 "terms" : { 
                     "field" : "{}.keyword".format(field_name),
-                    "size": 10000,
+                    "size": 50000,
                     "order": { "_key" : "asc" }
                 }
             }
@@ -420,10 +446,26 @@ def get_people_facet_by_field(request):
 
     return JsonResponse(response)
     
+# Get total number of people from people index
+def get_people_count(request):
+    client = OpenSearch(
+        hosts = [{'host': settings.OPENSEARCH_URL, 'port': 443}],
+        use_ssl = True,
+        verify_certs = True,
+    )
+
+    response = client.count(
+        body = None,
+        index = 'person_index'
+    )
+
+    return JsonResponse(response)
+
+# Get search results using person index
 def search_people(request):
     start = request.GET.get('from', 0)
     size = request.GET.get('size', 20)
-
+    get_count = request.GET.get('get_count', False)
     # Get filter/search criteria from request
     keyword = request.GET.get('keyword', None)
     affiliated_org_name = request.GET.get('org_name', None)
@@ -483,11 +525,18 @@ def search_people(request):
         verify_certs = True,
     )
 
-    response = client.search(
-        body = query,
-        index = 'person_index',
-        scroll = '1m'
-    )
+    if not get_count:
+        response = client.search(
+            body = query,
+            index = 'person_index',
+        )
+    else:
+        query.pop('size')
+        query.pop('from')
+        response = client.count(
+            body = query,
+            index = 'person_index',
+        )
 
     return JsonResponse(response)
 
@@ -588,4 +637,3 @@ def search_assets(request):
     )
 
     return JsonResponse(response)
-

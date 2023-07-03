@@ -2,6 +2,7 @@ import { Component } from "react";
 import MaterialTable from "material-table";
 import { Link as MaterialLink} from '@mui/material';
 import Highlighter from 'react-highlight-words'
+import { TablePagination, TablePaginationProps } from '@material-ui/core';
 
 type Prop = {
     'title': string
@@ -16,10 +17,39 @@ type DatasetsTableProps = {
     pageIndex: number
     pageChangeHandler?: (page:number, pageSize: number) => void 
     paging: boolean
-
 }
 
 class DatasetsTable extends Component<DatasetsTableProps> {
+
+    PatchedPagination(props: TablePaginationProps) {
+        const {
+          ActionsComponent,
+          onChangePage,
+          onChangeRowsPerPage,
+          ...tablePaginationProps
+        } = props;
+      
+        return (
+          <TablePagination
+            {...tablePaginationProps}
+            // @ts-expect-error onChangePage was renamed to onPageChange
+            onPageChange={onChangePage}
+            onRowsPerPageChange={onChangeRowsPerPage}
+            rowsPerPageOptions={[]}
+            ActionsComponent={(subprops) => {
+              const { onPageChange, ...actionsComponentProps } = subprops;
+              return (
+                // @ts-expect-error ActionsComponent is provided by material-table
+                <ActionsComponent
+                  {...actionsComponentProps}
+                  onChangePage={onPageChange}
+                />
+              );
+            }}
+          />
+        );
+      }
+
     highlightText = (textToHighlight:string ) => {
         return (<Highlighter
             highlightStyle={{
@@ -84,11 +114,14 @@ class DatasetsTable extends Component<DatasetsTableProps> {
                             paging: this.props.paging, 
                             showTitle: false,
                             search: false,
-                            //exportButton: false,
+                            exportButton: false,
                             pageSize: 20,
                             exportAllData: false
                         }
                     }
+                    components={{
+                        Pagination: this.PatchedPagination,
+                    }}
                 >
 
                 </MaterialTable>

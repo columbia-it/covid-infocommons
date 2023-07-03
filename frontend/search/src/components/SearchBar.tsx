@@ -2,7 +2,7 @@ import React, { Component, useContext } from "react";
 import TextField from '@mui/material/TextField';
 //import { createContext } from "react";
 import Box from '@mui/material/Box';
-import {SearchContext} from '../search_context';
+import { SearchContext } from '../search_context';
 
 interface SearchState {
     keyword: string,
@@ -11,7 +11,6 @@ interface SearchState {
 }
   
 class SearchBar extends React.Component<any, SearchState> {
-    static context = SearchContext;
 
     state:SearchState = {
         keyword: '',
@@ -19,9 +18,7 @@ class SearchBar extends React.Component<any, SearchState> {
         totalCount: 0
     }
 
-
     enterHandler = (e:any) => {
-
         if (e.key === 'Enter') {
             e.preventDefault();
             //this.get_grants_data()
@@ -32,7 +29,6 @@ class SearchBar extends React.Component<any, SearchState> {
         event.preventDefault()
         const keyword = (document.getElementById('outlined-search') as HTMLInputElement).value;
         this.setState({'keyword': keyword})
-        //this.get_grants_data(keyword)
     }
     render() {
         return (

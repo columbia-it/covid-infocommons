@@ -90,4 +90,4 @@ class DatasetFilter extends Component<DatasetFilterProps, DatasetFilterState> {
     }
 }
 
-export { DatasetFilter, Facet};
+export { DatasetFilter, Facet };

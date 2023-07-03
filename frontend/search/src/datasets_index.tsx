@@ -55,8 +55,8 @@ if (process.env.NODE_ENV == 'production') {
     url = "http://127.0.0.1:8000"
 }
 
-class Datasets extends Component<DatasetsTableProps, DatasetsState> {
-
+class Datasets extends Component<any, DatasetsState> {
+    
     state:DatasetsState = {
         totalCount: this.props.totalCount,
         search_in_progress: false,
@@ -78,7 +78,6 @@ class Datasets extends Component<DatasetsTableProps, DatasetsState> {
         this.setState({
             pageIndex: page
         })
-        this.get_datasets()
     }
 
     filterChangeHandler(fieldName?:string, value?:any, reset?:boolean) {
@@ -159,12 +158,13 @@ class Datasets extends Component<DatasetsTableProps, DatasetsState> {
         this.get_datasets()
     }
 
-    componentDidUpdate = (prevProps:DatasetsTableProps) => {
+    componentDidUpdate = (prevProps: DatasetsTableProps, prevState: DatasetsState) => {
         if(this.props.keyword != prevProps.keyword) // Check if the search keyword has changed
         {
             this.setState({
                 keyword: this.props.keyword
             })
+            this.get_datasets()
         }
         if(this.props.data != prevProps.data) // Check if the datasets have changed
         {
@@ -172,6 +172,7 @@ class Datasets extends Component<DatasetsTableProps, DatasetsState> {
                 data: this.props.data,
                 totalCount: this.props.totalCount
             })
+            this.get_datasets()
         }
         if(this.props.totalCount != prevProps.totalCount) // Check if the total number of datasets has changed
         {
@@ -179,6 +180,14 @@ class Datasets extends Component<DatasetsTableProps, DatasetsState> {
                 data: this.props.data,
                 totalCount: this.props.totalCount
             })
+            this.get_datasets()
+        }
+        if(this.state.pageIndex != prevState.pageIndex) // Check if it's a new user, you can also use some unique property, like the ID  (this.props.user.id !== prevProps.user.id)
+        {
+          this.setState({
+              pageIndex: this.state.pageIndex
+          })
+          this.get_datasets()
         }
     }
 

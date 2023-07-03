@@ -1,12 +1,10 @@
 import { Component } from "react";
 import Button from '@mui/material/Button';
 import DownloadIcon from '@mui/icons-material/Download';
-import SearchBar from './components/SearchBar';
 import PeopleTable from "./components/PeopleTable";
 import axios from "axios";
 import ModelSelect from "./components/ModelSelect";
 import { PeopleFilter, Facet } from "./components/PeopleFilter";
-import {SearchContext} from './search_context';
 
 const styles = {
     // See MUI Button CSS classes at https://mui.com/material-ui/api/button/
@@ -45,8 +43,6 @@ interface Filter {
 
 interface PeopleTableProps {
     keyword: string
-    data: Person[]
-    totalCount: number
 }
 
 let url = ''
@@ -59,12 +55,11 @@ if (process.env.NODE_ENV == 'production') {
 }
 
 class People extends Component<PeopleTableProps, PeopleState> {
-    static context = SearchContext;
 
     state:PeopleState = {
-        totalCount: this.props.totalCount,
+        totalCount: 0,
         search_in_progress: false,
-        data: this.props.data,
+        data: [],
         pageIndex: 0,
         keyword: this.props.keyword,
         url: url,
@@ -82,30 +77,21 @@ class People extends Component<PeopleTableProps, PeopleState> {
         this.get_people_data()
     }
 
-    componentDidUpdate = (prevProps:PeopleTableProps) => {
-        if(this.props.keyword != prevProps.keyword) // Check if it's a new user, you can also use some unique property, like the ID  (this.props.user.id !== prevProps.user.id)
+    componentDidUpdate = (prevProps:PeopleTableProps, prevState:PeopleState) => {
+        if(this.props.keyword != prevProps.keyword) // Check if the keyword has changed
         {
             this.setState({
                 keyword: this.props.keyword
             })
+            this.get_people_data()
         }
-        if(this.props.totalCount != prevProps.totalCount) // Check if it's a new user, you can also use some unique property, like the ID  (this.props.user.id !== prevProps.user.id)
+        if(this.state.pageIndex != prevState.pageIndex) // Check if the selected page index has changed
         {
           this.setState({
-              totalCount: this.props.totalCount,
-              data: this.props.data,
-              keyword: this.props.keyword
+              pageIndex: this.state.pageIndex
           })
+          this.get_people_data()
         }
-        if(this.props.data != prevProps.data) // Check if it's a new user, you can also use some unique property, like the ID  (this.props.user.id !== prevProps.user.id)
-        {
-          this.setState({
-              totalCount: this.props.totalCount,
-              data: this.props.data,
-              keyword: this.props.keyword
-          })
-        }
-
     }
 
     get_institution_facet() {
@@ -142,22 +128,26 @@ class People extends Component<PeopleTableProps, PeopleState> {
                 params[property] = this.state.filter[property]
             }
         }
-        axios.get(url, {params: params}).then(results => {
-            this.setState({
-                search_in_progress: false
+        params['get_count'] = true
+        axios.get(url, {params: params}).then(count_result => {
+            this.setState({ totalCount: count_result.data.count })
+            delete params.get_count
+            axios.get(url, {params: params}).then(results => {
+                this.setState({
+                    search_in_progress: false
+                })
+                var newArray = results.data.hits.hits.map(function(val:any) {
+                    return {
+                        id: val['_source']['id'],
+                        name: val['_source']['full_name'],
+                        emails: val['_source']['emails'],
+                        private_emails: val['_source']['private_emails'],
+                        affiliations: val['_source']['affiliations']
+                    }   
+                })
+                this.setState({ data: newArray })
+                this.get_institution_facet()
             })
-            this.setState({ totalCount: results.data.hits.total.value })
-            var newArray = results.data.hits.hits.map(function(val:any) {
-                return {
-                    id: val['_source']['id'],
-                    name: val['_source']['full_name'],
-                    emails: val['_source']['emails'],
-                    private_emails: val['_source']['private_emails'],
-                    affiliations: val['_source']['affiliations']
-                }
-            })
-            this.setState({ data: newArray })
-            this.get_institution_facet()
         })
     }
     
@@ -165,7 +155,6 @@ class People extends Component<PeopleTableProps, PeopleState> {
         this.setState({
             pageIndex: page
         })
-        this.get_people_data()
     }
 
     exportToCsv = (event:any) => {
@@ -220,8 +209,9 @@ class People extends Component<PeopleTableProps, PeopleState> {
                     </div>
                     <div className="flex-child">
                         <ModelSelect
-                        selected_model={ 2 }
-                    /></div>
+                            selected_model={ 2 }
+                        />
+                    </div>
                 </div>
                 <br/>
                 <div>  

@@ -19,36 +19,37 @@ type PeopleTableProps = {
     paging: boolean
 }
 
-function PatchedPagination(props: TablePaginationProps) {
-    const {
-      ActionsComponent,
-      onChangePage,
-      onChangeRowsPerPage,
-      ...tablePaginationProps
-    } = props;
-  
-    return (
-      <TablePagination
-        {...tablePaginationProps}
-        // @ts-expect-error onChangePage was renamed to onPageChange
-        onPageChange={onChangePage}
-        onRowsPerPageChange={onChangeRowsPerPage}
-        ActionsComponent={(subprops) => {
-          const { onPageChange, ...actionsComponentProps } = subprops;
-          return (
-            // @ts-expect-error ActionsComponent is provided by material-table
-            <ActionsComponent
-              {...actionsComponentProps}
-              onChangePage={onPageChange}
-            />
-          );
-        }}
-      />
-    );
-  }
-
 class PeopleTable extends Component<PeopleTableProps> {
     
+    PatchedPagination(props: TablePaginationProps) {
+        const {
+          ActionsComponent,
+          onChangePage,
+          onChangeRowsPerPage,
+          ...tablePaginationProps
+        } = props;
+      
+        return (
+          <TablePagination
+            {...tablePaginationProps}
+            // @ts-expect-error onChangePage was renamed to onPageChange
+            onPageChange={onChangePage}
+            onRowsPerPageChange={onChangeRowsPerPage}
+            rowsPerPageOptions={[]}
+            ActionsComponent={(subprops) => {
+              const { onPageChange, ...actionsComponentProps } = subprops;
+              return (
+                // @ts-expect-error ActionsComponent is provided by material-table
+                <ActionsComponent
+                  {...actionsComponentProps}
+                  onChangePage={onPageChange}
+                />
+              );
+            }}
+          />
+        );
+      }
+
     highlightText = (textToHighlight:string ) => {
         return (<Highlighter
             highlightStyle={{
@@ -108,18 +109,17 @@ class PeopleTable extends Component<PeopleTableProps> {
                 ]}
                 options={
                     { 
-                        paging: this.props.paging,
+                        paging: this.props.paging, 
                         showTitle: false,
                         search: false,
+                        exportButton: false,
                         pageSize: 20,
                         exportAllData: false
                     }
                 }
-                components={
-                    {
-                        Pagination: PatchedPagination
-                    }
-                }
+                components={{
+                    Pagination: this.PatchedPagination,
+                }}
             >
 
             </MaterialTable>

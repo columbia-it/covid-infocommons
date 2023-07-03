@@ -19,8 +19,6 @@ const styles = {
 
 interface PublicationsTableProps {
     keyword: string
-    data: Publication[]
-    totalCount: number
 }
 
 interface Publication {
@@ -57,9 +55,9 @@ if (process.env.NODE_ENV == 'production') {
 class Publications extends Component<PublicationsTableProps, PublicationsState> {
 
     state:PublicationsState = {
-        totalCount: this.props.totalCount,
+        totalCount: 0,
         search_in_progress: false,
-        data: this.props.data,
+        data: [],
         pageIndex: 0,
         keyword: this.props.keyword,
         url: url,
@@ -77,26 +75,20 @@ class Publications extends Component<PublicationsTableProps, PublicationsState> 
         this.get_publications_data()
     }
 
-    componentDidUpdate = (prevProps:PublicationsTableProps) => {
-        if(this.props.keyword != prevProps.keyword) // Check if it's a new user, you can also use some unique property, like the ID  (this.props.user.id !== prevProps.user.id)
+    componentDidUpdate = (prevProps:PublicationsTableProps, prevState:PublicationsState) => {
+        if(this.props.keyword != prevProps.keyword) // Check if the keyword has changed
         {
             this.setState({
                 keyword: this.props.keyword
             })
+            this.get_publications_data()
         }
-        if(this.props.data != prevProps.data) // Check if the publications data has changed
+        if(this.state.pageIndex != prevState.pageIndex) // Check if it's a new user, you can also use some unique property, like the ID  (this.props.user.id !== prevProps.user.id)
         {
-            this.setState({
-                data: this.props.data,
-                totalCount: this.props.totalCount
-            })
-        }
-        if(this.props.totalCount != prevProps.totalCount) // Check if the total number of publications has changed
-        {
-            this.setState({
-                data: this.props.data,
-                totalCount: this.props.totalCount
-            })
+          this.setState({
+              pageIndex: this.state.pageIndex
+          })
+          this.get_publications_data()
         }
     }
 
@@ -108,7 +100,6 @@ class Publications extends Component<PublicationsTableProps, PublicationsState> 
         this.setState({
             pageIndex: page
         })
-        this.get_publications_data()
     }
 
     get_publications_data = (kw?:string) => {
@@ -208,9 +199,9 @@ class Publications extends Component<PublicationsTableProps, PublicationsState> 
                     </div>
                     <div className="flex-child">
                         <ModelSelect
-                        selected_model={ 3 }
-                    /></div>
-                    
+                            selected_model={ 3 }
+                        />
+                    </div>      
                 </div>
                 <br/>
                 <div>  

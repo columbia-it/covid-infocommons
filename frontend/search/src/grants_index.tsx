@@ -1,4 +1,4 @@
-import React, { Component, useContext } from "react";
+import { Component } from "react";
 import { GrantsFilter, Facet } from './components/GrantsFilter';
 import axios from "axios";
 import Button from '@mui/material/Button';
@@ -6,7 +6,6 @@ import DownloadIcon from '@mui/icons-material/Download';
 import axiosRetry from 'axios-retry';
 import GrantsTable from './components/GrantTable';
 import ModelSelect from './components/ModelSelect';
-import {SearchContext} from './search_context';
 
 interface Filter {
     nsf_division?: string
@@ -70,29 +69,24 @@ const styles = {
 };
 
 interface GrantTableProps {
-    keyword: string,
-    data: Grant[]
-    totalCount: number
+    keyword: string
 }
 
 class Grants extends Component<GrantTableProps, GrantsState> {
-    static context = SearchContext;
     state:GrantsState = {
-        data: this.props.data,
+        data: [],
         url: url,
-        totalCount: this.props.totalCount,
+        totalCount: 0,
         pageIndex: 0,
         awardee_org_names: [],
         funder_divisions: [],
         pi_names: [],
         po_names: [],
-        //keyword: (window as any)['keywords'],
         keyword: this.props.keyword,
         filter: {},
         funder_names: [],
         search_in_progress: false
     }
-
 
     constructor(props:any) {
         super(props)
@@ -104,32 +98,23 @@ class Grants extends Component<GrantTableProps, GrantsState> {
         this.get_grants_data()
     }
 
-    componentDidUpdate = (prevProps:GrantTableProps) => {
+    componentDidUpdate = (prevProps:GrantTableProps, prevState: GrantsState) => {
         if(this.props.keyword != prevProps.keyword) // Check if it's a new user, you can also use some unique property, like the ID  (this.props.user.id !== prevProps.user.id)
         {
             this.setState({
-                keyword: this.props.keyword
+                keyword: this.props.keyword,
+                pageIndex: this.state.pageIndex
             })
+            this.get_grants_data()
         }
-        if(this.props.totalCount != prevProps.totalCount) // Check if it's a new user, you can also use some unique property, like the ID  (this.props.user.id !== prevProps.user.id)
+        if(this.state.pageIndex != prevState.pageIndex) // Check if it's a new user, you can also use some unique property, like the ID  (this.props.user.id !== prevProps.user.id)
         {
           this.setState({
-              totalCount: this.props.totalCount,
-              data: this.props.data,
-              keyword: this.props.keyword
+              pageIndex: this.state.pageIndex
           })
+          this.get_grants_data()
         }
-        if(this.props.data != prevProps.data) // Check if it's a new user, you can also use some unique property, like the ID  (this.props.user.id !== prevProps.user.id)
-        {
-          this.setState({
-              totalCount: this.props.totalCount,
-              data: this.props.data,
-              keyword: this.props.keyword
-          })
-        }
-
     }
-
 
     get_org_name_facet() {
         var url = this.state.url.concat('/search/facets?field=awardee_organization.name')
@@ -180,18 +165,15 @@ class Grants extends Component<GrantTableProps, GrantsState> {
         return funder_facet;
     }
 
-
     pageChangeHandler(page:number, pageSize: number) {
         this.setState({
             pageIndex: page
         })
-        this.get_grants_data()
     }
 
     filterChangeHandler(fieldName?:string, value?:any, reset?:boolean) {
         if (reset) {
             this.state.filter = {}
-            this.get_grants_data()
             return
         }
         var currentFilter = this.state.filter
@@ -296,38 +278,43 @@ class Grants extends Component<GrantTableProps, GrantsState> {
                 params[property] = this.state.filter[property]
             }
         }
-        
-        axios.get(url, {params: params}).then(results => {
-            this.setState({
-                search_in_progress: false
-            })
-            this.setState({ totalCount: results.data.hits.total.value })
 
-            var newArray = results.data.hits.hits.map(function(val:any) {
-                let pi_name = ''
-                let pi_id = ''
-                let funder_name = ''
-                let pi_private_emails = ''
-                if (val['_source']['principal_investigator'] != null) {
-                    pi_name = val['_source']['principal_investigator']['full_name']
-                    pi_id = val['_source']['principal_investigator']['id']
-                    pi_private_emails = val['_source']['principal_investigator']['private_emails']
-                }
-                return {
-                    id: val['_source']['id'],
-                    title: val['_source']['title'],
-                    award_id: val['_source']['award_id'],
-                    pi: pi_name,
-                    pi_id: pi_id,
-                    pi_private_emails: pi_private_emails,
-                    abstract: val['_source']['abstract'],
-                    award_amount: (val['_source']['award_amount'] !== null) ? val['_source']['award_amount'] : 0,
-                    funder_name: ('name' in val['_source']['funder']) ? val['_source']['funder']['name'] : '',
-                    awardee_org: val['_source']['awardee_organization']['name']
-                }
+        params['get_count'] = true
+        axios.get(url, {params: params}).then(count_result => {
+            this.setState({ totalCount: count_result.data.count })
+            delete params.get_count
+            axios.get(url, {params: params}).then(results => {
+
+                this.setState({
+                    search_in_progress: false
+                })
+
+                var newArray = results.data.hits.hits.map(function(val:any) {
+                    let pi_name = ''
+                    let pi_id = ''
+                    let funder_name = ''
+                    let pi_private_emails = ''
+                    if (val['_source']['principal_investigator'] != null) {
+                        pi_name = val['_source']['principal_investigator']['full_name']
+                        pi_id = val['_source']['principal_investigator']['id']
+                        pi_private_emails = val['_source']['principal_investigator']['private_emails']
+                    }
+                    return {
+                        id: val['_source']['id'],
+                        title: val['_source']['title'],
+                        award_id: val['_source']['award_id'],
+                        pi: pi_name,
+                        pi_id: pi_id,
+                        pi_private_emails: pi_private_emails,
+                        abstract: val['_source']['abstract'],
+                        award_amount: (val['_source']['award_amount'] !== null) ? val['_source']['award_amount'] : 0,
+                        funder_name: ('name' in val['_source']['funder']) ? val['_source']['funder']['name'] : '',
+                        awardee_org: val['_source']['awardee_organization']['name']
+                    }
+                })
+                this.setState({ data: newArray })
+                this.get_org_name_facet()
             })
-            this.setState({ data: newArray })
-            this.get_org_name_facet()
         })
     }
 
@@ -440,7 +427,6 @@ class Grants extends Component<GrantTableProps, GrantsState> {
         a.remove()
     }
 
-
     removeTime(date:Date) {
         return new Date(
             date.getFullYear(),
@@ -453,7 +439,6 @@ class Grants extends Component<GrantTableProps, GrantsState> {
         event.preventDefault()
         const keyword = (document.getElementById('outlined-search') as HTMLInputElement).value;
         this.setState({'keyword': keyword})
-        this.get_grants_data(keyword)
     }
 
     render() {
@@ -492,7 +477,6 @@ class Grants extends Component<GrantTableProps, GrantsState> {
                             pageIndex={ this.state.pageIndex }
                             keyword={ this.state.keyword }
                             pageChangeHandler={ this.pageChangeHandler }
-
                         />
                     </div>
                     <div className='flex-table-child'>

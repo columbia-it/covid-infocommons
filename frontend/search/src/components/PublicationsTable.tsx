@@ -2,6 +2,7 @@ import { Component } from "react";
 import MaterialTable from "material-table";
 import { Link as MaterialLink} from '@mui/material';
 import Highlighter from 'react-highlight-words'
+import { TablePagination, TablePaginationProps } from '@material-ui/core';
 
 type Prop = {
     'title': string
@@ -16,10 +17,55 @@ type PublicationsTableProps = {
     pageIndex: number
     pageChangeHandler?: (page:number, pageSize: number) => void 
     paging: boolean
-
 }
 
-class PublicationsTable extends Component<PublicationsTableProps> {
+interface TableState {
+    authors: string[]
+    itemsToShow: number
+    expanded: boolean
+}
+
+class PublicationsTable extends Component<PublicationsTableProps, TableState> {
+    state:TableState = {
+        authors: [],
+        itemsToShow: 3,
+        expanded: false,
+    }
+
+    constructor(props:PublicationsTableProps) {
+        super(props)
+        this.showLess = this.showLess.bind(this)
+    }
+
+    PatchedPagination(props: TablePaginationProps) {
+        const {
+          ActionsComponent,
+          onChangePage,
+          onChangeRowsPerPage,
+          ...tablePaginationProps
+        } = props;
+      
+        return (
+          <TablePagination
+            {...tablePaginationProps}
+            // @ts-expect-error onChangePage was renamed to onPageChange
+            onPageChange={onChangePage}
+            onRowsPerPageChange={onChangeRowsPerPage}
+            rowsPerPageOptions={[]}
+            ActionsComponent={(subprops) => {
+              const { onPageChange, ...actionsComponentProps } = subprops;
+              return (
+                // @ts-expect-error ActionsComponent is provided by material-table
+                <ActionsComponent
+                  {...actionsComponentProps}
+                  onChangePage={onPageChange}
+                />
+              );
+            }}
+          />
+        );
+      }
+
     highlightText = (textToHighlight:string ) => {
         return (<Highlighter
             highlightStyle={{
@@ -31,6 +77,19 @@ class PublicationsTable extends Component<PublicationsTableProps> {
             autoEscape={ true }
             textToHighlight={ textToHighlight }
         />)
+    }
+
+    // showMore() {
+    //     this.state.itemsToShow === 3 ? (
+    //       this.setState({ itemsToShow: 3, expanded: false })
+    //     ) : (
+    //       this.setState({ itemsToShow: this.state.authors.length, expanded: true })
+    //     )
+    //   }
+    
+    showLess() {
+        let current_state = this.state.expanded
+        this.setState({expanded: !current_state})
     }
 
     render() {
@@ -73,7 +132,29 @@ class PublicationsTable extends Component<PublicationsTableProps> {
                                 }
                                 return ( 
                                     <div>
-                                        { author_names }
+                                    {/* <ul> */}
+                                    <div id='sliced_author_names' hidden={ this.state.expanded }>
+                                    { author_names.slice(0, this.state.itemsToShow) }
+                                    </div>
+                                    <div id='all_author_names' hidden={ !this.state.expanded }>
+                                    { author_names }
+                                    </div>
+                                    <br/>
+                                        {/* { author_names.slice(0, this.state.itemsToShow).map((author, i) => 
+                                        <li key={i}>{author}</li>
+                                        )} */}
+                                    {/* </ul> */}
+                                    {
+                                        author_names.length > 3 ? 
+                                        <a onClick={ this.showLess }>
+                                        {this.state.expanded ? (
+                                            <span>Show less</span>
+                                            ) : (
+                                        <span>Show more</span>
+                                        )}
+                                        </a> 
+                                        : <div></div>
+                                    }                                     
                                     </div>
                                 )
                             }
@@ -84,11 +165,14 @@ class PublicationsTable extends Component<PublicationsTableProps> {
                             paging: this.props.paging, 
                             showTitle: false,
                             search: false,
-                            //exportButton: false,
+                            exportButton: false,
                             pageSize: 20,
                             exportAllData: false
                         }
                     }
+                    components={{
+                        Pagination: this.PatchedPagination,
+                    }}
                 >
 
                 </MaterialTable>
