@@ -15,7 +15,7 @@ def get_facet_by_field(request) :
         verify_certs = True,
     )
 
-    query = {
+    query = {        
         "size": 0,
         "aggs" : {
             "patterns" : {
@@ -447,6 +447,8 @@ def search_datasets(request):
     )
 
     query = {
+        # must explicitly set track_total_hits, otherwise it defaults to 10,000
+        'track_total_hits': True,
         'query': {
             'match_all': {}
         }
@@ -467,6 +469,8 @@ def search_assets(request):
         verify_certs = True,
     )
     query = {
+        # must explicitly set track_total_hits, otherwise it defaults to 10,000
+        'track_total_hits': True,
         'query': {
             'match_all': {}
         }
