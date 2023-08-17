@@ -5,8 +5,6 @@ import cic_people
 import requests
 import json
 
-
-
 def main():
     export_grants()
 #    export_people()

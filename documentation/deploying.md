@@ -55,6 +55,7 @@ python saml.py cuit-dev-role 305803678806
 # save it in /usr/local/bin/chromedriver
 # aws sts get-caller-identity
 
+zappa update dev
 
 ### For prod ###
 
