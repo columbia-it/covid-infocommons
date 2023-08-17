@@ -4,12 +4,14 @@ import cic_orgs
 import cic_people
 import requests
 import json
-    
+
+
+
 def main():
-#    export_grants()
+    export_grants()
 #    export_people()
 #    export_orgs()
-    export_assets()
+#    export_assets()
 
 def export_assets():
     with open("cic_assets_export.json", "w") as outfile:
