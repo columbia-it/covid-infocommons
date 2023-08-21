@@ -9,11 +9,10 @@ Prep:
 Basic deployment process:
 ```
 # 
-source ~/covid-infocommons/venv/bin/activate
+source ~/covid-infocommons/venv/bin/activate 
 
 # Update static files used by the frontend (including CSS)
 # This will put files in backend/search/static
-# <<< delete the search folder from the S3 bucket >>>
 cd ~/covid-infocommons/frontend/search
 npm run webpack
 
@@ -22,17 +21,23 @@ cd ~/covid-infocommons/backend
 pip install -r requirements.txt
 python manage.py collectstatic
 
+# get AWS token if needed
+(see below for AWS token information)
+
 # if schema updates are required
 # python manage.py makemigrations
 # zappa manage dev/prod migrate
+
+export AWS_PROFILE=cuit-infra-cice-dev
 zappa update dev
 ```
 
 Updating UI resources
 ======================
 
-- delete files from S3 bucket cuit-infra-cice-dev-s3-static if they need to be updated
-- `zappa manage dev “collectstatic --noinput”`
+- delete files from S3 bucket cuit-infra-cice-dev-s3-static
+  - only delete folders that need to be updated
+- zappa manage dev "collectstatic --noinput"
 
 
 Getting a token for AWS usage
