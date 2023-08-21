@@ -482,7 +482,7 @@ class App extends Component<any, AppState> {
 	                            onClick={ this.exportToCsv } 
                                 className='download-button' 
                                 variant="contained"
-                                endIcon={ <DownloadIcon /> }>Download Results as CSV (up to 1,000 awards)</Button>
+                                endIcon={ <DownloadIcon /> }>Download Results as CSV (up to 1000 awards)</Button>
                         </div>
                     </div>    
                     <br/>
