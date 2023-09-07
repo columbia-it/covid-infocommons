@@ -135,6 +135,8 @@ def retrieve_nsf_grants(year, month, offset):
     logging.info(f"REQUEST = {nsf_url}")
 
     response = requests.get(nsf_url)
+    if len(response.content) == 0:
+        return None
     response_json = response.json()
     response_detail = response_json['response']
     if 'award' not in response_detail:
@@ -320,12 +322,13 @@ def scrape_directorate(award_id):
     logging.info("Reading from NSF website")
     logging.info(f"REQUEST = {nsf_url}")
 
-    pq = PyQuery(nsf_url)
     ds = None
     try:
+        pq = PyQuery(nsf_url)
         ds = pq("tbody")("span")[7].text
-    except IndexError:
+    except:
         logging.error(f"Unable to parse page for award {award_id}")
+    
     if ds is None:
         logging.error(f"Unable to find directorate string for grant {award_id}")
         return "Unknown"
