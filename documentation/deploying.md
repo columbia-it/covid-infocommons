@@ -56,7 +56,8 @@ export AWS_PROFILE=cuit-infra-cice-dev
 python saml.py cuit-dev-role 305803678806
 
 # if it complains about the chromedriver version, get a new one from
-# https://chromedriver.chromium.org/downloads
+# https://googlechromelabs.github.io/chrome-for-testing/ (must find the version number of your Chrome
+# and get the matching chromedriver)
 # save it in /usr/local/bin/chromedriver
 # aws sts get-caller-identity
 
