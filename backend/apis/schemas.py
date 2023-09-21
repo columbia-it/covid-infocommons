@@ -26,8 +26,8 @@ class SchemaGenerator(JSONAPISchemaGenerator):
             }
         }
         schema['servers'] = [
-            {'url': 'http://127.0.0.1:8000/v1', 'description': 'local dev'},
-            {'url': 'https://cice-dev.paas.cc.columbia.edu/v1', 'description': 'dev server on AWS'}
+            {'url': 'https://cice-prod.paas.cc.columbia.edu/v1', 'description': 'CIC production server'},
+            {'url': 'https://cice-dev.paas.cc.columbia.edu/v1', 'description': ' CIC development server'}
         ]
         
         return schema
