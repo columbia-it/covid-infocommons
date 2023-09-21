@@ -10,11 +10,11 @@ info:
     COVID Information Commons (CIC) API
 
 
-    (c) 2018-2022 The Trustees of Columbia University in the City of New York
+    (c) 2018-2023 The Trustees of Columbia University in the City of New York
 
     '
   contact:
-    name: Sunaina Gupta
+    name: Ryan Scherle
 paths:
   /people:
     get:
