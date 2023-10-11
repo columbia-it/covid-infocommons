@@ -159,7 +159,7 @@ class App extends Component<any, AppState> {
     getDataPromise() {
         var params: { [key: string]: any } = {};
         params.from = 0
-        params.size = 1000
+        params.size = 500
         let keyword = (document.getElementById('outlined-search') as HTMLInputElement).value;
         if (keyword && keyword.length > 0) {
             params.keyword = keyword
@@ -482,7 +482,7 @@ class App extends Component<any, AppState> {
 	                            onClick={ this.exportToCsv } 
                                 className='download-button' 
                                 variant="contained"
-                                endIcon={ <DownloadIcon /> }>Download Results as CSV (up to 1000 awards)</Button>
+                                endIcon={ <DownloadIcon /> }>Download Results as CSV (up to 500 awards)</Button>
                         </div>
                     </div>    
                     <br/>
