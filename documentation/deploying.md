@@ -28,22 +28,22 @@ python manage.py collectstatic
 # python manage.py makemigrations
 # zappa manage dev/prod migrate
 
+## ??Not needed?
+## delete files from S3 bucket cuit-infra-cice-dev-s3-static
+## only delete folders that need to be updated
+
 ### For dev ###
 export AWS_PROFILE=cuit-infra-cice-dev
 zappa update dev
+zappa manage dev "collectstatic --noinput"
+## IMPORTANT -- if the last command has a timeout error, run it again
 
 ### For prod ###
 export AWS_PROFILE=cuit-infra-cice-prod
 zappa update prod
+zappa manage prod "collectstatic --noinput"
+## IMPORTANT -- if the last command has a timeout error, run it again
 ```
-
-Updating UI resources
-======================
-
-- delete files from S3 bucket cuit-infra-cice-dev-s3-static
-  - only delete folders that need to be updated
-- zappa manage dev "collectstatic --noinput"
-
 
 Getting a token for AWS usage
 =============================

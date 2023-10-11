@@ -414,6 +414,7 @@ IC_MAPPING = {
     'National Center for Advancing Translational Sciences': 'National Center for Advancing Translational Sciences (NCATS)',
     'National Center for Complementary and Integrative Health': 'National Center for Complementary and Integrative Health (NCCIH)',
     'National Center for Complementary and Intergrative Health': 'National Center for Complementary and Integrative Health (NCCIH)',
+    'National Center for Emerging and Zoonotic Infectious Diseases': 'National Center for Emerging and Zoonotic Infectious Diseases (NCEZID)',
     'NIH Office of the Director': 'NIH Office of the Director'
 }
 
