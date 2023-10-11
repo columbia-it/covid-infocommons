@@ -28,8 +28,13 @@ python manage.py collectstatic
 # python manage.py makemigrations
 # zappa manage dev/prod migrate
 
+### For dev ###
 export AWS_PROFILE=cuit-infra-cice-dev
 zappa update dev
+
+### For prod ###
+export AWS_PROFILE=cuit-infra-cice-prod
+zappa update prod
 ```
 
 Updating UI resources
@@ -59,9 +64,10 @@ python saml.py cuit-dev-role 305803678806
 # https://googlechromelabs.github.io/chrome-for-testing/ (must find the version number of your Chrome
 # and get the matching chromedriver)
 # save it in /usr/local/bin/chromedriver
-# aws sts get-caller-identity
 
-zappa update dev
+# Verify if needed
+aws sts get-caller-identity
+
 
 ### For prod ###
 
@@ -72,9 +78,9 @@ export AWS_PROFILE=cuit-infra-cice-prod
 # Note that the below command uses "cuit-dev-role", because it's the role
 # for developers, not for a "dev" environment
 python saml.py cuit-dev-role 031752658700
-# aws sts get-caller-identity
 
-zappa update prod
+# Verify if needed
+aws sts get-caller-identity
 ```
 
 Troubleshooting
