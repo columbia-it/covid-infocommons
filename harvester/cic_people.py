@@ -114,8 +114,11 @@ def find_cic_person(first, last):
         if response_json['links']['next'] is not None:
             print('.', end='', flush=True)
             response = requests.get(f"{response_json['links']['next']}")
-            response_json = response.json()    
-            cic_people = response_json['data']
+            response_json = response.json()
+            if response_json is not None and 'data' in response_json:
+                cic_people = response_json['data']
+            else:
+                cic_people = []
         else:
             cic_people = []
 

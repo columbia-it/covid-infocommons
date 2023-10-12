@@ -415,6 +415,9 @@ IC_MAPPING = {
     'National Center for Complementary and Integrative Health': 'National Center for Complementary and Integrative Health (NCCIH)',
     'National Center for Complementary and Intergrative Health': 'National Center for Complementary and Integrative Health (NCCIH)',
     'National Center for Emerging and Zoonotic Infectious Diseases': 'National Center for Emerging and Zoonotic Infectious Diseases (NCEZID)',
+    'National Institute for Occupational Safety and Health': 'National Institute for Occupational Safety and Health (NIOSH)',
+    'National Center for Immunization and Respiratory Diseases': 'National Center for Immunization and Respiratory Diseases (NCIRD)',
+    'National Center for Injury Prevention and Control': 'National Center for Injury Prevention and Control (NCIPC)',
     'NIH Office of the Director': 'NIH Office of the Director'
 }
 

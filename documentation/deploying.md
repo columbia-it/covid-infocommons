@@ -11,6 +11,14 @@ Basic deployment process:
 # 
 source ~/covid-infocommons/venv/bin/activate 
 
+### For dev ###
+export NODE_ENV=development
+export AWS_PROFILE=cuit-infra-cice-dev
+
+### For prod ###
+export NODE_ENV=production
+export AWS_PROFILE=cuit-infra-cice-prod
+
 # Update static files used by the frontend (including CSS)
 # This will put files in backend/search/static
 cd ~/covid-infocommons/frontend/search
@@ -33,13 +41,11 @@ python manage.py collectstatic
 ## only delete folders that need to be updated
 
 ### For dev ###
-export AWS_PROFILE=cuit-infra-cice-dev
 zappa update dev
 zappa manage dev "collectstatic --noinput"
 ## IMPORTANT -- if the last command has a timeout error, run it again
 
 ### For prod ###
-export AWS_PROFILE=cuit-infra-cice-prod
 zappa update prod
 zappa manage prod "collectstatic --noinput"
 ## IMPORTANT -- if the last command has a timeout error, run it again
@@ -70,9 +76,6 @@ aws sts get-caller-identity
 
 
 ### For prod ###
-
-# For prod
-export NODE_ENV=production
 export AWS_PROFILE=cuit-infra-cice-prod
 
 # Note that the below command uses "cuit-dev-role", because it's the role
