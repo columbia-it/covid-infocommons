@@ -11,6 +11,14 @@ Basic deployment process:
 # 
 source ~/covid-infocommons/venv/bin/activate 
 
+### For dev ###
+export NODE_ENV=development
+export AWS_PROFILE=cuit-infra-cice-dev
+
+### For prod ###
+export NODE_ENV=production
+export AWS_PROFILE=cuit-infra-cice-prod
+
 # Update static files used by the frontend (including CSS)
 # This will put files in backend/search/static
 cd ~/covid-infocommons/frontend/search
@@ -28,17 +36,20 @@ python manage.py collectstatic
 # python manage.py makemigrations
 # zappa manage dev/prod migrate
 
-export AWS_PROFILE=cuit-infra-cice-dev
+## ??Not needed?
+## delete files from S3 bucket cuit-infra-cice-dev-s3-static
+## only delete folders that need to be updated
+
+### For dev ###
 zappa update dev
+zappa manage dev "collectstatic --noinput"
+## IMPORTANT -- if the last command has a timeout error, run it again
+
+### For prod ###
+zappa update prod
+zappa manage prod "collectstatic --noinput"
+## IMPORTANT -- if the last command has a timeout error, run it again
 ```
-
-Updating UI resources
-======================
-
-- delete files from S3 bucket cuit-infra-cice-dev-s3-static
-  - only delete folders that need to be updated
-- zappa manage dev "collectstatic --noinput"
-
 
 Getting a token for AWS usage
 =============================
@@ -59,22 +70,20 @@ python saml.py cuit-dev-role 305803678806
 # https://googlechromelabs.github.io/chrome-for-testing/ (must find the version number of your Chrome
 # and get the matching chromedriver)
 # save it in /usr/local/bin/chromedriver
-# aws sts get-caller-identity
 
-zappa update dev
+# Verify if needed
+aws sts get-caller-identity
+
 
 ### For prod ###
-
-# For prod
-export NODE_ENV=production
 export AWS_PROFILE=cuit-infra-cice-prod
 
 # Note that the below command uses "cuit-dev-role", because it's the role
 # for developers, not for a "dev" environment
 python saml.py cuit-dev-role 031752658700
-# aws sts get-caller-identity
 
-zappa update prod
+# Verify if needed
+aws sts get-caller-identity
 ```
 
 Troubleshooting

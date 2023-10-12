@@ -9,9 +9,9 @@ import logging
 import requests
 
 
-NSF_GRANT_REQUEST = "https://api.nsf.gov/services/v1/awards.json?keyword=covid+COVID+covid19+coronavirus+pandemic+sars2+%22SARS-CoV%22&printFields=abstractText,agency,awardAgencyCode,awardee,awardeeAddress,awardeeCity,awardeeCountryCode,awardeeCounty,awardeeDistrictCode,awardeeName,awardeeStateCode,awardeeZipCode,cfdaNumber,coPDPI,date,dunsNumber,estimatedTotalAmt,expDate,fundAgencyCode,fundProgramName,fundsObligatedAmt,id,offset,parentDunsNumber,pdPIName,perfAddress,perfCity,perfCountryCode,perfCounty,perfDistrictCode,perfLocation,perfStateCode,perfZipCode,piEmail,piFirstName,piLastName,piMiddeInitial,piPhone,poEmail,poName,poPhone,primaryProgram,projectOutComesReport,publicationConference,publicationResearch,rpp,startDate,title,transType"
+NSF_GRANT_REQUEST = "https://api.nsf.gov/services/v1/awards.json?keyword=covid+COVID+covid19+coronavirus+pandemic+sars2+%22SARS-CoV%22&printFields=abstractText,agency,awardAgencyCode,awardee,awardeeAddress,awardeeCity,awardeeCountryCode,awardeeCounty,awardeeDistrictCode,awardeeName,awardeeStateCode,awardeeZipCode,cfdaNumber,coPDPI,date,dunsNumber,estimatedTotalAmt,expDate,fundAgencyCode,fundProgramName,fundsObligatedAmt,id,offset,parentDunsNumber,pdPIName,perfAddress,perfCity,perfCountryCode,perfCounty,perfDistrictCode,perfLocation,perfStateCode,perfZipCode,piEmail,piFirstName,piLastName,piMiddeInitial,piPhone,poEmail,poName,poPhone,primaryProgram,projectOutComesReport,rpp,startDate,startDateStart,title,transType"
 
-NSF_SINGLE_GRANT_REQUEST = "https://api.nsf.gov/services/v1/awards.json?printFields=abstractText,agency,awardAgencyCode,awardee,awardeeAddress,awardeeCity,awardeeCountryCode,awardeeCounty,awardeeDistrictCode,awardeeName,awardeeStateCode,awardeeZipCode,cfdaNumber,coPDPI,date,dunsNumber,estimatedTotalAmt,expDate,fundAgencyCode,fundProgramName,fundsObligatedAmt,id,offset,parentDunsNumber,pdPIName,perfAddress,perfCity,perfCountryCode,perfCounty,perfDistrictCode,perfLocation,perfStateCode,perfZipCode,piEmail,piFirstName,piLastName,piMiddeInitial,piPhone,poEmail,poName,poPhone,primaryProgram,projectOutComesReport,publicationConference,publicationResearch,rpp,startDate,title,transType&id="
+NSF_SINGLE_GRANT_REQUEST = "https://api.nsf.gov/services/v1/awards.json?printFields=abstractText,agency,awardAgencyCode,awardee,awardeeAddress,awardeeCity,awardeeCountryCode,awardeeCounty,awardeeDistrictCode,awardeeName,awardeeStateCode,awardeeZipCode,cfdaNumber,coPDPI,date,dunsNumber,estimatedTotalAmt,expDate,fundAgencyCode,fundProgramName,fundsObligatedAmt,id,offset,parentDunsNumber,pdPIName,perfAddress,perfCity,perfCountryCode,perfCounty,perfDistrictCode,perfLocation,perfStateCode,perfZipCode,piEmail,piFirstName,piLastName,piMiddeInitial,piPhone,poEmail,poName,poPhone,primaryProgram,projectOutComesReport,rpp,startDate,startDateStart,title,transType&id="
 
 NSF_AWARD_PAGE = "https://www.nsf.gov/awardsearch/showAward?AWD_ID="
 
@@ -127,7 +127,7 @@ def retrieve_nsf_grants(year, month, offset):
         monthstr = f'0{month}'
     else:
         monthstr = month
-    monthfilter = f"&dateStart={monthstr}/01/{year}&dateEnd={monthstr}/31/{year}"
+    monthfilter = f"&startDateStart={monthstr}/01/{year}&startDateEnd={monthstr}/31/{year}"
 
     nsf_url = f"{NSF_GRANT_REQUEST}{monthfilter}&offset={offset}"
 
@@ -149,8 +149,14 @@ def process_grant(grant):
     logging.info("======================================================================")
     logging.info(f" -- processing grant {grant['id']} -- {grant['title']}")
     existing_grant = cic_grants.find_cic_grant(grant['id'])
-    if existing_grant is None:        
+    response_code = ''
+    if existing_grant is None:
+        # No pre-existing grant, so we're creating one from scratch
         logging.debug("   -- not found - creating")
+        if 'startDate' not in grant:
+            logging.debug(f"  -- grant is {grant}")
+            logging.debug("   -- skipping - no start date yet")
+            return None
         grant_json = nsf_to_cic_format(grant)
         response_code = cic_grants.create_cic_grant(grant_json)
     else:
@@ -183,7 +189,7 @@ def nsf_to_cic_format(grant):
                 "award_id": grant['id'],
                 "title": html_entity_cleaner.replace_quoted(grant['title']),
                 "start_date": nsf_to_cic_date(grant['startDate']),
-                "end_date": nsf_to_cic_date(grant['expDate']),
+               # "end_date": nsf_to_cic_date(grant['expDate']), # BROKEN -- NSF API no longer supports expDate
                 "award_amount": nsf_award_amount(grant),
                 "abstract": html_entity_cleaner.replace_quoted(grant['abstractText'])
             }

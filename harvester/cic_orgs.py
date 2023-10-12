@@ -87,7 +87,9 @@ def find_cic_org(name):
 def find_cic_org_by_ror(ror_id):
     logging.info(f" -- find {ror_id} from {CIC_ORGS_API}?filter[ror]={ror_id}")
     response = requests.get(f"{CIC_ORGS_API}?filter[ror]={ror_id}")
-    response_json = response.json()    
+    response_json = response.json()
+    if 'data' not in response_json:
+        return None
     cic_orgs = response_json['data']
     while(len(cic_orgs) > 0):
         for co in cic_orgs:

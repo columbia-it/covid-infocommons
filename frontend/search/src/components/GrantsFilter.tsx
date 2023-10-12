@@ -88,6 +88,10 @@ const nih_institues = [
     'Fogarty International Center (FIC)',
     'National Center for Advancing Translational Sciences (NCATS)',
     'National Center for Complementary and Integrative Health (NCCIH)',
+    'National Center for Emerging and Zoonotic Infectious Diseases (NCEZID)',
+    'National Institute for Occupational Safety and Health (NIOSH)',
+    'National Center for Immunization and Respiratory Diseases (NCIRD)',
+    'National Center for Injury Prevention and Control (NCIPC)',
     'NIH Office of the Director'
 ]
 
