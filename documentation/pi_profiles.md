@@ -8,7 +8,7 @@ Adding videos to user profile pages
    - Once Youtube starts playing the video, copy the video's ID from the address bar
      (the part after "watch?v=")
    - Use the ID to create the video's embedded URL:
-	 https://www.youtube.com/embed/ID_GOES_HERE?autoplay=0&start=0&rel=0
+	 https://www.youtube.com/embed/ID_GOES_HERE?autoplay=0&amp;start=0&amp;rel=0
 2. Find the user's profile ID in CIC
    - Go to the person administration page
      https://cic-apps.datascience.columbia.edu/admin/apis/person/
