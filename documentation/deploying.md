@@ -49,7 +49,7 @@ zappa manage dev "collectstatic --noinput"
 zappa update prod
 zappa manage prod "collectstatic --noinput"
 ## IMPORTANT -- if the last command has a timeout error, run it again
-```
+
 
 Getting a token for AWS usage
 =============================
@@ -62,9 +62,14 @@ this process (~/.aws/credentials) and copy it to the other machine.
 # Ensure the chromedriver executable is first in the path, so it doesn't get clobbered by rbenv's chromedriver
 export PATH=/usr/local/bin:$PATH
 
+cd backend
+
 ### For dev ###
 export AWS_PROFILE=cuit-infra-cice-dev
 python saml.py cuit-dev-role 305803678806
+
+# copy the credentials file to your deploy server
+scp /Users/ryan/.aws/credentials ryan-django:.aws/credentials
 
 # if it complains about the chromedriver version, get a new one from
 # https://googlechromelabs.github.io/chrome-for-testing/ (must find the version number of your Chrome
@@ -74,7 +79,6 @@ python saml.py cuit-dev-role 305803678806
 # Verify if needed
 aws sts get-caller-identity
 
-
 ### For prod ###
 export AWS_PROFILE=cuit-infra-cice-prod
 
@@ -82,9 +86,12 @@ export AWS_PROFILE=cuit-infra-cice-prod
 # for developers, not for a "dev" environment
 python saml.py cuit-dev-role 031752658700
 
+
 # Verify if needed
 aws sts get-caller-identity
-```
+
+# copy the credentials file to your deploy server
+scp /Users/ryan/.aws/credentials ryan-django:.aws/credentials
 
 Troubleshooting
 ===============
