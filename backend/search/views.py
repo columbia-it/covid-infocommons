@@ -17,11 +17,13 @@ def get_facet_by_field(request) :
 
     query = {        
         "size": 0,
+        # must explicitly set track_total_hits, otherwise it defaults to 10,000
+        'track_total_hits': True,
         "aggs" : {
             "patterns" : {
                 "terms" : { 
                     "field" : "{}.keyword".format(field_name),
-                    "size": 10000,
+                    "size": 100000,
                     "order": { "_key" : "asc" }
                 }
             }
@@ -60,6 +62,8 @@ def search_grants(request):
     query = {
         'size': size,
         'from': start,
+        # must explicitly set track_total_hits, otherwise it defaults to 10,000
+        'track_total_hits': True,
         'sort' : [
             '_score', 
             { 
@@ -258,6 +262,8 @@ def search_publications(request):
     query = {
         'size': size,
         'from': start,
+        # must explicitly set track_total_hits, otherwise it defaults to 10,000
+        'track_total_hits': True,
         'sort' : [
             '_score', 
             { 
@@ -342,6 +348,8 @@ def search_people(request):
     query = {
         'size': size,
         'from': start,
+        # must explicitly set track_total_hits, otherwise it defaults to 10,000
+        'track_total_hits': True,
         'query': {
             'bool': {
                 'must': [],
@@ -403,6 +411,8 @@ def search_datasets(request):
     query = {
         'size': size,
         'from': start,
+        # must explicitly set track_total_hits, otherwise it defaults to 10,000
+        'track_total_hits': True,
         'query': {
             'bool': {
                 'must': [],
