@@ -6,3 +6,4 @@ The software for the Covid Information Commons consists of several modules.
 
 - `backend` -- A framework for storing grants, researchers, and related information. Provides an API to make these accessible to outside users.
 - `frontend` -- Tools for displaying records and interfacing with the search system.
+- `harvester` -- Tools for harvesting information from external services, cleaning it, and storing it in CIC.
