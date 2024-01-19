@@ -8,7 +8,7 @@ Prep:
 
 Basic deployment process:
 ```
-# 
+# initialize virtual environment
 source ~/covid-infocommons/venv/bin/activate 
 
 ### For dev ###
@@ -43,12 +43,12 @@ python manage.py collectstatic
 ### For dev ###
 zappa update dev
 zappa manage dev "collectstatic --noinput"
-## IMPORTANT -- if the last command has a timeout error, run it again
+## IMPORTANT -- if the last command has an error (typically caused by a timeout), run it again
 
 ### For prod ###
 zappa update prod
 zappa manage prod "collectstatic --noinput"
-## IMPORTANT -- if the last command has a timeout error, run it again
+## IMPORTANT -- if the last command has an error (typically caused by a timeout), run it again
 
 
 Getting a token for AWS usage
