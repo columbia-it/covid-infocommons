@@ -13,6 +13,8 @@ NSF_GRANT_REQUEST = "https://api.nsf.gov/services/v1/awards.json?keyword=covid+C
 
 NSF_SINGLE_GRANT_REQUEST = "https://api.nsf.gov/services/v1/awards.json?printFields=abstractText,agency,awardAgencyCode,awardee,awardeeAddress,awardeeCity,awardeeCountryCode,awardeeCounty,awardeeDistrictCode,awardeeName,awardeeStateCode,awardeeZipCode,cfdaNumber,coPDPI,date,dunsNumber,estimatedTotalAmt,expDate,fundAgencyCode,fundProgramName,fundsObligatedAmt,id,offset,parentDunsNumber,pdPIName,perfAddress,perfCity,perfCountryCode,perfCounty,perfDistrictCode,perfLocation,perfStateCode,perfZipCode,piEmail,piFirstName,piLastName,piMiddeInitial,piPhone,poEmail,poName,poPhone,primaryProgram,projectOutComesReport,rpp,startDate,startDateStart,title,transType&id="
 
+COVID_KEYWORDS = [ 'covid', 'COVID', 'covid19', 'coronavirus', 'pandemic', 'sars2', 'SARS-CoV' ]
+
 NSF_AWARD_PAGE = "https://www.nsf.gov/awardsearch/showAward?AWD_ID="
 
 SKIP_EXISTING = True
@@ -107,8 +109,16 @@ def main():
                     break
                 print(f"Received {len(grants)} grants")
                 for g in grants:
-                    process_grant(g)
-                imported_count += len(grants)
+                    if is_covid_related(g):
+                        process_grant(g)
+                        imported_count += 1
+
+def is_covid_related(grant):
+    for term in COVID_KEYWORDS:
+        if term in grant['title'] or term in grant['abstractText']:            
+            return True
+    logging.info(f"Grant {grant['id']}, does not contain one of the COVID_KEYWORDS")
+    return False
 
                 
 def retrieve_single_nsf_grant(grant_id):
