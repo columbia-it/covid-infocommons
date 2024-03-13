@@ -78,7 +78,8 @@ def main(max_year = None, start_offset = 0):
 
                 
 def retrieve_nih_grant(award_id):
-    criteria = nih_award_id_criteria(award_id)    
+    criteria = nih_award_id_criteria(award_id)
+    print(f"criteria = {criteria}")
     response = requests.post(url = NIH_BASE,
                              data = json.dumps(criteria),
                              headers={"Content-Type":"application/vnd.api+json"})
@@ -151,7 +152,7 @@ def nih_award_id_criteria(award_id):
     c =  {
         "criteria":
         {
-            "project_nums": [award_id]
+            "core_project_nums": [award_id]
         },
         "include_fields": [
             "ProjectTitle", "AbstractText", "FiscalYear",
@@ -463,10 +464,10 @@ if __name__ == "__main__":
         max_year = int(sys.argv[1])
     if len(sys.argv) > 2:
         start_offset = int(sys.argv[2])
-    print(f"Processing NIH grants starting at year {max_year}, offset {start_offset}")
+#    print(f"Processing NIH grants starting at year {max_year}, offset {start_offset}")
 
-    main(max_year, start_offset)
+#    main(max_year, start_offset)
     
-    #g=retrieve_nih_grant('1R13AI170179-01')
+    g=retrieve_nih_grant('1R13AI170179-01')
     #process_grant(g)
-    #print(nih_to_cic_format(g))
+    print(nih_to_cic_format(g))
