@@ -9,11 +9,11 @@ CIC_GRANTS_SEARCH_API = f"{cic_config.CIC_BASE}/search/grants"
 def main():
     print("CIC grant demo")
     print("")
-    print("finding test grant 3R43CA243815-01S2")
 #    grant = find_cic_grant('3R43CA243815-01S2')
 #    if grant is None:
-    grant = find_cic_grant('2204082')
+    grant = find_cic_grant('6644')
     print(f" -- found {grant['id']} -- {grant['award_id']} -- {grant['title']}")
+    print(f"{grant['other_investigators']}")
 #    grant_json = grant_object_to_upload_json(grant)
 #    update_cic_grant(grant_json, grant['id'])
 #    delete_cic_grant(10721)
