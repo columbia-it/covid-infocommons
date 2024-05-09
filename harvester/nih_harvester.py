@@ -9,7 +9,7 @@ import requests
 import sys
 import time
 
-NIH_BASE = "https://api.reporter.nih.gov/v1/projects/Search"
+NIH_BASE = "https://api.reporter.nih.gov/v2/projects/search"
 
 # Keywords are very limited for NIH, since they do not allow us an actual keyword search,
 # we are filtering to grants that contain these terms, so we don't want a lot of false positives.
@@ -231,6 +231,7 @@ def process_grant(grant):
 
     
 def nih_to_cic_format(grant):
+    print(f"GGG {grant['organization']['org_name']},{grant['organization']['org_country']}, {grant['organization']['org_state']}")
     grant_data = {
         "data": {
             "type": "Grant", 
@@ -244,7 +245,9 @@ def nih_to_cic_format(grant):
                     "type": "Funder",
                     "id": 4 # TODO -- this should be looked up!
                 },
-                "awardee_organization": nih_awardee_org(grant['org_name'],grant['org_country'], grant['org_state']),
+                "awardee_organization": nih_awardee_org(grant['organization']['org_name'],
+                                                        grant['organization']['org_country'],
+                                                        grant['organization']['org_state']),
                 "award_id": grant['project_num'],
                 "title": html_entity_cleaner.replace_quoted(grant['project_title']),
                 "start_date": nih_to_cic_date(grant['project_start_date']),
@@ -286,6 +289,8 @@ def nih_awardee_org(name, country, state):
     #   }
     if name is None:
         return None
+
+    print(f"NAO {name}, {country}, {state}")
     
     org = cic_orgs.find_or_create_org(name, country, state)
     if org is None:
@@ -467,7 +472,9 @@ if __name__ == "__main__":
 #    print(f"Processing NIH grants starting at year {max_year}, offset {start_offset}")
 
 #    main(max_year, start_offset)
-    
+
+    print("Processing test grant")
     g=retrieve_nih_grant('1R13AI170179-01')
+    print(g)
     #process_grant(g)
     print(nih_to_cic_format(g))
