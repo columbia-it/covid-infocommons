@@ -231,7 +231,7 @@ def process_grant(grant):
 
     
 def nih_to_cic_format(grant):
-    print(f"GGG {grant['organization']['org_name']},{grant['organization']['org_country']}, {grant['organization']['org_state']}")
+    #print(f"{grant['organization']['org_name']},{grant['organization']['org_country']}, {grant['organization']['org_state']}")
     grant_data = {
         "data": {
             "type": "Grant", 
@@ -290,8 +290,6 @@ def nih_awardee_org(name, country, state):
     if name is None:
         return None
 
-    print(f"NAO {name}, {country}, {state}")
-    
     org = cic_orgs.find_or_create_org(name, country, state)
     if org is None:
         return None
@@ -463,18 +461,18 @@ def nih_to_cic_date(d):
 
 if __name__ == "__main__":
     print(sys.argv)
-    max_year = 2023
+    max_year = 2024
     start_offset = 0
     if len(sys.argv) > 1:
         max_year = int(sys.argv[1])
     if len(sys.argv) > 2:
         start_offset = int(sys.argv[2])
-#    print(f"Processing NIH grants starting at year {max_year}, offset {start_offset}")
 
-#    main(max_year, start_offset)
+    print(f"Processing NIH grants starting at year {max_year}, offset {start_offset}")
+    main(max_year, start_offset)
 
-    print("Processing test grant")
-    g=retrieve_nih_grant('1R13AI170179-01')
-    print(g)
-    #process_grant(g)
-    print(nih_to_cic_format(g))
+#    print("Processing test grant")
+#    g=retrieve_nih_grant('1R13AI170179-01')
+#    print(g)
+#    process_grant(g)
+#    print(nih_to_cic_format(g))
