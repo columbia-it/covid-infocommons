@@ -26,8 +26,7 @@ class SchemaGenerator(JSONAPISchemaGenerator):
             }
         }
         schema['servers'] = [
-            {'url': 'https://cice-prod.paas.cc.columbia.edu/v1', 'description': 'CIC production server'},
-            {'url': 'https://cice-dev.paas.cc.columbia.edu/v1', 'description': ' CIC development server'}
+            {'url': 'https://cic-apps.datascience.columbia.edu/v1/', 'description': 'CIC production server'}
         ]
         
         return schema
