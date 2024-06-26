@@ -4,6 +4,12 @@ Search Index
 
 The search index is managed in AWS OpenSearch
 
+Each environment connects to its own OpenSearch cluster: If you login
+into aws, lambda, configuration and environment variables, it has the
+open search cluster name there. Also, each of the cic-e aws accounts
+should have an open search cluster used by their respective lambdas
+
+
 Updating the index
 -------------------
 
@@ -20,6 +26,7 @@ First-time setup:
 - run the environment, and in the bash window at the bottom, run:
 ```
 python -m venv venv
+source venv/bin/activate
 pip install opensearch-py
 ```
 
@@ -28,4 +35,5 @@ Running code:
 source venv/bin/activate
 python search.py 
 ```
+
 
