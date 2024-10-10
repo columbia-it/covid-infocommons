@@ -16,7 +16,7 @@ Frameworks/Libraries used include:
 Clone the repository:
 ```sh
 $ git clone https://github.com/columbia-it/covid-infocommons.git
-$ cd covid-infocommons/backend
+$ cd covid-infocommons
 ```
 Create a virtual environment to install dependencies in and activate it:
 ```sh
@@ -25,11 +25,12 @@ $ source venv/bin/activate
 ```
 Then install the dependencies:
 ```sh
-(venv)$ pip install -r requirements.txt
+(venv)$ pip install -r backend/requirements.txt
 ```
 Once the dependencies are successfully installed, update the database connection information (leave it as it is for default sqllite3 DB) by editing **DATABASES** section in `cic->settings.py`.
 To create or update your local/dev DB schema, run the (Django) makemigrations and migrate command: 
 ```sh
+(venv)$ cd ~/covid-infocommons/backend
 (venv)$ python manage.py makemigrations
 (venv)$ python manage.py migrate
 ```
@@ -39,10 +40,12 @@ To create or update your local/dev DB schema, run the (Django) makemigrations an
 ### Generating a static schema document
 To generate a YAML schema document:
 ```sh
+(venv)$ cd ~/covid-infocommons/backend
 (venv)$ python manage.py generateschema --generator_class apis.schemas.SchemaGenerator --file docs/schemas/openapi.yaml
 ```
 If you want a JSON schema document:
 ```sh
+(venv)$ cd ~/covid-infocommons/backend
 (venv)$ python manage.py generateschema --generator_class apis.schemas.SchemaGenerator --format openapi-json --file docs/schemas/openapi.json
 ```
 Use the schema with swagger-ui
@@ -51,6 +54,7 @@ You can try out your static schema document with swagger-ui-watcher: Install it 
 
 Run the server:
 ```sh
+(venv)$ cd ~/covid-infocommons/backend
 (venv)$ python manage.py runserver
 ```
 
@@ -65,6 +69,7 @@ This Django application is also configured to run in Lambda on AWS.
 
 To build and deploy to AWS from your workstation, first install zappa:
 ```sh
+(venv)$ cd ~/covid-infocommons/backend
 (venv)$ pip install zappa
 ```
 
@@ -79,7 +84,8 @@ export AWS_PROFILE=<aws profile name>
 ```
 - Run `saml.py` to assume role. Running this command will launch Chrome and prompts CAS login
 ```sh
- (venv)$ python saml.py <role name> <aws account number> 
+(venv)$ cd ~/covid-infocommons/backend
+(venv)$ python saml.py <role name> <aws account number> 
 ```
 - Once the role has been assumed, verify that you are using the correct AWS account:
 ```sh
