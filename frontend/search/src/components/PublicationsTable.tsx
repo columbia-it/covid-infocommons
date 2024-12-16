@@ -127,9 +127,14 @@ class PublicationsTable extends Component<PublicationsTableProps, TableState> {
                                 let author_names = []
                                 if (row.authors) {
                                     for (let i = 0; i < row.authors.length; i++) {
-                                        author_names.push(row.authors[i]['full_name'])
+                                        author_names.push(row.authors[i]['full_name']);
+                                    }
+                                    if (author_names.length > 1) {
+                                        let separated_names = author_names.join(', ');
+                                        author_names = [separated_names];
                                     }
                                 }
+
                                 return ( 
                                     <div>
                                     {/* <ul> */}
