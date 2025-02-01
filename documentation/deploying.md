@@ -42,6 +42,7 @@ python manage.py collectstatic
 
 ### For dev ###
 zappa update dev
+# -- if you see "Warning! Couldn't get function cice-dev", that means you need to update the AWS token
 zappa manage dev "collectstatic --noinput"
 ## IMPORTANT -- if the last command has an error (typically caused by a timeout), run it again
 
