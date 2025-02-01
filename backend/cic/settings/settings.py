@@ -4,6 +4,8 @@ from opensearchpy import OpenSearch
 
 ENVIRONMENT = os.getenv('CIC_ENVIRONMENT')
 
+DEBUG = False
+
 if ENVIRONMENT == 'dev':
     from .dev import * 
 elif ENVIRONMENT == 'prod':
