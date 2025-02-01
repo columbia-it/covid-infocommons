@@ -1,6 +1,7 @@
 import cic_grants
 import cic_orgs
 import cic_people
+import csv
 import json
 import logging
 import requests
@@ -12,38 +13,38 @@ import requests
 # data, the relevant RADx fields are added.
 ################################
 
-def process(grant):
-    if grant['funder']['id'] != 4:
-        return
-    print(f"Processing {grant['award_id']} -- ")
-    org = grant['awardee_organization']
-    pi = grant['principal_investigator']
-    #if pi is None or org is None:
-    #    return
-    #person = cic_people.find_cic_person(pi['first_name'], pi['last_name'])
-    #if person is None or person['attributes'] is None:
-    #    return
-    #person_affil = person['attributes']['affiliations']
-    #if person_affil is None or len(person_affil) == 0:
-    #    print(" -- replacing affiliation")
-    #    person_json = cic_people.person_org_to_cic_format(person['attributes'], org['id'])
-    #    cic_people.update_cic_person(person_json, person['id'])
+def add_radx_to_grant(radx, grant):
+    # compare authors
+    print(f" -- {radx[3]} -- {grant['principal_investigator']['first_name']} {grant['principal_investigator']['last_name']}")
+
+#    cic_grants.update_cic_grant(grant_update_json(title, abstract), grant['id'])
+    
+def grant_update_json(title, abstract):
+    grant_data = {
+        "data": {
+            "type": "Grant", 
+            "attributes": {
+                "title": title,
+                "abstract": abstract
+            }
+        }
+    }
+    return grant_data
 
     
+    
 def main():
-    # process all grants, one page at a time
-    grants = cic_grants.find_cic_grants()
-    print(f"Received {len(grants)} grants")
-    page = 1
-    total = 0
-    while len(grants) > 0:
-        total += len(grants)
-        for g in grants:
-            process(g['attributes'])
-        grants = cic_grants.find_cic_grants(page)
-        print(f"Received {len(grants)} grants -- total {total}")
-        page += 1
-    print("Completed grant processing")
+    found = 0
+    with open('RADx_2024-12.csv', newline='') as csvfile:
+        lines = csv.reader(csvfile, delimiter=',', quotechar='"')
+        for line in lines:
+            g = cic_grants.find_cic_grant(line[4])
+            if g is not None:
+                print(f"{line[4]} --> {g['id']}")
+                found = found + 1
+                add_radx_to_grant(line, g)
+    print(f"Found {found} matching grants.")
+
 
 
 if __name__ == "__main__":

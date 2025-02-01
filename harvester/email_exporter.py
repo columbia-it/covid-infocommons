@@ -6,7 +6,7 @@ import requests
 import json
 
 # NOTE: The exports below are not a "complete" export. They clean data by filtering out:
-#       - email addresses, so we can publish the data in Dryad with a bit of privacy protection
+#       - private email addresses, so we can publish the data in Dryad with a bit of privacy protection
 #       - approved flags, since data in CIC is almost always approved, and these are clutter
 
 

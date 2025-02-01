@@ -21,6 +21,7 @@ from cic.views import index, detail, pi_detail
 from django.contrib.auth.views import LoginView
 
 urlpatterns = [
+    path('', include('apis.urls')),
     path('admin/', admin.site.urls),
     path('grants/', index, name='index'),
     path('grants/<int:grant_id>', detail),
