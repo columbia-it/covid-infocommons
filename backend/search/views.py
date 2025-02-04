@@ -7,6 +7,30 @@ import logging
 
 logger = logging.getLogger('search.view')
 
+
+from django.shortcuts import render, get_object_or_404
+from apis.models import Person, Grant, Asset
+
+# home page
+def index(request):
+    return render(request, 'index.html', {'keywords': request.GET.get('keywords', '')})
+
+# PI details page
+def pi_detail(request, pi_id): 
+    keyword = request.GET.get('keyword', '')
+    person = get_object_or_404(Person, pk=pi_id)
+    grants = Grant.objects.filter(principal_investigator__id=pi_id)
+    assets = Asset.objects.filter(author__id=pi_id)
+    videos = []
+    profile_pic = None
+    for asset in assets:
+        if asset.filename == 'profile_image':
+            profile_pic = asset.download_path
+        elif asset.filename == 'cic_video':
+            videos.append(asset.download_path)
+    return render(request, 'person_detail.html', {'person': person, 'grants': grants, 'keyword': keyword, 'profile_pic': profile_pic, 'videos': videos })
+
+# Get facet by field name in grants index
 def get_facet_by_field(request) :
     field_name = request.GET.get('field', None)
     client = OpenSearch(
@@ -37,12 +61,27 @@ def get_facet_by_field(request) :
 
     return JsonResponse(response)
 
+# Get total number of grants in grants index
+def get_grants_count(request):
+    client = OpenSearch(
+        hosts = [{'host': settings.OPENSEARCH_URL, 'port': 443}],
+        use_ssl = True,
+        verify_certs = True,
+    )
+
+    response = client.count(
+        body = None,
+        index = 'grant_index'
+    )
+
+    return JsonResponse(response)
 
 # Handle the request to search grants with keyword and/or filter values
 def search_grants(request):
     logger.info('View--Grants search started at: {}'.format(datetime.now()))
     start = request.GET.get('from', 0)
     size = request.GET.get('size', 20)
+    get_count = request.GET.get('get_count', False)
 
     # Get filter/search criteria from request
     keyword = request.GET.get('keyword', None)
@@ -243,10 +282,21 @@ def search_grants(request):
         verify_certs = True,
     )
 
-    response = client.search(
-        body = query,
-        index = 'grant_index'
-    )
+
+    if not get_count:
+        response = client.search(
+            body = query,
+            index = 'grant_index'
+        )
+    else:
+        query.pop('size')
+        query.pop('from')
+        query.pop('sort')
+        response = client.count(
+            body = query,
+            index = 'grant_index'
+        )
+    
     logger.info('View--Grants search ended at: {}'.format(datetime.now()))
     return JsonResponse(response)
 
@@ -257,7 +307,7 @@ def search_publications(request):
     
     keyword = request.GET.get('keyword', None)
     doi = request.GET.get('doi', None)
-    author_name = request.GET.get('pi_name', None)
+    author_name = request.GET.get('author_name', None)
 
     query = {
         'size': size,
@@ -337,13 +387,115 @@ def search_publications(request):
 
     return JsonResponse(response)
 
+
+# Get author facet from publications index
+def get_pub_author_facet(request):
+    client = OpenSearch(
+        hosts = [{'host': settings.OPENSEARCH_URL, 'port': 443}],
+        use_ssl = True,
+        verify_certs = True,
+    )
+
+    query = {
+        "size": 0,
+        "aggs" : {
+            "patterns" : {
+                "terms" : { 
+                    "field" : "authors.full_name.keyword",
+                    "size": 10000,
+                    "order": { "_key" : "asc" }
+                }
+            }
+        }
+    }
+    response = client.search(
+        body = query,
+        index = 'publication_index',
+    )
+
+    return JsonResponse(response)
+
+# Get author facet from dataset index
+def get_dataset_author_facet(request):
+    client = OpenSearch(
+        hosts = [{'host': settings.OPENSEARCH_URL, 'port': 443}],
+        use_ssl = True,
+        verify_certs = True,
+    )
+
+    query = {
+        "size": 0,
+        "aggs" : {
+            "patterns" : {
+                "terms" : { 
+                    "field" : "authors.full_name.keyword",
+                    "size": 10000,
+                    "order": { "_key" : "asc" }
+                }
+            }
+        }
+    }
+    response = client.search(
+        body = query,
+        index = 'dataset_index',
+    )
+
+    return JsonResponse(response)
+
+# Get full names facet from person index  
+def get_people_facet_by_field(request):
+    field_name = request.GET.get('field', None)
+    client = OpenSearch(
+        hosts = [{'host': settings.OPENSEARCH_URL, 'port': 443}],
+        use_ssl = True,
+        verify_certs = True,
+    )
+
+    query = {
+        "size": 0,
+        "aggs" : {
+            "patterns" : {
+                "terms" : { 
+                    "field" : "{}.keyword".format(field_name),
+                    "size": 50000,
+                    "order": { "_key" : "asc" }
+                }
+            }
+        }
+    }
+
+    response = client.search(
+        body = query,
+        index = 'person_index',
+    )
+
+    return JsonResponse(response)
+
+# Get total number of people from people index
+def get_people_count(request):
+    client = OpenSearch(
+        hosts = [{'host': settings.OPENSEARCH_URL, 'port': 443}],
+        use_ssl = True,
+        verify_certs = True,
+    )
+
+    response = client.count(
+        body = None,
+        index = 'person_index'
+    )
+
+    return JsonResponse(response)
+
+# Get search results using person index
 def search_people(request):
     start = request.GET.get('from', 0)
     size = request.GET.get('size', 20)
-
+    get_count = request.GET.get('get_count', False)
+    
     # Get filter/search criteria from request
     keyword = request.GET.get('keyword', None)
     affiliated_org_name = request.GET.get('org_name', None)
+    affiliated_org_state = request.GET.get('org_state', None)
 
     query = {
         'size': size,
@@ -381,21 +533,38 @@ def search_people(request):
         query['query']['bool']['must'].append(
             { 
                 'match_phrase': { 
-                    'awardee_organization.name': affiliated_org_name
+                    'affiliations.name': affiliated_org_name
                 }
             },
         )
-      
+
+    if affiliated_org_state:
+        query['query']['bool']['must'].append(
+            {
+                'match': {
+                    'affiliations.state': affiliated_org_state
+                }
+            }
+        )
+
     client = OpenSearch(
         hosts = [{'host': settings.OPENSEARCH_URL, 'port': 443}],
         use_ssl = True,
         verify_certs = True,
     )
 
-    response = client.search(
-        body = query,
-        index = 'person_index'
-    )
+    if not get_count:
+        response = client.search(
+            body = query,
+            index = 'person_index',
+        )
+    else:
+        query.pop('size')
+        query.pop('from')
+        response = client.count(
+            body = query,
+            index = 'person_index',
+        )
 
     return JsonResponse(response)
 
@@ -407,6 +576,7 @@ def search_datasets(request):
     # Get filter/search criteria from request
     keyword = request.GET.get('keyword', None)
     mime_type = request.GET.get('mime_type', None)
+    author_name = request.GET.get('author_name', None)
 
     query = {
         'size': size,
@@ -435,13 +605,27 @@ def search_datasets(request):
                     'title', 
                     'mime_type', 
                     'keywords', 
-                    'principal_investigator.full_name',
-                    'other_investigators.full_name',
-                    'awardee_organization.name'
+                    'authors.full_name'
                 ]
             }
         })
 
+    if author_name:  
+        if 'match_phrase' in query:
+               query['query']['bool']['must']['match_phrase'].append(
+                   {
+                       'authors.full_name': author_name
+                    }
+               )
+        else:
+            query['query']['bool']['must'].append(
+            {
+                'match_phrase': {
+                    'authors.full_name': author_name
+                }
+            }
+        )
+            
     if mime_type:  
         query['query']['bool']['must'].append(
         {
@@ -466,7 +650,8 @@ def search_datasets(request):
     
     response = client.search(
         body = query,
-        index = 'dataset_index'
+        index = 'dataset_index',
+        scroll='1m'
     )
 
     return JsonResponse(response)
