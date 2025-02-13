@@ -73,7 +73,7 @@
 	            {% if grant.principal_investigator.private_emails %}
  	            <a href="{{ grant.principal_investigator.private_emails }}">
 		    {% else %}
-		    <a href="/grants/pi/{{ grant.principal_investigator.id }}">
+		    <a href="/search/pi/{{ grant.principal_investigator.id }}">
 		    {% endif %}  
                   {{ grant.principal_investigator.first_name|add:" "|add:grant.principal_investigator.last_name}}</p></a>
                   {% for other_investigator in grant.other_investigators.all %}

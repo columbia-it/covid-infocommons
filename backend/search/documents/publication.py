@@ -88,7 +88,7 @@ class PublicationDocument(Document):
                 )
             return people
 
-    authors = fields.ObjectField(
+    authors = fields.NestedField(
         properties = get_person_properties.__func__())
     # grants = fields.NestedField(
     #     properties = get_grant_properties.__func__())
