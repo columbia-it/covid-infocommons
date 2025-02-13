@@ -739,5 +739,5 @@ components:
 servers:
 - url: https://cic-apps.datascience.columbia.edu/v1/
   description: CIC production server
-- url: https://cice-dev.paas.cc.columbia.edu/v1
+- url: https://cic-apps-dev.datascience.columbia.edu/v1
   description: CIC development server
