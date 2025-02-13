@@ -6,7 +6,7 @@ import json
 # export URLs like
 # https://cice-dev.paas.cc.columbia.edu/admin/apis/grant/60/change/
 
-CIC_BASE = "https://cice-dev.paas.cc.columbia.edu"
+CIC_BASE = "https://cic-apps-dev.datascience.columbia.edu/"
 CIC_GRANT_REQUEST = f"{CIC_BASE}/v1/grants"
     
 def main():
