@@ -5,7 +5,7 @@ import os
 
 CLIENT_ID = os.getenv('CLIENT_ID', 'CIC_E_REST_APPS')
 CLIENT_SECRET = os.getenv('CLIENT_SECRET')
-REDIRECT_URI = "https://cice-dev.paas.cc.columbia.edu/v1"
+REDIRECT_URI = "https://cic-apps-dev.datascience.columbia.edu/v1"
 OAUTH_TOKEN_URL = os.getenv('OAUTH_URL')
 
 def refresh_token():

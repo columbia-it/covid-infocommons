@@ -20,4 +20,4 @@ People:
   `/v1/people?filter[last_name]=Henderson`
 
 Grants are currently located via the search API. Grants by grant ID:
-- https://cice-dev.paas.cc.columbia.edu/search/grants?keyword=3R01AI072726-10S1
+- https://cic-apps-dev.datascience.columbia.edu/search/grants?keyword=3R01AI072726-10S1

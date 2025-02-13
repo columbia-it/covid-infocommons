@@ -86,7 +86,7 @@ let url = ''
 if (process.env.NODE_ENV == 'production') {
     url = "https://cic-apps.datascience.columbia.edu";
 } else if (process.env.NODE_ENV == 'development') {
-    url = "https://cice-dev.paas.cc.columbia.edu";
+    url = "https://cic-apps-dev.datascience.columbia.edu";
 } else {
     url = "http://127.0.0.1:8000"
 }
