@@ -33,6 +33,7 @@ class SearchBar extends React.Component<any, SearchState> {
 
     render() {
         return (
+     <SearchContext.Provider value={{keyword: this.state.keyword}}>
       <div className='search_bar'>
                 <Box
                     sx={{

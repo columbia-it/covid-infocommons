@@ -224,8 +224,7 @@ header h1 {
   display: inline-block;
 }
 
-.flex-child:first-child {
-  .flex-table-container {
+.flex-table-container {
   display: flex;
 }
 
