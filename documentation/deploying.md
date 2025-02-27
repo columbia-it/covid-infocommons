@@ -65,7 +65,7 @@ this process (~/.aws/credentials) and copy it to the other machine.
 # Ensure the chromedriver executable is first in the path, so it doesn't get clobbered by rbenv's chromedriver
 export PATH=/usr/local/bin:$PATH
 
-cd backend
+cd ~/lib/covid-infocommons/backend
 
 ### For dev ###
 export AWS_PROFILE=cuit-infra-cice-dev
