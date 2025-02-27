@@ -35,9 +35,11 @@ python manage.py collectstatic
 # if schema updates are required
 # python manage.py makemigrations
 # zappa manage dev/prod migrate
-
-## ??Not needed?
+ 
+## Only needed if there are certain types of frontend changes; not sure which ones
 ## delete files from S3 bucket cuit-infra-cice-dev-s3-static
+https://cuit.columbia.edu/aws
+
 ## only delete folders that need to be updated
 
 ### For dev ###
