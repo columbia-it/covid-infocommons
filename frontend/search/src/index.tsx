@@ -102,7 +102,7 @@ class App extends Component<any, AppState> {
     }
 
     currPage() {
-	if (this.currentURL().includes("asearch")) {
+	if (this.currentURL().includes("adv_search")) {
 	    return "search"
 	} else {
 	    return "grants"

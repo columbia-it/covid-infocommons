@@ -63,9 +63,9 @@ def index(request):
     """Home view callable, for the home page."""
     return render(request, 'index.html', {'keywords': request.GET.get('keywords', '')})
 
-def asearch(request):
+def adv_search(request):
     """Advanced search page"""
-    return render(request, 'asearch.html', {'keywords': request.GET.get('keywords', '')})
+    return render(request, 'adv_search.html', {'keywords': request.GET.get('keywords', '')})
 
 def detail(request, grant_id):
     grant = get_object_or_404(Grant, pk=grant_id)

@@ -4,7 +4,7 @@ Basic page loading
 
 URL route is handled by backend/cic/urls.py
 Initial (Django) render is backend/cic/views.py
-Outer HTML is backend/templates/asearch.html
+Outer HTML is backend/templates/adv_search.html
 - hands to search/main.js, which is built by webpack
 - ??? not clear whether it is backend/search/static/search/main.js OR backend/static/search/main.js
 React section starts at frontend/search/src/index.html and frontend/search/src/index.tsx
