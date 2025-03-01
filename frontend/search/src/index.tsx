@@ -97,6 +97,18 @@ class App extends Component<any, AppState> {
         this.get_grants_data()
     }
 
+    currentURL() {
+	return window.location.href;
+    }
+
+    currPage() {
+	if (this.currentURL().includes("asearch")) {
+	    return "search"
+	} else {
+	    return "grants"
+	}
+    }
+    
     searchHandler = (event:any) => {
         event.preventDefault()
         const keyword = (document.getElementById('outlined-search') as HTMLInputElement).value;
@@ -471,7 +483,7 @@ class App extends Component<any, AppState> {
                     {
                         this.state.search_in_progress == false ? 
                         <div className='results-row'>
-                                Showing <span style={{fontWeight: 'bold', color: '#000000'}}>{ this.state.totalCount }</span> results.
+                            Showing <span style={{fontWeight: 'bold', color: '#000000'}}>{ this.state.totalCount }</span> results for { this.currPage() } page.
                         </div> 
                         : <div className='results-row'>Waiting for results...
                         </div> 
@@ -482,7 +494,7 @@ class App extends Component<any, AppState> {
 	                            onClick={ this.exportToCsv } 
                                 className='download-button' 
                                 variant="contained"
-                                endIcon={ <DownloadIcon /> }>Download Results as CSV (up to 500 awards)</Button>
+            endIcon={ <DownloadIcon /> }>Download Results as CSV (up to 500 awards) </Button>
                         </div>
                     </div>    
                     <br/>
