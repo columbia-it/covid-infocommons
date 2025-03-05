@@ -8,6 +8,7 @@ const MiniCssExtractPlugin = require("mini-css-extract-plugin");
 module.exports = {
     entry: {
 	main: path.join(__dirname, "src", "index.tsx"),
+	grants: path.join(__dirname, "src", "grants.tsx"),
 	adv_search: path.join(__dirname, "src", "adv_search.tsx"),
     },
     output: { 
