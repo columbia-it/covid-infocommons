@@ -452,84 +452,84 @@ class App extends Component<any, AppState> {
 
     render() {
         return (
-            <Box
-                sx={{
-                    width: '100%',
-                    '& .MuiTextField-root': { width: '100%' },
-                }}
-                component="form"
-                noValidate
-                autoComplete="off"
-            >
-                <div className='root'>
-                    <link rel="stylesheet" href="https://fonts.googleapis.com/icon?family=Material+Icons"></link>
-                    <form className='search-form'>
-                        <TextField
-                            id="outlined-search" 
-                            label="Search" 
-                            type="search"
-                            value={ this.state.keyword }
-                            onKeyDown={ this.enterHandler }
-                            onChange={ this.searchHandler }/>
-
-                        {/* <Button
-	                    sx={styles}
-                            onClick={ this.searchHandler } 
-                            className='search-button' 
-                            variant="contained">Search</Button> */}
-                    </form>
-                    <br/>
-                    <div className='flex-container'>
-                    {
-                        this.state.search_in_progress == false ? 
-                        <div className='results-row'>
-                            Showing <span style={{fontWeight: 'bold', color: '#000000'}}>{ this.state.totalCount }</span> results for { this.currPage() } page.
-                        </div> 
-                        : <div className='results-row'>Waiting for results...
-                        </div> 
-                    } 
-                        
-                        <div className='download-csv'>                            
-                            <Button sx={styles}
-	                            onClick={ this.exportToCsv } 
-                                className='download-button' 
-                                variant="contained"
-            endIcon={ <DownloadIcon /> }>Download Results as CSV (up to 500 awards) IND</Button>
-                        </div>
-                    </div>    
-                    <br/>
-                    <div className='flex-container'>
-                        <div className='flex-child'>
-                            <GrantsTable
-                                totalCount={ this.state.totalCount } 
-                                data={ this.state.data} 
-                                url={ this.state.url }
-                                pageChangeHandler={ this.pageChangeHandler }
-                                pageIndex={ this.state.pageIndex }
-                                keyword={ this.state.keyword }
-                            />
-                </div>
-                <div className='flex-child'>
-                            <div>
-                                <GrantsFilter
-                                    awardee_org_names={ this.state.awardee_org_names }
-                                    funder_divisions={ this.state.funder_divisions }
-                                    pi_names={ this.state.pi_names }
-                                    program_official_names={ this.state.po_names}
-                                    funder_names={ this.state.funder_names }
-                                    filterChangeHandler={ this.filterChangeHandler }
-                                />
-                            </div>
-                        </div>
-                </div>
-
-                </div>
-            </Box>
-        );
-    }
-    
-}
-
-const rootElement = document.getElementById("root");
-ReactDOM.render(<App />, rootElement);
+  <Box
+    sx={{
+    width: '100%',
+    '& .MuiTextField-root': { width: '100%' },
+    }}
+    component="form"
+    noValidate
+    autoComplete="off"
+    >
+    <div className='root'>
+      <link rel="stylesheet" href="https://fonts.googleapis.com/icon?family=Material+Icons"></link>
+      <form className='search-form'>
+        <TextField
+          id="outlined-search" 
+          label="Search" 
+          type="search"
+          value={ this.state.keyword }
+          onKeyDown={ this.enterHandler }
+          onChange={ this.searchHandler }/>
+	
+        {/* <Button
+	      sx={styles}
+              onClick={ this.searchHandler } 
+              className='search-button' 
+              variant="contained">Search</Button> */}
+      </form>
+      <br/>
+      <div className='flex-container'>
+        {
+        this.state.search_in_progress == false ? 
+        <div className='results-row'>
+          Showing <span style={{fontWeight: 'bold', color: '#000000'}}>{ this.state.totalCount }</span> results for { this.currPage() } page.
+        </div> 
+        : <div className='results-row'>Waiting for results...
+        </div> 
+        } 
         
+        <div className='download-csv'>                            
+          <Button sx={styles}
+	          onClick={ this.exportToCsv } 
+                  className='download-button' 
+                  variant="contained"
+		  endIcon={ <DownloadIcon /> }>Download Results as CSV (up to 500 awards)</Button>
+        </div>
+      </div>    
+      <br/>
+      <div className='flex-container'>
+        <div className='flex-child'>
+          <GrantsTable
+            totalCount={ this.state.totalCount } 
+            data={ this.state.data} 
+            url={ this.state.url }
+            pageChangeHandler={ this.pageChangeHandler }
+            pageIndex={ this.state.pageIndex }
+            keyword={ this.state.keyword }
+            />
+        </div>
+        <div className='flex-child'>
+          <div>
+            <GrantsFilter
+              awardee_org_names={ this.state.awardee_org_names }
+              funder_divisions={ this.state.funder_divisions }
+              pi_names={ this.state.pi_names }
+              program_official_names={ this.state.po_names}
+              funder_names={ this.state.funder_names }
+              filterChangeHandler={ this.filterChangeHandler }
+              />
+          </div>
+        </div>
+      </div>
+      
+    </div>
+  </Box>
+  );
+  }
+  
+  }
+  
+  const rootElement = document.getElementById("root");
+  ReactDOM.render(<App />, rootElement);
+  
