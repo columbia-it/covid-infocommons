@@ -6,10 +6,13 @@ const static_dir = path.resolve("../../").concat("/backend/search/static/search"
 const MiniCssExtractPlugin = require("mini-css-extract-plugin");
 
 module.exports = {
-    entry: path.join(__dirname, "src", "index.tsx"),
+    entry: {
+	main: path.join(__dirname, "src", "index.tsx"),
+	adv_search: path.join(__dirname, "src", "adv_search.tsx"),
+    },
     output: { 
         path: static_dir,
-        filename: 'main.js'
+        filename: '[name].js'
     },
     optimization: {
         minimize: true,

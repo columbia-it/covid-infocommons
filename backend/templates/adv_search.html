@@ -22,7 +22,7 @@
     <!-- Include FontAwesome for icons -->
     <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/font-awesome/4.4.0/css/font-awesome.min.css">
     
-    <title>Covid Information Commons -- search</title>
+    <title>Covid Information Commons -- adv_search</title>
 </head>
 <body>
     <script type="text/javascript">
@@ -32,10 +32,11 @@
     {% include "cic_header.html" %}
     <div id="root">
     </div>
+    <h1>SEARCHIT</h1>
     <script type="text/javascript">
         var keywords = "{{ keywords }}";
       </script>
-    <script type="text/javascript" src="{% static 'search/main.js'%}">
+    <script type="text/javascript" src="{% static 'search/adv_search.js'%}">
     </script>
 
     {% include "cic_footer.html" %}
