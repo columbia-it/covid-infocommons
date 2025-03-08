@@ -327,7 +327,7 @@ class App extends Component<any, AppState> {
             this.setState({ totalCount: results.data.hits.total.value })
 
             var newArray = results.data.hits.hits.map(function(val:any) {
-		console.log('App.get_pi_data() -- result is ' + val)
+		console.log('App.get_pi_data() -- result is ' + JSON.stringify(val))
                 let pi_name = ''
                 let pi_id = ''
                 let funder_name = ''
