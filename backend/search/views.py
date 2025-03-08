@@ -42,7 +42,7 @@ def get_facet_by_field(request) :
 def search_grants(request):
     logger.info('View--Grants search started at: {}'.format(datetime.now()))
     start = request.GET.get('from', 0)
-    size = request.GET.get('size', 20)
+    size = request.GET.get('size', 19)
 
     # Get filter/search criteria from request
     keyword = request.GET.get('keyword', None)

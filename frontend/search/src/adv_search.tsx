@@ -168,6 +168,11 @@ class App extends Component<any, AppState> {
         return funder_facet;
     }
 
+
+
+
+
+    
     getDataPromise() {
         var params: { [key: string]: any } = {};
         params.from = 0
@@ -286,10 +291,72 @@ class App extends Component<any, AppState> {
             this.setState({ data: newArray })
             this.get_funder_facet()
             console.log('App.get_grants_data()--Ended at: ' + new Date().toLocaleString())
-
+	    this.get_pi_data()
         })
     }
 
+    get_pi_data = (keyword?:string) => {
+        console.log('App.get_pi_data()--Started at: ' + new Date().toLocaleString())
+        this.setState({
+            search_in_progress: true
+        })
+        var url = this.state.url.concat('/search/people')
+        var params: { [key: string]: any } = {};
+
+        let from:number = 0
+
+        if (this.state.pageIndex > 0) {
+            from = (this.state.pageIndex * 20) + 1
+        } 
+        params.from = from
+        if (!keyword) {
+            keyword = (document.getElementById('outlined-search') as HTMLInputElement).value;
+        }
+        if (keyword && keyword.length > 0) {
+            params.keyword = keyword
+        }
+
+        console.log('App.get_pi_data()--Request sent at: ' + new Date().toLocaleString())
+	console.log(url + JSON.stringify(params))
+        axios.get(url, {params: params}).then(results => {
+            console.log('App.get_pi_data()--Response received at: ' + new Date().toLocaleString())
+
+            this.setState({
+                search_in_progress: false
+            })
+            this.setState({ totalCount: results.data.hits.total.value })
+
+            var newArray = results.data.hits.hits.map(function(val:any) {
+		console.log('App.get_pi_data() -- result is ' + val)
+                let pi_name = ''
+                let pi_id = ''
+                let funder_name = ''
+                let pi_private_emails = ''
+                if (val['_source']['principal_investigator'] != null) {
+                    pi_name = val['_source']['principal_investigator']['full_name']
+                    pi_id = val['_source']['principal_investigator']['id']
+                    pi_private_emails = val['_source']['principal_investigator']['private_emails']
+                }
+                return {
+                    id: val['_source']['id'],
+                    title: val['_source']['title'],
+                    award_id: val['_source']['award_id'],
+                    pi: pi_name,
+                    pi_id: pi_id,
+                    pi_private_emails: pi_private_emails,
+                    abstract: val['_source']['abstract'],
+                    award_amount: (val['_source']['award_amount'] !== null) ? val['_source']['award_amount'] : 0,
+                  /*  funder_name: ('name' in val['_source']['funder']) ? val['_source']['funder']['name'] : '', */
+                    awardee_org: val['_source']['awardee_organization']['name']
+                }
+            })
+            this.setState({ data: newArray })
+            this.get_funder_facet()
+            console.log('App.get_pi_data()--Ended at: ' + new Date().toLocaleString())
+
+        })
+    }
+    
     downloadFile = (data:any, fileName:any, fileType:any) => {
         const blob = new Blob([data], { type: fileType })
         const a = document.createElement('a')
@@ -302,47 +369,6 @@ class App extends Component<any, AppState> {
         })
         a.dispatchEvent(clickEvt)
         a.remove()
-    }
-
-    exportToCsv = (event:any) => {
-        event.preventDefault()
-        // Headers for each column
-        let headers = ['Funder, Award ID, Award Amount, Title, PI Name, Awardee Organization, Abstract, CIC ID']
-        // Convert grants data to csv
-        this.getDataPromise().then(res => {
-            let grantsCsv = res.reduce((acc:any, grant:any) => {
-                let grant_to_add:Grant = grant
-                let abstract = grant_to_add.abstract
-                if (abstract) {
-                    abstract = grant_to_add.abstract.replaceAll('"', "'")
-                }
-                let awardee_org = grant_to_add.awardee_org
-                if (awardee_org) {
-                    if (awardee_org.indexOf(',') > -1) {
-                        awardee_org = grant_to_add.awardee_org.replaceAll(',', '')
-                    }
-                }
-                let pi_name = grant_to_add.pi
-                if (pi_name) {
-                    if (pi_name.indexOf(',') > -1) {
-                        pi_name = grant_to_add.pi.replaceAll(',', '')
-                    }
-                }
-                acc.push([
-                    grant_to_add.funder_name,
-                    grant_to_add.award_id,
-                    grant_to_add.award_amount,
-                    '"' + grant_to_add.title + '"', 
-                    pi_name,
-                    awardee_org,
-                    '"' + abstract + '"', 
-                    grant_to_add.id
-                ]
-                .join(','))
-                return acc
-            }, [])
-            this.downloadFile([...headers, ...grantsCsv].join('\n'), 'grants.csv', 'text/csv')    
-        })
     }
 
     enterHandler = (e:any) => {
@@ -489,13 +515,6 @@ class App extends Component<any, AppState> {
         </div> 
         } 
         
-        <div className='download-csv'>                            
-          <Button sx={styles}
-	          onClick={ this.exportToCsv } 
-                  className='download-button' 
-                  variant="contained"
-		  endIcon={ <DownloadIcon /> }>Download Results as CSV (up to 500 awards)</Button>
-        </div>
       </div>    
       <br/>
       <div className='flex-container'>
@@ -508,18 +527,6 @@ class App extends Component<any, AppState> {
             pageIndex={ this.state.pageIndex }
             keyword={ this.state.keyword }
             />
-        </div>
-        <div className='flex-child'>
-          <div>
-            <GrantsFilter
-              awardee_org_names={ this.state.awardee_org_names }
-              funder_divisions={ this.state.funder_divisions }
-              pi_names={ this.state.pi_names }
-              program_official_names={ this.state.po_names}
-              funder_names={ this.state.funder_names }
-              filterChangeHandler={ this.filterChangeHandler }
-              />
-          </div>
         </div>
       </div>
       <br/>
@@ -534,18 +541,6 @@ class App extends Component<any, AppState> {
             pageIndex={ this.state.pageIndex }
             keyword={ this.state.keyword }
             />
-        </div>
-        <div className='flex-child'>
-          <div>
-            <GrantsFilter
-              awardee_org_names={ this.state.awardee_org_names }
-              funder_divisions={ this.state.funder_divisions }
-              pi_names={ this.state.pi_names }
-              program_official_names={ this.state.po_names}
-              funder_names={ this.state.funder_names }
-              filterChangeHandler={ this.filterChangeHandler }
-              />
-          </div>
         </div>
       </div>
     </div>
