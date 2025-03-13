@@ -12,6 +12,14 @@ import axios from "axios";
 import DownloadIcon from '@mui/icons-material/Download';
 import axiosRetry from 'axios-retry';
 
+import Link from '@mui/material/Link';
+
+/* import {
+    Link as RouterLink,
+    LinkProps as RouterLinkProps,
+  } from 'react-router-dom';
+*/
+
 axiosRetry(axios, {retries: 3});
 
 const styles = {
@@ -86,14 +94,6 @@ class App extends Component<any, HomeState> {
     state:HomeState = {
         keyword: this.props.keyword,
         url: '',
-        // grants: this.props.grants,
-        // total_grants: this.props.total_grants,
-        // people: this.props.people,
-        // total_people: this.props.total_people,
-        // publications: this.props.publications,
-        // total_publications: this.props.total_publications,
-        // datasets: this.props.datasets,
-        // total_datasets: this.props.total_datasets
         grants: [],
         total_grants: 0,
         people: [],
@@ -383,8 +383,7 @@ class App extends Component<any, HomeState> {
       </form>
       <br/>
 
-      <div className='flex-container'>
-        <div className='flex-child'>
+      <div>
 	  <GrantsTable
 	    totalCount={ this.state.total_grants } 
             data={ this.state.grants} 
@@ -392,11 +391,17 @@ class App extends Component<any, HomeState> {
 	    pageIndex={ 0 }
             keyword={ this.state.keyword }
             />
-        </div>
-      </div>
+       </div>
+       <div className='flex-container'>
+                        <div className='flex-child'></div>
+                        <div className='flex-child'>
+	    Placeholder for total grants link
+                        </div>
+       </div>
+
       <br/>
 
-	<div>
+      <div>
 	    <PeopleTable
                         paging={ false }
                         totalCount={ this.state.total_people }
@@ -405,7 +410,7 @@ class App extends Component<any, HomeState> {
                         pageIndex={ 0 }
                         keyword={ this.state.keyword }
                     />
-	</div>    
+       </div>    
 		
     </div>
   </Box>
