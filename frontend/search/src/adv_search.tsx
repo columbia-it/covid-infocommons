@@ -1,7 +1,9 @@
 import ReactDOM from 'react-dom';
 import "./main.css"
 import GrantsTable from './components/GrantTable';
-import { GrantsFilter, Facet } from './components/GrantsFilter';
+import PeopleTable from "./components/PeopleTable";
+import PublicationsTable from "./components/PublicationsTable";
+import DatasetsTable from "./components/DatasetsTable";
 import Box from '@mui/material/Box';
 import TextField from '@mui/material/TextField';
 import Button from '@mui/material/Button';
@@ -34,33 +36,42 @@ interface Grant {
     awardee_org: string
 }
 
-interface AppState {
-    data: Grant[]
-    url: string
-    totalCount: number
-    pageIndex: number
-    awardee_org_names: Facet[]
-    funder_divisions: Facet[]
-    pi_names: Facet[]
-    po_names: Facet[]
-    filter: Filter
-    keyword: string
-    funder_names: Facet[]
-    search_in_progress: boolean
+interface Person {
+    id: number
+    first_name: string
+    last_name: string
+    full_name: string
+    institutions: string[]
 }
 
-interface Filter {
-    nsf_division?: string
-    nih_division?: string
-    funder_division?: string
-    start_date?: Date
-    end_date?: Date
-    awardee_organization?: string
-    org_state?: string
-    pi_name?: string
-    po_name?: string
-    funder_name?: string
+interface Publication {
+    id: number
+    title: string
+    doi: string
+    authors: string[]
 }
+
+interface Dataset {
+    id: number
+    title: string
+    doi: string
+    authors: string[]
+}
+
+
+interface HomeState {
+    keyword: string
+    url: string
+    grants: Grant[]
+    total_grants: number
+    people: Person[]
+    total_people: number
+    publications: Publication[]
+    total_publications: number
+    datasets: Dataset[]
+    total_datasets: number
+}
+
 
 let url = ''
 if (process.env.NODE_ENV == 'production') {
@@ -71,26 +82,30 @@ if (process.env.NODE_ENV == 'production') {
     url = "http://127.0.0.1:8000"
 }
 
-class App extends Component<any, AppState> {
-    state:AppState = {
-        data: [],
-        url: url,
-        totalCount: 0,
-        pageIndex: 0,
-        awardee_org_names: [],
-        funder_divisions: [],
-        pi_names: [],
-        po_names: [],
-        keyword: (window as any)['keywords'],
-        filter: {},
-        funder_names: [],
-        search_in_progress: false
+class App extends Component<any, HomeState> {
+    state:HomeState = {
+        keyword: this.props.keyword,
+        url: '',
+        // grants: this.props.grants,
+        // total_grants: this.props.total_grants,
+        // people: this.props.people,
+        // total_people: this.props.total_people,
+        // publications: this.props.publications,
+        // total_publications: this.props.total_publications,
+        // datasets: this.props.datasets,
+        // total_datasets: this.props.total_datasets
+        grants: [],
+        total_grants: 0,
+        people: [],
+        total_people: 0,
+        publications: [],
+        total_publications: 0,
+        datasets: [],
+        total_datasets: 0
     }
 
     constructor(props:any) {
         super(props)
-        this.pageChangeHandler = this.pageChangeHandler.bind(this)
-        this.filterChangeHandler = this.filterChangeHandler.bind(this)
     }
 
     componentDidMount = () => {
@@ -116,63 +131,6 @@ class App extends Component<any, AppState> {
         this.get_grants_data(keyword)
     }
 
-    get_org_name_facet() {
-        var url = this.state.url.concat('/search/facets?field=awardee_organization.name')
-        axios.get(url).then(results => {
-            this.setState({ awardee_org_names: results.data.aggregations.patterns.buckets })
-            this.get_pi_name_facet()    
-        })
-    }
-
-    get_funder_division_facet() {
-        var url = this.state.url.concat('/search/facets?field=funder_divisions')
-        axios.get(url).then(results => {
-            this.setState({ funder_divisions: results.data.aggregations.patterns.buckets })
-        })
-    }
-
-    get_pi_name_facet(): Facet[] {
-        console.log('App.get_pi_name_facet()--Started at: ' + new Date().toLocaleString())
-        var url = this.state.url.concat('/search/facets?field=principal_investigator.full_name')
-        let pi_facet: Facet[] = [];
-        axios.get(url).then(results => {
-            this.setState({ pi_names: results.data.aggregations.patterns.buckets })
-            pi_facet = results.data.aggregations.patterns.buckets
-            this.get_po_name_facet()
-        })
-        console.log('App.get_pi_name_facet()--Ended at: ' + new Date().toLocaleString())
-        return pi_facet;
-    }
-
-    get_po_name_facet(): Facet[] {
-        console.log('App.get_po_name_facet()--Started at: ' + new Date().toLocaleString())
-        var url = this.state.url.concat('/search/facets?field=program_officials.full_name')
-        let po_facet: Facet[] = [];
-        axios.get(url).then(results => {
-            this.setState({ po_names: results.data.aggregations.patterns.buckets })
-            po_facet = results.data.aggregations.patterns.buckets
-            this.get_funder_division_facet()
-        })
-        console.log('App.get_po_name_facet()--Ended at: ' + new Date().toLocaleString())
-        return po_facet;
-    }
-
-    get_funder_facet(): Facet[] {
-        var url = this.state.url.concat('/search/facets?field=funder.name')
-        let funder_facet: Facet[] = [];
-        axios.get(url).then(results => {
-            this.setState({ funder_names: results.data.aggregations.patterns.buckets })
-            funder_facet = results.data.aggregations.patterns.buckets
-            this.get_org_name_facet()
-        })
-        return funder_facet;
-    }
-
-
-
-
-
-    
     getDataPromise() {
         var params: { [key: string]: any } = {};
         params.from = 0
@@ -180,12 +138,6 @@ class App extends Component<any, AppState> {
         let keyword = (document.getElementById('outlined-search') as HTMLInputElement).value;
         if (keyword && keyword.length > 0) {
             params.keyword = keyword
-        }
-        let property: keyof typeof this.state.filter
-        for (property in this.state.filter) {
-            if (this.state.filter[property]) {
-                params[property] = this.state.filter[property]
-            }
         }
         return axios({
                 url: url + '/search/grants',
@@ -231,17 +183,12 @@ class App extends Component<any, AppState> {
 
     get_grants_data = (keyword?:string) => {
         console.log('App.get_grants_data()--Started at: ' + new Date().toLocaleString())
-        this.setState({
-            search_in_progress: true
-        })
+
         var url = this.state.url.concat('/search/grants')
         var params: { [key: string]: any } = {};
 
         let from:number = 0
 
-        if (this.state.pageIndex > 0) {
-            from = (this.state.pageIndex * 20) + 1
-        } 
         params.from = from
         if (!keyword) {
             keyword = (document.getElementById('outlined-search') as HTMLInputElement).value;
@@ -250,20 +197,11 @@ class App extends Component<any, AppState> {
             params.keyword = keyword
         }
 
-        let property: keyof typeof this.state.filter
-        for (property in this.state.filter) {
-            if (this.state.filter[property]) {
-                params[property] = this.state.filter[property]
-            }
-        }
         console.log('App.get_grants_data()--Request sent at: ' + new Date().toLocaleString())
         axios.get(url, {params: params}).then(results => {
             console.log('App.get_grants_data()--Response received at: ' + new Date().toLocaleString())
 
-            this.setState({
-                search_in_progress: false
-            })
-            this.setState({ totalCount: results.data.hits.total.value })
+            this.setState({ total_grants: results.data.hits.total.value })
 
             var newArray = results.data.hits.hits.map(function(val:any) {
                 let pi_name = ''
@@ -288,26 +226,58 @@ class App extends Component<any, AppState> {
                     awardee_org: val['_source']['awardee_organization']['name']
                 }
             })
-            this.setState({ data: newArray })
-            this.get_funder_facet()
+            this.setState({ grants: newArray })
             console.log('App.get_grants_data()--Ended at: ' + new Date().toLocaleString())
-	    this.get_pi_data()
+	    //  this.get_pi_data()
+	    this.get_people()
         })
     }
 
-    get_pi_data = (keyword?:string) => {
-        console.log('App.get_pi_data()--Started at: ' + new Date().toLocaleString())
-        this.setState({
-            search_in_progress: true
-        })
+
+    get_people = (kw?:string) => {
         var url = this.state.url.concat('/search/people')
         var params: { [key: string]: any } = {};
 
         let from:number = 0
 
-        if (this.state.pageIndex > 0) {
-            from = (this.state.pageIndex * 20) + 1
-        } 
+        params.from = from
+        if (!kw) {
+            kw = (document.getElementById('outlined-search') as HTMLInputElement).value;
+        }
+        if (kw && kw.length > 0) {
+            params.keyword = kw
+        }
+        params['get_count'] = true
+        console.log(params)
+        axios.get(url, {params: params}).then(count_result => {
+            this.setState({ total_people: count_result.data.count })
+            delete params.get_count
+            axios.get(url, {params: params}).then(results => {
+                this.setState({ total_people: results.data.hits.total.value })
+
+                var newArray = results.data.hits.hits.map(function(val:any) {
+                    return {
+                        id: val['_source']['id'],
+                        name: val['_source']['full_name'],
+                        emails: val['_source']['emails'],
+                        private_emails: val['_source']['private_emails'],
+                        affiliations: val['_source']['affiliations']
+                    }
+                })
+                this.setState({ people: newArray })
+        //        this.get_publications()
+            })
+        })
+    }
+    
+    get_pi_data = (keyword?:string) => {
+        console.log('App.get_pi_data()--Started at: ' + new Date().toLocaleString())
+
+        var url = this.state.url.concat('/search/people')
+        var params: { [key: string]: any } = {};
+
+        let from:number = 0
+
         params.from = from
         if (!keyword) {
             keyword = (document.getElementById('outlined-search') as HTMLInputElement).value;
@@ -321,10 +291,7 @@ class App extends Component<any, AppState> {
         axios.get(url, {params: params}).then(results => {
             console.log('App.get_pi_data()--Response received at: ' + new Date().toLocaleString())
 
-            this.setState({
-                search_in_progress: false
-            })
-            this.setState({ totalCount: results.data.hits.total.value })
+            this.setState({ total_people: results.data.hits.total.value })
 
             var newArray = results.data.hits.hits.map(function(val:any) {
 		console.log('App.get_pi_data() -- result is ' + JSON.stringify(val))
@@ -350,8 +317,7 @@ class App extends Component<any, AppState> {
                     awardee_org: val['_source']['awardee_organization']['name']
                 }
             })
-            this.setState({ data: newArray })
-            this.get_funder_facet()
+            this.setState({ people: newArray })
             console.log('App.get_pi_data()--Ended at: ' + new Date().toLocaleString())
 
         })
@@ -378,95 +344,6 @@ class App extends Component<any, AppState> {
         }
     }
 
-    pageChangeHandler(page:number, pageSize: number) {
-        this.setState({
-            pageIndex: page
-        })
-        this.get_grants_data()
-    }
-
-
-    filterChangeHandler(fieldName?:string, value?:any, reset?:boolean) {
-        if (reset) {
-            this.state.filter = {}
-            this.get_grants_data()
-            return
-        }
-        var currentFilter = this.state.filter
-        if (fieldName == 'nsf_division') {
-            if (!value || value.length === 0) {
-                delete currentFilter.nsf_division;
-            } else {
-                currentFilter['nsf_division'] = value
-            }
-        }
-        if (fieldName == 'nih_division') {
-            if (!value || value.length === 0) {
-                delete currentFilter.nih_division;
-            } else {
-                currentFilter['nih_division'] = value
-            }
-        }
-        if (fieldName == 'funder_division') {
-            if (!value || value.length === 0) {
-                delete currentFilter.funder_division;
-            } else {
-                currentFilter['funder_division'] = value
-            }
-        }
-        if (fieldName == 'awardee_organization') {
-            if (!value || value.length === 0) {
-                delete currentFilter.awardee_organization;
-            } else {
-                currentFilter['awardee_organization'] = value
-            }
-        }
-        if (fieldName == 'startDate') {
-            if (value) {
-                currentFilter['start_date'] = this.removeTime(value)
-            } else {
-                delete currentFilter.start_date;
-            }
-        }
-        if (fieldName == 'endDate') {
-            if (value) {
-                currentFilter['end_date'] = this.removeTime(value)
-            } else {
-                delete currentFilter.end_date;
-            }
-        }
-        if (fieldName == 'org_state') {
-            if (!value || value.length === 0) {
-                delete currentFilter.org_state;
-            } else {
-                currentFilter['org_state'] = value
-            }
-        }
-        if (fieldName == 'pi_name') {
-            if (!value || value.length === 0) {
-                delete currentFilter.pi_name;
-            } else {
-                currentFilter['pi_name'] = value
-            }
-        }
-        if (fieldName == 'po_name') {
-            if (!value || value.length === 0) {
-                delete currentFilter.po_name;
-            } else {
-                currentFilter['po_name'] = value
-            }
-        }
-        if (fieldName == 'funder_name') {
-            if (!value || value.length === 0) {
-                delete currentFilter.funder_name;
-            } else {
-                currentFilter['funder_name'] = value
-            }
-        }
-        console.log(currentFilter)
-        this.setState({filter: currentFilter})
-        this.get_grants_data()
-    }
 
     removeTime(date:Date) {
         return new Date(
@@ -505,44 +382,31 @@ class App extends Component<any, AppState> {
               variant="contained">Search</Button> */}
       </form>
       <br/>
-      <div className='flex-container'>
-        {
-        this.state.search_in_progress == false ? 
-        <div className='results-row'>
-          Showing <span style={{fontWeight: 'bold', color: '#000000'}}>{ this.state.totalCount }</span> results for { this.currPage() } page.
-        </div> 
-        : <div className='results-row'>Waiting for results...
-        </div> 
-        } 
-        
-      </div>    
-      <br/>
+
       <div className='flex-container'>
         <div className='flex-child'>
 	  <GrantsTable
-	    totalCount={ this.state.totalCount } 
-            data={ this.state.data} 
+	    totalCount={ this.state.total_grants } 
+            data={ this.state.grants} 
             url={ this.state.url }
-            pageChangeHandler={ this.pageChangeHandler }
-            pageIndex={ this.state.pageIndex }
+	    pageIndex={ 0 }
             keyword={ this.state.keyword }
             />
         </div>
       </div>
       <br/>
-      
-      <div className='flex-container'>
-        <div className='flex-child'>
-	  <GrantsTable
-	    totalCount={ this.state.totalCount } 
-            data={ this.state.data} 
-            url={ this.state.url }
-            pageChangeHandler={ this.pageChangeHandler }
-            pageIndex={ this.state.pageIndex }
-            keyword={ this.state.keyword }
-            />
-        </div>
-      </div>
+
+	<div>
+	    <PeopleTable
+                        paging={ false }
+                        totalCount={ this.state.total_people }
+                        data={ this.state.people.slice(0, 5) } 
+                        url={ this.state.url }
+                        pageIndex={ 0 }
+                        keyword={ this.state.keyword }
+                    />
+	</div>    
+		
     </div>
   </Box>
   );

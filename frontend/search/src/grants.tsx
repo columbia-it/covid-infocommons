@@ -483,7 +483,7 @@ class App extends Component<any, AppState> {
         {
         this.state.search_in_progress == false ? 
         <div className='results-row'>
-          Showing <span style={{fontWeight: 'bold', color: '#000000'}}>{ this.state.totalCount }</span> results for { this.currPage() } page.
+          Showing <span style={{fontWeight: 'bold', color: '#000000'}}>{ this.state.totalCount }</span> results for grants page.
         </div> 
         : <div className='results-row'>Waiting for results...
         </div> 
