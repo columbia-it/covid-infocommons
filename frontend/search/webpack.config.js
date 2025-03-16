@@ -9,6 +9,7 @@ module.exports = {
     entry: {
 	grants: path.join(__dirname, "src", "grants.tsx"),
 	adv_search: path.join(__dirname, "src", "adv_search.tsx"),
+	main: path.join(__dirname, "src", "main.tsx"), //only used for centralized CSS
     },
     output: { 
         path: static_dir,

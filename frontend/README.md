@@ -29,9 +29,11 @@ Styling
 ========
 
 The stylesheet in `frontend/src/main.css` is the primary stylesheet
-for the site. When running `npm run webpack`, the stylesheet is copied to
-the appropriate backend location. This stylesheet controls the header
-and footer.
+for the site. When running `npm run webpack`, the stylesheet is copied
+to several backend locations. (These may not all be necessary, but
+they don't take much space, so not a big deal.) The versions in the
+backend folders control the header and footer directly, and are copied
+to S3 so they can serve as stylesheets for the react components.
 
 Within the React sections of the page, the stylesheet is largely
 overridden by the Material UI settings.
@@ -43,6 +45,7 @@ overridden by the Material UI settings.
 - Some components have settings overridden by `sx` attributes.
 - When the `sx` attribute cannot be applied to a component, an explicit CSS block is dropped in,
   using the `emotion/react` toolkit.
+
 
 Known good versions
 ====================

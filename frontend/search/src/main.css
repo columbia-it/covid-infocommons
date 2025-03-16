@@ -2,6 +2,9 @@
   !*** css ./node_modules/css-loader/dist/cjs.js!./src/main.css ***!
   \****************************************************************/
 
+
+/* frontend/search/src/main.css improved again */
+
 /* simplify the screen for mobile */
 @media only screen and (max-width: 700px) { 
     #site-nav {
@@ -228,7 +231,12 @@ header h1 {
 }
 
 .flex-child:not(:first-child)  {
-  flex: 1;
+    flex: 1;
+}
+
+.adv-link-text {
+    text-align: right;
+    padding-top: 5px;
 }
 
 .filter-div {

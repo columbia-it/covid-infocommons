@@ -14,11 +14,12 @@ import axiosRetry from 'axios-retry';
 
 import Link from '@mui/material/Link';
 
-/* import {
-    Link as RouterLink,
-    LinkProps as RouterLinkProps,
-  } from 'react-router-dom';
-*/
+// TODO next
+// spacing on the links
+//  -- may need to add a new CSS class, just so we can style that text, in search/src/main.css
+//  -- didn't seem to work; look at the MUI styling info
+// add all links
+// get URL params passed between search and regular pages
 
 axiosRetry(axios, {retries: 3});
 
@@ -82,6 +83,7 @@ interface HomeState {
 
 
 let url = ''
+
 if (process.env.NODE_ENV == 'production') {
     url = "https://cic-apps.datascience.columbia.edu";
 } else if (process.env.NODE_ENV == 'development') {
@@ -392,11 +394,13 @@ class App extends Component<any, HomeState> {
             keyword={ this.state.keyword }
             />
        </div>
-       <div className='flex-container'>
-                        <div className='flex-child'></div>
-                        <div className='flex-child'>
-	    Placeholder for total grants link
-                        </div>
+       <div className='flex-container'>                      
+                <div className='flex-child'></div>
+		<div className='flex-child'>		
+		  <div className='adv-link-text'>
+	 	    <a href="/grants">See all {this.state.total_grants} grants</a>
+		  </div>
+             </div>
        </div>
 
       <br/>
