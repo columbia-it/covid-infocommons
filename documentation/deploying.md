@@ -1,10 +1,56 @@
 
+
+Getting a token for AWS usage
+=============================
+
+The token must be obtained on a machine that has a graphical web browser. If the
+actual deploy will be performed on a different machine, take the file created by
+this process (~/.aws/credentials) and copy it to the other machine.
+
+```
+# Ensure the chromedriver executable is first in the path, so it doesn't get clobbered by rbenv's chromedriver
+export PATH=/usr/local/bin:$PATH
+
+cd ~/lib/covid-infocommons/backend
+
+### For dev ###
+export AWS_PROFILE=cuit-infra-cice-dev
+python saml.py cuit-dev-role 305803678806
+
+# copy the credentials file to your deploy server
+scp /Users/ryan/.aws/credentials ryan-django:.aws/credentials
+
+# if it complains about the chromedriver version, get a new one from
+# https://googlechromelabs.github.io/chrome-for-testing/ (must find the version number of your Chrome
+# and get the matching chromedriver)
+# save it in /usr/local/bin/chromedriver
+
+# Verify if needed
+aws sts get-caller-identity
+
+### For prod ###
+export AWS_PROFILE=cuit-infra-cice-prod
+
+# Note that the below command uses "cuit-dev-role", because it's the role
+# for developers, not for a "dev" environment
+python saml.py cuit-dev-role 031752658700
+
+
+# Verify if needed
+aws sts get-caller-identity
+
+# copy the credentials file to your deploy server
+scp /Users/ryan/.aws/credentials ryan-django:.aws/credentials
+
+
 Deploying the CIC code in the CUIT environment
 ===============================================
 
 Prep:
-- clear files from backend/static and backend/search/static if there are any
-- ensure you have an AWS token in place (see section below)
+- ensure you have an AWS token in place (see section above)
+- delete files from the AWS S3 static storage
+
+#### MOST OF THIS PROCESS is in deploy_cic.sh -- for the dev server
 
 Basic deployment process:
 ```
@@ -35,9 +81,11 @@ python manage.py collectstatic
 # if schema updates are required
 # python manage.py makemigrations
 # zappa manage dev/prod migrate
-
-## ??Not needed?
+ 
+## Only needed if there are certain types of frontend changes; not sure which ones
 ## delete files from S3 bucket cuit-infra-cice-dev-s3-static
+https://cuit.columbia.edu/aws
+
 ## only delete folders that need to be updated
 
 ### For dev ###
@@ -51,48 +99,6 @@ zappa update prod
 zappa manage prod "collectstatic --noinput"
 ## IMPORTANT -- if the last command has an error (typically caused by a timeout), run it again
 
-
-Getting a token for AWS usage
-=============================
-
-The token must be obtained on a machine that has a graphical web browser. If the
-actual deploy will be performed on a different machine, take the file created by
-this process (~/.aws/credentials) and copy it to the other machine.
-
-```
-# Ensure the chromedriver executable is first in the path, so it doesn't get clobbered by rbenv's chromedriver
-export PATH=/usr/local/bin:$PATH
-
-cd backend
-
-### For dev ###
-export AWS_PROFILE=cuit-infra-cice-dev
-python saml.py cuit-dev-role 305803678806
-
-# copy the credentials file to your deploy server
-scp /Users/ryan/.aws/credentials ryan-django:.aws/credentials
-
-# if it complains about the chromedriver version, get a new one from
-# https://googlechromelabs.github.io/chrome-for-testing/ (must find the version number of your Chrome
-# and get the matching chromedriver)
-# save it in /usr/local/bin/chromedriver
-
-# Verify if needed
-aws sts get-caller-identity
-
-### For prod ###
-export AWS_PROFILE=cuit-infra-cice-prod
-
-# Note that the below command uses "cuit-dev-role", because it's the role
-# for developers, not for a "dev" environment
-python saml.py cuit-dev-role 031752658700
-
-
-# Verify if needed
-aws sts get-caller-identity
-
-# copy the credentials file to your deploy server
-scp /Users/ryan/.aws/credentials ryan-django:.aws/credentials
 
 Troubleshooting
 ===============

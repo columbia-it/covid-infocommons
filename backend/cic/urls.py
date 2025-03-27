@@ -17,7 +17,7 @@ from django.contrib import admin
 from django.urls import path, include
 from django.conf import settings
 from django.conf.urls.static import static
-from cic.views import index, detail, pi_detail
+from cic.views import index, adv_search, detail, pi_detail
 from django.contrib.auth.views import LoginView
 from django.views.generic.base import RedirectView
 
@@ -25,7 +25,7 @@ urlpatterns = [
 #    path('', include('apis.urls')),
     path('', RedirectView.as_view(url='/grants', permanent=False)),
     path('admin/', admin.site.urls),
-    path('aa/', admin.site.urls),
+    path('adv_search/', adv_search),
     path('grants/', index, name='index'),
     path('grants/<int:grant_id>', detail),
     path('grants/pi/<int:pi_id>', pi_detail),

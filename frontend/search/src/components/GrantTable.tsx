@@ -16,9 +16,10 @@ type GrantsTableProps = {
     data: Prop[],
     url: string
     totalCount: number
-    pageChangeHandler: (page:number, pageSize: number) => void 
+    pageChangeHandler?: (page:number, pageSize: number) => void 
     pageIndex: number
     keyword: string | ''
+    pageSize: number
 }
 
 
@@ -83,7 +84,7 @@ class GrantsTable extends Component<GrantsTableProps> {
                 page={ this.props.pageIndex }
                 totalCount={ this.props.totalCount }
                 onChangePage={ (page, pageSize) => {
-                    this.props.pageChangeHandler(page, pageSize)
+		 if (this.props.pageChangeHandler) this.props.pageChangeHandler(page, pageSize);                 
                 } }
                 columns={[
                     {
@@ -140,7 +141,7 @@ class GrantsTable extends Component<GrantsTableProps> {
                         showTitle: false,
                         search: false,
                         exportButton: false,
-                        pageSize: 20,
+                        pageSize: this.props.pageSize,
                         exportAllData: false
                     }
                 }
