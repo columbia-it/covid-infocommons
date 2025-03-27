@@ -14,13 +14,6 @@ import axiosRetry from 'axios-retry';
 
 import Link from '@mui/material/Link';
 
-// TODO next
-// spacing on the links
-//  -- may need to add a new CSS class, just so we can style that text, in search/src/main.css
-//  -- didn't seem to work; look at the MUI styling info
-// add all links
-// get URL params passed between search and regular pages
-
 axiosRetry(axios, {retries: 3});
 
 const styles = {
@@ -110,8 +103,11 @@ class App extends Component<any, HomeState> {
         super(props)
     }
 
+    
     componentDidMount = () => {
-        this.get_grants_data()
+	console.log('App.componentDidMount()--Started at: ' + new Date().toLocaleString())
+	this.get_grants_data()
+	
     }
 
     currentURL() {
@@ -127,6 +123,7 @@ class App extends Component<any, HomeState> {
     }
     
     searchHandler = (event:any) => {
+	console.log('App.searchHandler()--Started at: ' + new Date().toLocaleString())
         event.preventDefault()
         const keyword = (document.getElementById('outlined-search') as HTMLInputElement).value;
         this.setState({'keyword': keyword})
@@ -188,7 +185,8 @@ class App extends Component<any, HomeState> {
 
         var url = this.state.url.concat('/search/grants')
         var params: { [key: string]: any } = {};
-
+	params.size = 4
+	
         let from:number = 0
 
         params.from = from
@@ -239,9 +237,8 @@ class App extends Component<any, HomeState> {
     get_people = (kw?:string) => {
         var url = this.state.url.concat('/search/people')
         var params: { [key: string]: any } = {};
-
+	params.size = 4
         let from:number = 0
-
         params.from = from
         if (!kw) {
             kw = (document.getElementById('outlined-search') as HTMLInputElement).value;
@@ -392,6 +389,7 @@ class App extends Component<any, HomeState> {
             url={ this.state.url }
 	    pageIndex={ 0 }
             keyword={ this.state.keyword }
+	    pageSize={ 4 }
             />
        </div>
        <div className='flex-container'>                      
@@ -415,6 +413,14 @@ class App extends Component<any, HomeState> {
                         keyword={ this.state.keyword }
                     />
        </div>    
+       <div className='flex-container'>                      
+                <div className='flex-child'></div>
+		<div className='flex-child'>		
+		  <div className='adv-link-text'>
+	 	    <a href="/grants">See all {this.state.total_people} researchers</a>
+		  </div>
+             </div>
+       </div>
 		
     </div>
   </Box>

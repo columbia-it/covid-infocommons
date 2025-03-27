@@ -140,7 +140,7 @@ class GrantsTable extends Component<GrantsTableProps> {
                         showTitle: false,
                         search: false,
                         exportButton: false,
-                        pageSize: 20,
+                        pageSize: this.props.pageSize,
                         exportAllData: false
                     }
                 }
