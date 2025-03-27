@@ -507,6 +507,7 @@ class App extends Component<any, AppState> {
             pageChangeHandler={ this.pageChangeHandler }
             pageIndex={ this.state.pageIndex }
             keyword={ this.state.keyword }
+	    pageSize={ 20 }
             />
         </div>
         <div className='flex-child'>

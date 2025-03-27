@@ -19,6 +19,7 @@ type GrantsTableProps = {
     pageChangeHandler?: (page:number, pageSize: number) => void 
     pageIndex: number
     keyword: string | ''
+    pageSize: number
 }
 
 
