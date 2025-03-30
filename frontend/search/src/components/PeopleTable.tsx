@@ -66,7 +66,8 @@ class PeopleTable extends Component<PeopleTableProps> {
     render() {
         return (
             <div>
-            <MaterialTable
+		<MaterialTable
+	    title= { "Researchers" }
                 data={ this.props.data }
                 page={ this.props.pageIndex }
                 totalCount={ this.props.totalCount }
@@ -78,7 +79,7 @@ class PeopleTable extends Component<PeopleTableProps> {
                         title: "Name", 
                         field: "name",
                         render: (row: any) => {
-                            let pi_detail_url = (row.private_emails) ? row.private_emails : this.props.url.concat('/search/pi/'+ row.id)
+                            let pi_detail_url = (row.private_emails) ? row.private_emails : this.props.url.concat('/grants/pi/'+ row.id)
                             if (this.props.keyword) {
                                 pi_detail_url = pi_detail_url.concat('?keyword='+this.props.keyword)
                             }
@@ -110,7 +111,7 @@ class PeopleTable extends Component<PeopleTableProps> {
                 options={
                     { 
                         paging: this.props.paging, 
-                        showTitle: false,
+                        showTitle: true,
                         search: false,
                         exportButton: false,
                         pageSize: 20,
