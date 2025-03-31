@@ -66,7 +66,7 @@ class PeopleTable extends Component<PeopleTableProps> {
     render() {
         return (
             <div>
-		<MaterialTable
+		<MaterialTable 
 	    title= { "Researchers" }
                 data={ this.props.data }
                 page={ this.props.pageIndex }
