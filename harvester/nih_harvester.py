@@ -40,20 +40,21 @@ def main(max_year = None, start_offset = 0):
     # So we request one year at a time, and step through each page
     for year in range(max_year, 2020, -1):
         # grants that are funded by the COVID programs
-        for offset in range(start_offset, 5000, 25):
-            print(f"========= COVID program grants {year} offset {offset}", flush = True)
-            grants = retrieve_covid_grants(year, offset)                
-            if grants is None or len(grants) == 0:
-                time.sleep(NIH_API_DELAY) 
-                break
-            print("")
-            print(f"Received {len(grants)} grants, offset {offset}")
-            for g in grants:
-                process_grant(g)
-            imported_count += len(grants)
-            time.sleep(NIH_API_DELAY)
-            if len(grants) < 25:                
-                break
+        # No longer used, because this program didn't last long
+        #for offset in range(start_offset, 5000, 25):
+        #    print(f"========= COVID program grants {year} offset {offset}", flush = True)
+        #    grants = retrieve_covid_grants(year, offset)                
+        #    if grants is None or len(grants) == 0:
+        #        time.sleep(NIH_API_DELAY) 
+        #        break
+        #    print("")
+        #    print(f"Received {len(grants)} grants, offset {offset}")
+        #    for g in grants:
+        #        process_grant(g)
+        #    imported_count += len(grants)
+        #    time.sleep(NIH_API_DELAY)
+        #    if len(grants) < 25:                
+        #        break
 
 
     for year in range(max_year, 2020, -1):
@@ -461,7 +462,7 @@ def nih_to_cic_date(d):
 
 if __name__ == "__main__":
     print(sys.argv)
-    max_year = 2024
+    max_year = 2025
     start_offset = 0
     if len(sys.argv) > 1:
         max_year = int(sys.argv[1])
