@@ -11,12 +11,16 @@ def main():
     print("")
     d = find_cic_dataset('10.60773/8e0v-pk44')
     print(d)
+
+    # https://cic-apps-dev.datascience.columbia.edu/search/datasets?keyword=https://cic-apps-dev.datascience.columbia.edu/
+    d = find_cic_dataset('https://doi.org/10.1016/j.wace.2013.08.002')
+    print(d)
     #print(f" -- found {d['id']} --- {d['doi']} --  {d['title']}")
  
 
 def create_cic_dataset(dataset_json):
     r = requests.post(url = CIC_DATASETS_API,
-                      jdata = json.dumps(dataset_json),
+                      data = json.dumps(dataset_json),
                       headers={"Content-Type":"application/vnd.api+json",
                                "Authorization": f"access_token {cic_config.CIC_TOKEN}"
                       })
@@ -26,6 +30,7 @@ def create_cic_dataset(dataset_json):
         return {}
     logging.info(f" -- created dataset {r.json()}")
     return r.json()['data']
+
 
 def update_cic_dataset(dataset_json, dataset_id):
     grant_json['data']['id'] = dataset_id
@@ -61,11 +66,10 @@ def find_cic_dataset(doi):
     if  'hits' not in response_json['hits']:
         return None
     cic_datasets = response_json['hits']['hits']
-    for d in cic_datasets:
-        
-        logging.debug(f" --  checking {d['_id']}")
-        #if d['doi'] == doi:
-        #    return d
+    for d in cic_datasets:        
+        logging.debug(f" --  checking {d['_id']} {d['_source']['doi']}")
+        if '_source' in d and d['_source']['doi'] == doi:
+            return d['_source']
     return None
 
 

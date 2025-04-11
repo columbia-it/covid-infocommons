@@ -1,9 +1,9 @@
 import ReactDOM from 'react-dom';
 import "./main.css"
+import DatasetsTable from "./components/DatasetsTable";
 import GrantsTable from './components/GrantTable';
 import PeopleTable from "./components/PeopleTable";
 import PublicationsTable from "./components/PublicationsTable";
-import DatasetsTable from "./components/DatasetsTable";
 import Box from '@mui/material/Box';
 import TextField from '@mui/material/TextField';
 import Button from '@mui/material/Button';
@@ -264,10 +264,45 @@ class App extends Component<any, HomeState> {
                     }
                 })
                 this.setState({ people: newArray })
+		this.get_datasets()
+            })
+        })
+    }
+
+    get_datasets = (kw?:string) => {
+        var url = this.state.url.concat('/search/datasets')
+        var params: { [key: string]: any } = {};
+	params.size = 4
+        let from:number = 0
+        params.from = from
+        if (!kw) {
+            kw = (document.getElementById('outlined-search') as HTMLInputElement).value;
+        }
+        if (kw && kw.length > 0) {
+            params.keyword = kw
+        }
+        params['get_count'] = true
+        console.log(params)
+        axios.get(url, {params: params}).then(count_result => {
+            this.setState({ total_datasets: count_result.data.count })
+            delete params.get_count
+            axios.get(url, {params: params}).then(results => {
+                this.setState({ total_datasets: results.data.hits.total.value })
+
+                var newArray = results.data.hits.hits.map(function(val:any) {
+                    return {
+                        id: val['_source']['id'],
+                        title: val['_source']['title'],
+                        doi: val['_source']['doi'],
+                        authors: val['_source']['authors']
+                    }
+                })
+                this.setState({ datasets: newArray })
         //        this.get_publications()
             })
         })
     }
+
     
     get_pi_data = (keyword?:string) => {
         console.log('App.get_pi_data()--Started at: ' + new Date().toLocaleString())
@@ -421,7 +456,27 @@ class App extends Component<any, HomeState> {
 		  </div>
              </div>
        </div>
-		
+
+
+       <div>
+	    <DatasetsTable
+                        paging={ false }
+                        totalCount={ this.state.total_datasets }
+                        data={ this.state.datasets.slice(0, 5) } 
+                        url={ this.state.url }
+                        pageIndex={ 0 }
+                        keyword={ this.state.keyword }
+                    />
+       </div>    
+       <div className='flex-container'>                      
+                <div className='flex-child'></div>
+		<div className='flex-child'>		
+		  <div className='adv-link-text'>
+	 	    <a href="/grants">See all {this.state.total_datasets} datasets</a>
+		  </div>
+             </div>
+       </div>
+
     </div>
   </Box>
   );

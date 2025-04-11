@@ -11,6 +11,7 @@ import requests
 import time
 
 
+START_PAGE = 1666
 DATACITE_BASE = "https://api.datacite.org/dois?query=covid+OR+COVID+OR+covid19+OR+coronavirus+OR+pandemic+OR+sars2+OR+SARS-CoV"
 DATACITE_TEST = "https://api.datacite.org/dois?query=scherle"
 
@@ -61,17 +62,18 @@ def main():
     page_size = 100
     imported_count = 0
 
-    for page in range(1,3): #100000):
+    for page in range(START_PAGE, 100000):
         datasets = get_datasets(page, page_size)
         if datasets is None or len(datasets) == 0:
             break
         print(f"Found {len(datasets)} datasets, total {imported_count}")
-        
+
         for d in datasets:            
             process_dataset(d)
+
         imported_count += len(datasets)
         time.sleep(2)
-        
+
     print(f"Total imported: {imported_count}")
 
 
@@ -97,25 +99,17 @@ def process_dataset(d):
     
     # don't overwrite an existing dataset
     existing_data = cic_datasets.find_cic_dataset(d['id'])
-    print(f"   found pre-existing? {existing_data}")
+    print(f"   found pre-existing? {existing_data != None}")
     response_code = ''
     if existing_data is None:
         # No pre-existing dataset, so we're creating one from scratch
-        logging.debug("   -- not found - creating")
-        #grant_json = nsf_to_cic_format(grant)
-        #response_code = cic_grants.create_cic_grant(grant_json)
-
-        logging.info(f"    -- {response_code}")
-
-    # Transform to CIC format
-    new_dataset = datacite_to_cic_format(d)
-    print(f"  NEW DATASET {new_dataset}")
-    
-    # Save
-    ##### #TODO
+        # Transform to CIC format and save
+        print("   -- not found - creating")
+        dataset_json = datacite_to_cic_format(d)
+        print(f"  NEW DATASET {dataset_json}")
+        response_code = cic_datasets.create_cic_dataset(dataset_json)
+        print(f"    -- response {response_code}")
         
-    # Exit after processing the first dataset (for testing)
-    exit()
 
 
 def datacite_to_cic_format(d):
@@ -129,7 +123,7 @@ def datacite_to_cic_format(d):
                 "downloadPath": "https://doi.org/" + d['id'],
                 "size": datacite_size(da),
                 "authors": process_datacite_authors(da),
-                "grants": []
+                "grants": process_datacite_funding(da)
             }
         }
     }
@@ -138,11 +132,36 @@ def datacite_to_cic_format(d):
 
 def datacite_size(da):
     if da['sizes'] is None or len(da['sizes']) == 0:
-        return []
+        return ""
     else:
         return da['sizes'][0]
 
-    
+def process_datacite_funding(da):
+    print(f" FUNDING {da['fundingReferences']}")
+    results = []
+    # Find the appropriate grant objects, then return them as an array of references like
+    #  {
+    #    "type": "Grant",
+    #    "id": "1"
+    #  }
+    if 'fundingReferences' not in da:
+        return None
+    dc_grants = da['fundingReferences']
+    for g in dc_grants:
+        if 'awardNumber' not in g:
+            continue
+        award = g['awardNumber']
+        grant = cic_grants.find_cic_grant(award)
+        if grant is None:
+            continue
+        grant_json = { "type": "Grant",
+                    "id": int(grant['id']) }
+        print(f" -- attaching grant {grant_json}")
+        results.append(grant_json)
+    print(f" -- results {results}")
+    return results
+
+
 def process_datacite_authors(da):
     print(f" AUTHOr {da['creators']}")
     results = []
@@ -155,8 +174,12 @@ def process_datacite_authors(da):
         return None
     people = da['creators']
     for p in people:
-        first = p['givenName']
-        last = p['familyName']
+        first = ''
+        if 'givenName' in p:
+            first = p['givenName']
+        last = ''
+        if 'familyName' in p:
+            last = p['familyName']
         orcid = find_orcid(p['nameIdentifiers'])
         affiliation = find_affiliation(p['affiliation'])
         person = cic_people.find_or_create_person(first, last, '', '', orcid, affiliation)
@@ -188,8 +211,8 @@ def find_orcid(ids):
     
 
 def get_datasets(page, page_size):
-#    datasets_url = f"{DATACITE_BASE}&page[number]={page}&page[size]={page_size}"
-    datasets_url = f"{DATACITE_TEST}&page[number]={page}&page[size]={page_size}"
+    datasets_url = f"{DATACITE_BASE}&page[number]={page}&page[size]={page_size}"
+    #datasets_url = f"{DATACITE_TEST}&page[number]={page}&page[size]={page_size}"
     print(f"Searching {datasets_url}")
     response = requests.get(datasets_url)
     response_json = response.json()

@@ -41,7 +41,8 @@ def init_names_seen():
             print('.', end='', flush=True)
             response = requests.get(f"{response_json['links']['next']}")
             response_json = response.json()
-            cic_orgs = response_json['data']
+            if 'data' in response_json:
+                cic_orgs = response_json['data']
         else:
             return None
 
