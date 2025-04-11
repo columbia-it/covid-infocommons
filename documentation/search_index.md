@@ -4,6 +4,9 @@ Search Index
 
 The search index is managed in AWS OpenSearch
 
+Configuration
+--------------
+
 Each environment connects to its own OpenSearch cluster: If you login
 into aws, lambda, configuration and environment variables, it has the
 open search cluster name there. Also, each of the cic-e aws accounts

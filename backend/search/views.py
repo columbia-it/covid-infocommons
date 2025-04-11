@@ -408,47 +408,78 @@ def search_datasets(request):
     keyword = request.GET.get('keyword', None)
     mime_type = request.GET.get('mime_type', None)
 
-    query = {
-        'size': size,
-        'from': start,
+#    query = {
+#        'size': size,
+#        'from': start,
+#        # must explicitly set track_total_hits, otherwise it defaults to 10,000
+#        'track_total_hits': True,
+#        'query': {
+#            'bool': {
+#                'must': [],
+#                'filter': {
+#                    'term': {
+#                        'approved': True
+#                    }
+#                }
+#            }
+#        }
+#    }
+
+#    if keyword:
+#        keyword = keyword.strip()
+#        # Escape the keyword in case it contains any Elasticsearch reserved characters
+#        special_chars = ['-', ':', '/']
+#        for s in special_chars:
+#            if s in keyword:
+#                keyword = '\"{}\"'.format(keyword)
+#                break
+#
+#        query['query']['bool']['must'].append({
+#            'multi_match': {
+#                'query': keyword,
+#                'operator': 'and',
+#                'fields': [
+#                    'doi', 
+#                    'title', 
+#                    'mime_type', 
+#                    'keywords', 
+#                    'authors.full_name'
+#                ]
+#            }
+#        })
+
+#    if author_name:  
+#        if 'match_phrase' in query:
+#               query['query']['bool']['must']['match_phrase'].append(
+#                   {
+#                       'authors.full_name': author_name
+#                    }
+#               )
+#        else:
+#           query['query']['bool']['must'].append(
+#            {
+#                'match_phrase': {
+#                    'authors.full_name': author_name
+#                }
+#            }
+#        )
+
+#    if mime_type:  
+#        query['query']['bool']['must'].append(
+#        {
+#            'match': {
+#                'mime_type': mime_type
+#            }
+#        })
+
+
+     query = {
         # must explicitly set track_total_hits, otherwise it defaults to 10,000
         'track_total_hits': True,
         'query': {
-            'bool': {
-                'must': [],
-                'filter': {
-                    'term': {
-                        'approved': True
-                    }
-                }
-            }
+            'match_all': {}
         }
     }
-
-    if keyword:
-        query['query']['bool']['must'].append({
-            'multi_match': {
-                'query': keyword,
-                'operator': 'and',
-                'fields': [
-                    'doi', 
-                    'title', 
-                    'mime_type', 
-                    'keywords', 
-                    'principal_investigator.full_name',
-                    'other_investigators.full_name',
-                    'awardee_organization.name'
-                ]
-            }
-        })
-
-    if mime_type:  
-        query['query']['bool']['must'].append(
-        {
-            'match': {
-                'mime_type': mime_type
-            }
-        })
 
     client = OpenSearch(
         hosts = [{'host': settings.OPENSEARCH_URL, 'port': 443}],
@@ -456,14 +487,6 @@ def search_datasets(request):
         verify_certs = True,
     )
 
-    query = {
-        # must explicitly set track_total_hits, otherwise it defaults to 10,000
-        'track_total_hits': True,
-        'query': {
-            'match_all': {}
-        }
-    }
-    
     response = client.search(
         body = query,
         index = 'dataset_index'

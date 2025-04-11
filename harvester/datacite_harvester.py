@@ -11,7 +11,7 @@ import requests
 import time
 
 
-START_PAGE = 1666
+START_PAGE = 2435
 DATACITE_BASE = "https://api.datacite.org/dois?query=covid+OR+COVID+OR+covid19+OR+coronavirus+OR+pandemic+OR+sars2+OR+SARS-CoV"
 DATACITE_TEST = "https://api.datacite.org/dois?query=scherle"
 

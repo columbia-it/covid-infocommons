@@ -67,6 +67,7 @@ class DatasetsTable extends Component<DatasetsTableProps> {
         return (
             <div>
                 <MaterialTable
+	    	    title= { "Datasets" } 
                     data={ this.props.data }
                     page={ this.props.pageIndex }
                     totalCount={ this.props.totalCount }
