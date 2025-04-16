@@ -113,7 +113,7 @@ class DatasetsTable extends Component<DatasetsTableProps> {
                     options={
                         { 
                             paging: this.props.paging, 
-                            showTitle: false,
+                            showTitle: true,
                             search: false,
                             exportButton: false,
                             pageSize: 20,
