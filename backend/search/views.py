@@ -426,6 +426,14 @@ def search_datasets(request):
     }
 
     if keyword:
+        keyword = keyword.strip()
+        # Escape the keyword in case it contains any Elasticsearch reserved characters
+        special_chars = ['-', ':', '/']
+        for s in special_chars:
+            if s in keyword:
+                keyword = '\"{}\"'.format(keyword)
+                break
+
         query['query']['bool']['must'].append({
             'multi_match': {
                 'query': keyword,
@@ -435,20 +443,18 @@ def search_datasets(request):
                     'title', 
                     'mime_type', 
                     'keywords', 
-                    'principal_investigator.full_name',
-                    'other_investigators.full_name',
-                    'awardee_organization.name'
+                    'authors.full_name'
                 ]
             }
         })
 
-    if mime_type:  
-        query['query']['bool']['must'].append(
-        {
-            'match': {
-                'mime_type': mime_type
-            }
-        })
+    #query = {
+    #    # must explicitly set track_total_hits, otherwise it defaults to 10,000
+    #    'track_total_hits': True,
+    #    'query': {
+    #        'match_all': {}
+    #    }
+    #}
 
     client = OpenSearch(
         hosts = [{'host': settings.OPENSEARCH_URL, 'port': 443}],
@@ -456,14 +462,6 @@ def search_datasets(request):
         verify_certs = True,
     )
 
-    query = {
-        # must explicitly set track_total_hits, otherwise it defaults to 10,000
-        'track_total_hits': True,
-        'query': {
-            'match_all': {}
-        }
-    }
-    
     response = client.search(
         body = query,
         index = 'dataset_index'

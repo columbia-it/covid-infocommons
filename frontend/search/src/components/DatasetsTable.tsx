@@ -67,6 +67,7 @@ class DatasetsTable extends Component<DatasetsTableProps> {
         return (
             <div>
                 <MaterialTable
+	    	    title= { "Datasets" } 
                     data={ this.props.data }
                     page={ this.props.pageIndex }
                     totalCount={ this.props.totalCount }
@@ -79,20 +80,21 @@ class DatasetsTable extends Component<DatasetsTableProps> {
                             field: "title",
                             width: "60%",
                             render: (row: any) => {
+				let detail_url = 'https://doi.org/' + row.doi
                                 return (
                                     <div>
                                         <div>
                                             { row.title }
                                         </div>
                                         <div className="titleLink">
-                                            <MaterialLink target="_blank" underline="hover" href={ row.doi }>{ row.doi }</MaterialLink>
+                                        <MaterialLink target="_blank" underline="hover" href={ detail_url }>{ row.doi }</MaterialLink>
                                         </div>
                                     </div>)
                             }
 
                         },
                         {
-                            title: "Authors", 
+                            title: "", 
                             field: "authors",
                             render: (row: any) => {
                                 let author_names = []
@@ -112,7 +114,7 @@ class DatasetsTable extends Component<DatasetsTableProps> {
                     options={
                         { 
                             paging: this.props.paging, 
-                            showTitle: false,
+                            showTitle: true,
                             search: false,
                             exportButton: false,
                             pageSize: 20,

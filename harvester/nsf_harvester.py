@@ -9,7 +9,7 @@ import logging
 import requests
 
 
-NSF_GRANT_REQUEST = "https://api.nsf.gov/services/v1/awards.json?keyword=covid+COVID+covid19+coronavirus+pandemic+sars2+%22SARS-CoV%22&printFields=abstractText,agency,awardAgencyCode,awardee,awardeeAddress,awardeeCity,awardeeCountryCode,awardeeDistrictCode,awardeeName,awardeeStateCode,awardeeZipCode,cfdaNumber,coPDPI,date,estimatedTotalAmt,expDate,fundAgencyCode,fundProgramName,fundsObligatedAmt,id,offset,pdPIName,perfAddress,perfCity,perfCountryCode,perfDistrictCode,perfLocation,perfStateCode,perfZipCode,piEmail,piFirstName,piLastName,piMiddeInitial,poEmail,poName,poPhone,primaryProgram,projectOutComesReport,rpp,startDate,title,transType"
+NSF_GRANT_REQUEST = "https://api.nsf.gov/services/v1/awards.json?keyword=covid+COVID+covid19+coronavirus+pandemic+sars2&printFields=abstractText,agency,awardAgencyCode,awardee,awardeeAddress,awardeeCity,awardeeCountryCode,awardeeDistrictCode,awardeeName,awardeeStateCode,awardeeZipCode,cfdaNumber,coPDPI,date,estimatedTotalAmt,expDate,fundAgencyCode,fundProgramName,fundsObligatedAmt,id,offset,pdPIName,perfAddress,perfCity,perfCountryCode,perfDistrictCode,perfLocation,perfStateCode,perfZipCode,piEmail,piFirstName,piLastName,piMiddeInitial,poEmail,poName,poPhone,primaryProgram,projectOutComesReport,rpp,startDate,title,transType"
 
 NSF_SINGLE_GRANT_REQUEST = "https://api.nsf.gov/services/v1/awards.json?printFields=abstractText,agency,awardAgencyCode,awardee,awardeeAddress,awardeeCity,awardeeCountryCode,awardeeDistrictCode,awardeeName,awardeeStateCode,awardeeZipCode,cfdaNumber,coPDPI,date,estimatedTotalAmt,expDate,fundAgencyCode,fundProgramName,fundsObligatedAmt,id,offset,pdPIName,perfAddress,perfCity,perfCountryCode,perfDistrictCode,perfLocation,perfStateCode,perfZipCode,piEmail,piFirstName,piLastName,piMiddeInitial,poEmail,poName,poPhone,primaryProgram,projectOutComesReport,rpp,startDate,title,transType&id="
 
@@ -115,7 +115,7 @@ def main():
 
 def is_covid_related(grant):
     for term in COVID_KEYWORDS:
-        if term in grant['title'] or term in grant['abstractText']:            
+        if term in grant['title'] or (grant.get('abstractText') is not None and term in grant.get('abstractText')):            
             return True
     logging.info(f"Grant {grant['id']}, does not contain one of the COVID_KEYWORDS")
     return False
@@ -141,6 +141,7 @@ def retrieve_nsf_grants(year, month, offset):
 
     nsf_url = f"{NSF_GRANT_REQUEST}{monthfilter}&offset={offset}"
 
+    print(f'NSF URL is {nsf_url}')
     logging.info("Reading from NSF API")
     logging.info(f"REQUEST = {nsf_url}")
 

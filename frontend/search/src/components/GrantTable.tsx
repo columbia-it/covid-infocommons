@@ -79,7 +79,8 @@ class GrantsTable extends Component<GrantsTableProps> {
 
     render() {
         return (
-            <MaterialTable
+		<MaterialTable 
+	    title= { "NSF and NIH Projects" } 
                 data={ this.props.data }
                 page={ this.props.pageIndex }
                 totalCount={ this.props.totalCount }
@@ -138,11 +139,11 @@ class GrantsTable extends Component<GrantsTableProps> {
                 options={
                     { 
                         paging: true, 
-                        showTitle: false,
+                        showTitle: true,
                         search: false,
                         exportButton: false,
                         pageSize: this.props.pageSize,
-                        exportAllData: false
+                        exportAllData: false,
                     }
                 }
                 components={

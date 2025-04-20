@@ -14,14 +14,14 @@ def main():
     print(f"Find in CIC: {person}")
 
     
-def find_or_create_person(first, last, email = '', link = ''):
+def find_or_create_person(first, last, email = '', link = '', orcid = '', affiliation = ''):
     # see if person exists
     person = find_cic_person(first, last)
 
     if not email:
         email = ''
     if person is None:
-        person = create_cic_person(person_name_to_cic_format(first, last, email, link))
+        person = create_cic_person(person_name_to_cic_format(first, last, email, link, orcid, affiliation))
 
     return person
 
@@ -54,7 +54,7 @@ def update_cic_person(person_json, person_id):
     return r
 
 
-def person_name_to_cic_format(first, last, email = '', link = ''):
+def person_name_to_cic_format(first, last, email = '', link = '', orcid = '', affiliation = ''):
     person_data = {
         "data": {
             "type": "Person",
@@ -62,10 +62,19 @@ def person_name_to_cic_format(first, last, email = '', link = ''):
                 "first_name": first,
                 "last_name": last,
                 "emails": email,
-                "private_emails": link
+                "private_emails": link,
+                "orcid": orcid,
+                "affiliation": process_affiliation(affiliation)
         }}}
     return person_data
 
+
+def process_affiliation(a):
+    if a is None or len(a) == 0:
+        return None    
+    org = cic_orgs.find_or_create_org(a, 'United States')
+
+    
 
 def person_org_to_cic_format(person, org_id):
     person_data = {
