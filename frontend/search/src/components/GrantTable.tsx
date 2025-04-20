@@ -80,7 +80,7 @@ class GrantsTable extends Component<GrantsTableProps> {
     render() {
         return (
 		<MaterialTable 
-	    title= { "NSF and HHS Projects" } 
+	    title= { "NSF and NIH Projects" } 
                 data={ this.props.data }
                 page={ this.props.pageIndex }
                 totalCount={ this.props.totalCount }

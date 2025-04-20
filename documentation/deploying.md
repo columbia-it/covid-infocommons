@@ -1,4 +1,20 @@
 
+Dev scripts/process
+======================
+
+- On local, cic_login_credentials.sh
+- On AWS (dev), delete contents of static folder https://us-east-1.console.aws.amazon.com/s3/buckets/cuit-infra-cice-dev-s3-static
+- On Django machine, deploy_cic.sh
+
+
+
+Prod scripts/process
+======================
+
+- On local, prod_cic_login_credentials.sh
+- On AWS (prod), delete contents of static folder https://us-east-1.console.aws.amazon.com/s3/buckets/cuit-infra-cice-dev-s3-static
+- On Django machine, prod_deploy_cic.sh
+
 
 Getting a token for AWS usage
 =============================
@@ -33,6 +49,7 @@ export AWS_PROFILE=cuit-infra-cice-prod
 
 # Note that the below command uses "cuit-dev-role", because it's the role
 # for developers, not for a "dev" environment
+# BUT the numerical part is for the prod environment credentials
 python saml.py cuit-dev-role 031752658700
 
 
