@@ -63,7 +63,7 @@ class DatasetsTable extends Component<DatasetsTableProps> {
         />)
     }
 
-    render() {
+    render() {	
         return (
             <div>
                 <MaterialTable
@@ -94,13 +94,23 @@ class DatasetsTable extends Component<DatasetsTableProps> {
 
                         },
                         {
-                            title: "", 
+                            title: "Authors", 
                             field: "authors",
                             render: (row: any) => {
                                 let author_names = []
                                 if (row.authors) {
                                     for (let i = 0; i < row.authors.length; i++) {
-                                        author_names.push(row.authors[i]['full_name'])
+					let poss_comma = ', '
+					if (i + 1 == row.authors.length) {
+					    poss_comma = ''
+					}
+					if (i > 2) {
+					    poss_comma = '...'
+					}
+                                        author_names.push(row.authors[i]['first_name'] + ' ' + row.authors[i]['last_name'] + poss_comma)
+					if (i > 2) {
+					    break
+					}
                                     }
                                 }
                                 return ( 
