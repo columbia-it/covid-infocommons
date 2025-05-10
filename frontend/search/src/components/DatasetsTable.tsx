@@ -63,7 +63,8 @@ class DatasetsTable extends Component<DatasetsTableProps> {
         />)
     }
 
-    render() {	
+    render() {
+	if (this.props.totalCount > 0) {
         return (
             <div>
                 <MaterialTable
@@ -139,6 +140,9 @@ class DatasetsTable extends Component<DatasetsTableProps> {
                 </MaterialTable>
             </div>
         )
+	} else {
+	    return ""
+	}	
     }
 };
 
