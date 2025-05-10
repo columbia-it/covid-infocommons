@@ -37,26 +37,7 @@ def main(max_year = None, start_offset = 0):
     print("NIH Harvester")
     
     # The NIH API will only return a max of 500 grants per request, and the default page size is 25 
-    # So we request one year at a time, and step through each page
-    for year in range(max_year, 2020, -1):
-        # grants that are funded by the COVID programs
-        # No longer used, because this program didn't last long
-        #for offset in range(start_offset, 5000, 25):
-        #    print(f"========= COVID program grants {year} offset {offset}", flush = True)
-        #    grants = retrieve_covid_grants(year, offset)                
-        #    if grants is None or len(grants) == 0:
-        #        time.sleep(NIH_API_DELAY) 
-        #        break
-        #    print("")
-        #    print(f"Received {len(grants)} grants, offset {offset}")
-        #    for g in grants:
-        #        process_grant(g)
-        #    imported_count += len(grants)
-        #    time.sleep(NIH_API_DELAY)
-        #    if len(grants) < 25:                
-        #        break
-
-
+    # So we request one year at a time, and step through each page=
     for year in range(max_year, 2020, -1):
         for month in range(12,0,-1):
             # grants that explicitly mention COVID
