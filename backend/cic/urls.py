@@ -22,7 +22,6 @@ from django.contrib.auth.views import LoginView
 from django.views.generic.base import RedirectView
 
 urlpatterns = [
-#    path('', include('apis.urls')),
     path('', RedirectView.as_view(url='/grants', permanent=False)),
     path('admin/', admin.site.urls),
     path('adv_search/', adv_search),

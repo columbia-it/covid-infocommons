@@ -104,6 +104,17 @@
       </section>
       {% endif %}
 
+      {% if datasets %}
+      <section>
+        <small>COVID Datasets:</small>
+        {% for d in datasets %}
+	<p>
+          <a href="{{ d.doi }}">{{ d.title }}</a>
+	</p>
+        {% endfor %}
+      </section>
+      {% endif %}
+      
       {% if person.keywords is not None %}
       <section>
         <small>Keywords:</small>
