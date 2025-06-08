@@ -64,6 +64,7 @@ class PeopleTable extends Component<PeopleTableProps> {
     }
 
     render() {
+	if (this.props.totalCount > 0) {
         return (
             <div>
 		<MaterialTable 
@@ -125,7 +126,12 @@ class PeopleTable extends Component<PeopleTableProps> {
 
             </MaterialTable>
             </div>
-        )}
+        )
+	} else {
+	    return ""
+	}	
+
+	}
 }
 
 export default PeopleTable;
