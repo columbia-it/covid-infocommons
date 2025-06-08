@@ -431,7 +431,7 @@ class App extends Component<any, HomeState> {
                 <div className='flex-child'></div>
 		<div className='flex-child'>		
 		  <div className='adv-link-text'>
-	 	    <a href="/grants">See all {this.state.total_grants} grants</a>
+	 	    <a href="/grants">See all grants</a>
 		  </div>
              </div>
        </div>
@@ -452,7 +452,7 @@ class App extends Component<any, HomeState> {
                 <div className='flex-child'></div>
 		<div className='flex-child'>		
 		  <div className='adv-link-text'>
-	 	    <a href="/grants">See all {this.state.total_people} researchers</a>
+	 	    <a href="/grants">See all researchers</a>
 		  </div>
              </div>
        </div>
@@ -471,8 +471,8 @@ class App extends Component<any, HomeState> {
        <div className='flex-container'>                      
                 <div className='flex-child'></div>
 		<div className='flex-child'>		
-		  <div className='adv-link-text'>
-	 	    <a href="/grants">See all {this.state.total_datasets} datasets</a>
+		<div className='adv-link-text'>	    
+	 	    <a href="/grants">See all datasets</a>
 		  </div>
              </div>
        </div>
