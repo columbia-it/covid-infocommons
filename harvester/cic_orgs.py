@@ -37,7 +37,7 @@ def init_names_seen():
     while(len(cic_orgs) > 0):
         for co in cic_orgs:
             names_seen.append(co['attributes']['name'])
-        if response_json['links'] is not None and response_json['links']['next'] is not None:
+        if 'links' in response_json and response_json['links'] is not None and response_json['links']['next'] is not None:
             print('.', end='', flush=True)
             response = requests.get(f"{response_json['links']['next']}")
             response_json = response.json()

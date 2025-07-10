@@ -452,7 +452,7 @@ class App extends Component<any, HomeState> {
                 <div className='flex-child'></div>
 		<div className='flex-child'>		
 		  <div className='adv-link-text'>
-	 	    <a href="/grants">See all researchers</a>
+	 	   <!-- <a href="/grants">See all researchers</a> -->
 		  </div>
              </div>
        </div>
@@ -472,7 +472,7 @@ class App extends Component<any, HomeState> {
                 <div className='flex-child'></div>
 		<div className='flex-child'>		
 		<div className='adv-link-text'>	    
-	 	    <a href="/grants">See all datasets</a>
+	 	  <!--  <a href="/grants">See all datasets</a> -->
 		  </div>
              </div>
        </div>
