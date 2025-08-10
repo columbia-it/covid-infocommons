@@ -3,44 +3,62 @@ from pyquery import PyQuery
 import cic_grants
 import cic_orgs
 import cic_people
+import cic_publications
 import html_entity_cleaner
 import json
 import logging
 import re
 import requests
 import time
-
+import urllib.parse
 
 # DOI query
 # https://api.crossref.org/v1/works/10.1007%2F978-3-030-15705-0_13
+
+# Note tha CrossRef uses "minimal" DOIs, with 10.xxxx
+# CIC uses "full" DOIS, with https://doi.org/10.xxx
 
 CROSSREF_MEMBERS = "https://api.crossref.org/members"
 CROSSREF_WORK_BASE = "https://api.crossref.org/v1/works/"
 
 def main():
     #testing
-    test_doi = "10.1007%2F978-3-030-15705-0_13"
-    doi = normalize_doi(test_doi)
-    print(doi)
-    work = retrieve_crossref_work(doi)
+    test_doi = "10.1007/978-3-030-15705-0_13"
+    mdoi = cic_publications.minimize_doi(test_doi)
+    print(mdoi)
+    work = retrieve_crossref_work(mdoi)
+    print("======== Retrieved =========")
     print(work)
+    print("======== Converted =========")
+    new_work = process_work(work)
+    print(new_work)
+    print("======== Done  =========")
 
-def normalize_doi(doi):
-    # if it starts with 10, it's good
-    if doi.startswith("10."):
-        return doi
-    # remove 'doi:'
-    if doi.startswith("doi:"):
-        return doi[4:]
-    # else, return anything that looks like a DOI (e.g., remove the prefix from 'http(s)://xxx.doi.org/10.....')
-    match = re.search(r"10.*.", doi)
-    return match.group()
     
+def process_work(work):
+    # convert to cic format
+    new_work = crossref_to_cic_format(work)
+    # sent do cic
+    return(new_work)
+
 def retrieve_crossref_work(doi):
     print(f"Retrieving work by DOI: {doi}")
     response = requests.get(url = CROSSREF_WORK_BASE + doi,
                             headers={"Content-Type":"application/vnd.api+json"})
-    return response.json()
+    return response.json()['message']
+
+ 
+def crossref_to_cic_format(pub):
+    pub_data = {
+        "data": {
+            "type": "Publication", 
+            "attributes": {
+                "keywords": [],
+                "title": html_entity_cleaner.replace_quoted(pub['title'][0])
+            }
+        }
+    }
+    return pub_data
 
     
 def members_list():
