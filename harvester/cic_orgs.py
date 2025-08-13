@@ -104,6 +104,8 @@ def find_cic_org_by_ror(ror_id):
 def find_ror_org(name, country = 'United States'):
     if name is None:
         return None
+    if type(name) is dict:
+        return None
     
     name = name.lower()
     query_name = name.replace("&", "").replace("?","").replace("/"," ") # don't confuse the ROR API
@@ -165,6 +167,9 @@ def create_cic_org(org_json):
         logging.error(f"{r} {r.text}")
         print(f"ERROR {r} {r.text}")
 
+    if 'data' not in r.json():
+        return None
+    
     return r.json()['data']
 
 
