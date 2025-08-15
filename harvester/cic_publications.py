@@ -73,6 +73,7 @@ def find_cic_publication(doi):
     logging.debug(f"    -- {CIC_PUBLICATIONS_SEARCH_API}?keyword={doi}")
     response = requests.get(f"{CIC_PUBLICATIONS_SEARCH_API}?keyword={doi}")
     response_json = response.json()
+    doi = doi.lower()
     if  'hits' not in response_json:
         return None
     if  'hits' not in response_json['hits']:
@@ -80,8 +81,10 @@ def find_cic_publication(doi):
     cic_publications = response_json['hits']['hits']
     for d in cic_publications:        
         logging.debug(f" --  checking {d['_id']} {d['_source']['doi']}")
-        if '_source' in d and d['_source']['doi'] == doi:
-            return d['_source']
+        if '_source' in d:
+            source = d['_source']['doi'].lower()            
+            if source == doi or source == "https://doi.org/" + doi:
+                return d['_source']
     return None
 
 
