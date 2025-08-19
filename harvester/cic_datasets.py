@@ -33,7 +33,7 @@ def create_cic_dataset(dataset_json):
 
 
 def update_cic_dataset(dataset_json, dataset_id):
-    grant_json['data']['id'] = dataset_id
+    dataset_json['data']['id'] = dataset_id
     logging.info(f" -- updating dataset with {dataset_json}")
     r = requests.patch(url = CIC_DATASETS_API + f"/{dataset_id}",
                       data = json.dumps(dataset_json),

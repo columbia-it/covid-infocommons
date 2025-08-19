@@ -75,6 +75,18 @@ def harvest_pubs_from_dataset(d):
                 return None
             cic_work = process_work(work, mdoi)
             ### TODO -- link from the dataset to this publication
+            print(f"work is {cic_work}")
+            print('----')
+            print(f"datasetw is {d}")
+            d['attributes']['publications'].append({"type": "Publication","id": cic_work['id']})
+            new_dataset_updates = {
+                "data": {
+                    "type": "Dataset",
+                    "attributes": {
+                        "publications": d['attributes']['publications']
+                    }}} 
+            cic_datasets.update_cic_dataset(new_dataset_updates, d['id'])
+            return
     return None
 
 
