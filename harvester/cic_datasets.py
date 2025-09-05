@@ -33,16 +33,20 @@ def create_cic_dataset(dataset_json):
 
 
 def update_cic_dataset(dataset_json, dataset_id):
+    print("b1")
     dataset_json['data']['id'] = dataset_id
     logging.info(f" -- updating dataset with {dataset_json}")
+    print(f"b2 - {dataset_json}")
     r = requests.patch(url = CIC_DATASETS_API + f"/{dataset_id}",
                       data = json.dumps(dataset_json),
                       headers={"Content-Type":"application/vnd.api+json",
                                "Authorization": f"access_token {cic_config.CIC_TOKEN}"
                       })
+    print("b3")
     if r.status_code >= 300:
         logging.error(f"{r} {r.text}")
         print(f"ERROR {r} {r.text}")
+    print("b4")
     return r
 
 

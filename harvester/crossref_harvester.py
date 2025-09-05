@@ -49,10 +49,6 @@ def harvest_mentioned_works():
         total += len(dats)
         for d in dats:
             harvest_pubs_from_dataset(d)
-
-##
-        return
-            
         page += 1
         dats = cic_datasets.find_cic_datasets(page)
         print(f"Received {len(dats)} datasets -- total {total}")
@@ -60,37 +56,36 @@ def harvest_mentioned_works():
 
 
 def harvest_pubs_from_dataset(d):
+    print("hpd")
     doi = d['attributes']['doi']
     print(f" Processing |{d['attributes']['doi']}|")
     dc_dat = datacite_harvester.get_by_doi(doi)
     related = dc_dat['attributes']['relatedIdentifiers']
-    print(related)
     for r in related:
         if r['relatedIdentifierType'] == 'DOI':
             print ('==================================================')
-            print('   ' + r['relatedIdentifier'])
             mdoi = cic_publications.minimize_doi(r['relatedIdentifier'])
             work = retrieve_crossref_work(mdoi)
             if work is None:
                 return None
             cic_work = process_work(work, mdoi)
-            ### TODO -- link from the dataset to this publication
-            print(f"work is {cic_work}")
-            print('----')
-            print(f"datasetw is {d}")
+            print("a1")
             d['attributes']['publications'].append({"type": "Publication","id": cic_work['id']})
             new_dataset_updates = {
                 "data": {
                     "type": "Dataset",
                     "attributes": {
                         "publications": d['attributes']['publications']
-                    }}} 
+                    }}}
+            print("a2")
             cic_datasets.update_cic_dataset(new_dataset_updates, d['id'])
+            print("hpd done")
             return
     return None
 
 
 def process_work(work, mdoi):
+    print("pw")
     # send to cic, but don't overwrite an existing publication
     existing_pub = cic_publications.find_cic_publication(mdoi)
     print(f"   found pre-existing? {existing_pub != None}")
@@ -100,7 +95,6 @@ def process_work(work, mdoi):
         # Transform to CIC format and save
         print("   -- not found - creating")
         pub_json = crossref_to_cic_format(work)        
-        print(f"  NEW PUBLICATION {pub_json}")
         response_code = cic_publications.create_cic_publication(pub_json)
         if response_code is not None:
             existing_pub = response_code
@@ -108,6 +102,7 @@ def process_work(work, mdoi):
 
 
 def retrieve_crossref_work(doi):
+    print("rcw")
     print(f"Retrieving work by DOI: {doi}")
     response = requests.get(url = CROSSREF_WORK_BASE + doi,
                             headers={"Content-Type":"application/vnd.api+json"})
@@ -117,6 +112,7 @@ def retrieve_crossref_work(doi):
 
  
 def crossref_to_cic_format(pub):
+    print("ctcf")
     pub_data = {
         "data": {
             "type": "Publication", 
@@ -131,6 +127,7 @@ def crossref_to_cic_format(pub):
 
 
 def process_crossref_authors(pub):
+    print("pca")
     print(f" AUTHOr {pub['author']}")
     results = []
 

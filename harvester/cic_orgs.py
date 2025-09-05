@@ -124,7 +124,7 @@ def find_ror_org(name, country = 'United States'):
         # check the name and country of each
         # return first exact match (case insensitive)
         for ro in response_json['items']:
-            if ror['country'] is not None:
+            if 'country' in ro and ro['country'] is not None:
                 if ro['name'].lower() == name and ro['country']['country_name'].lower() == country:
                     logging.debug(f"   -- found {ro['name']}")
                     return ro
