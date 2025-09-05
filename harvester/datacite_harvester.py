@@ -4,6 +4,7 @@ import cic_datasets
 import cic_grants
 import cic_orgs
 import cic_people
+import cic_publications
 import html_entity_cleaner
 import json
 import logging
@@ -12,8 +13,9 @@ import time
 
 
 START_PAGE = 1
-DATACITE_BASE = "https://api.datacite.org/dois?query=covid+OR+COVID+OR+covid19+OR+coronavirus+OR+pandemic+OR+sars2+OR+SARS-CoV"
-DATACITE_TEST = "https://api.datacite.org/dois?query=scherle"
+DATACITE_BASE = "https://api.datacite.org/dois"
+DATACITE_QUERY = DATACITE_BASE + "?query=covid+OR+COVID+OR+covid19+OR+coronavirus+OR+pandemic+OR+sars2+OR+SARS-CoV"
+DATACITE_TEST =  DATACITE_BASE + "?query=scherle"
 
 ALLOWED_FUNDERS = [
     'National Science Foundation', 'NSF',
@@ -75,6 +77,13 @@ def main():
         time.sleep(2)
 
     print(f"Total imported: {imported_count}")
+
+
+def get_by_doi(doi):
+    mdoi = cic_publications.minimize_doi(doi)
+    response = requests.get(DATACITE_BASE + "/" + mdoi)
+    response_json = response.json()
+    return response_json['data']
 
 
 def process_dataset(d):
@@ -211,7 +220,7 @@ def find_orcid(ids):
     
 
 def get_datasets(page, page_size):
-    datasets_url = f"{DATACITE_BASE}&page[number]={page}&page[size]={page_size}"
+    datasets_url = f"{DATACITE_QUERY}&page[number]={page}&page[size]={page_size}"
     #datasets_url = f"{DATACITE_TEST}&page[number]={page}&page[size]={page_size}"
     print(f"Searching {datasets_url}")
     response = requests.get(datasets_url)
