@@ -63,17 +63,17 @@ def main():
     # https://api.test.datacite.org/dois?query=covid&page[number]=2&page[size]=100
     page_size = 100
     imported_count = 0
-
+    
+    
     for page in range(START_PAGE, 100000):
         datasets = get_datasets(page, page_size)
         if datasets is None or len(datasets) == 0:
             break
-        print(f"Found {len(datasets)} datasets, total {imported_count}")
+        print(f"Page {page}, found {len(datasets)} datasets, total {imported_count}")
 
         for d in datasets:            
-            process_dataset(d)
-
-        imported_count += len(datasets)
+            imported_count += process_dataset(d)
+        
         time.sleep(2)
 
     print(f"Total imported: {imported_count}")
@@ -87,15 +87,11 @@ def get_by_doi(doi):
 
 
 def process_dataset(d):
-    print(f"------------------ {d['id']} -----------")
-    print(f"   {d['id']} {d['attributes']['titles'][0]['title']}")
-
     # only process datasets associated with an NSF or NIH grant
-    print(f"   {d['attributes']['fundingReferences']}")
     funders = d['attributes']['fundingReferences']
     funder_found = False
     if funders is None or len(funders) == 0:
-        return None
+        return 0
     for f in funders:
         if f['funderName'] in ALLOWED_FUNDERS:
             funder_found = True
@@ -103,7 +99,10 @@ def process_dataset(d):
         else:
             print(f"  UNKOWN FUNDER {f['funderName']}")
     if not funder_found:
-        return None           
+        return 0           
+
+    print(f"------------------ {d['id']} -----------")
+    print(f"   {d['id']} {d['attributes']['titles'][0]['title']}")
 
     
     # don't overwrite an existing dataset
@@ -115,10 +114,11 @@ def process_dataset(d):
         # Transform to CIC format and save
         print("   -- not found - creating")
         dataset_json = datacite_to_cic_format(d)
-        print(f"  NEW DATASET {dataset_json}")
+        print(f"  NEW DATASET")
         response_code = cic_datasets.create_cic_dataset(dataset_json)
         print(f"    -- response {response_code}")
-        
+        return 1
+    return 0
 
 
 def datacite_to_cic_format(d):
@@ -172,7 +172,6 @@ def process_datacite_funding(da):
 
 
 def process_datacite_authors(da):
-    print(f" AUTHOr {da['creators']}")
     results = []
     # Create the appropriate people, then return them as an array of references like
     #  {
@@ -221,7 +220,6 @@ def find_orcid(ids):
 
 def get_datasets(page, page_size):
     datasets_url = f"{DATACITE_QUERY}&page[number]={page}&page[size]={page_size}"
-    #datasets_url = f"{DATACITE_TEST}&page[number]={page}&page[size]={page_size}"
     print(f"Searching {datasets_url}")
     response = requests.get(datasets_url)
     response_json = response.json()
