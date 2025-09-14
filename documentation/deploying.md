@@ -117,6 +117,30 @@ zappa manage prod "collectstatic --noinput"
 ## IMPORTANT -- if the last command has an error (typically caused by a timeout), run it again
 
 
+Lingo4g
+=========
+
+Getting to the Lingo box requires contorting through the CUIT system
+-- it's stupid. Type `lingo` and enter your columbia password
+continually until you get the message that you're in the  Lingo
+machine.
+
+To update the index in Lingo:
+1. On a machine with CIC API access, export the grants in Lingo-ready
+   format (`cic_run.sh lingo_exporter.py`)
+2. Get the export file to the lingo machine (e.g., put it at a public
+   URL and curl it from the lingo machine)
+3. Move the file to `/home/cic2119/lingo/datasets/dataset-cic/data/cic_grants.json`
+4. Reindex lingo
+```
+  cd  /home/cic2119/lingo/datasets/dataset-cic/data/
+  curl "http://secundus.datadryad.org/cic_grants.json" >cic_grants.json
+  cd /home/cic2119/lingo
+  ./l4g index -p datasets/dataset-cic --force
+  ./l4g server -p datasets/dataset-cic --port 8080
+```
+
+
 Troubleshooting
 ===============
 

@@ -22,6 +22,7 @@ def main():
         outfile.write("]")
         print("Completed grant export to \'cic_grants.json\'")
 
+        
 def grant_to_lingo(grant):
     g = grant['attributes']
     result = {
@@ -40,6 +41,7 @@ def grant_to_lingo(grant):
         "keywords": g['keywords']
     }
     return result
+
 
 def grant_funder(g):
     if g['funder'] is None:
