@@ -16,6 +16,18 @@ should have an open search cluster used by their respective lambdas
 Updating the index
 -------------------
 
+Use the Cloud9 environment to connect to the OpenSearch index:
+- Login to AWS - https://www.cuit.columbia.edu/aws -> AWS account login
+- From Services, select Cloud9
+- Select "connect-to-cice-os-cluster" environment
+- Click "Open in Cloud9"
+
+Once the environment is open and ready, you can see and access the existing python scripts in the environment. You can create and run new scripts here as well.
+For e.g, there is a script called "update_all_pis.py" which updates all the documents in the index with latest PI data. To run this script -
+Activate the existing virtual environment called "venv" using the command `source venv/bin/activate`
+Run the script using the command: `python update_all_pis.py`
+
+
 The index must be accesed through a CUIT AWS account, using the Cloud9 editing
 environment.
 
