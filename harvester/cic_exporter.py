@@ -1,7 +1,9 @@
 import cic_assets
+import cic_datasets
 import cic_grants
 import cic_orgs
 import cic_people
+import cic_publications
 import requests
 import json
 
@@ -15,6 +17,8 @@ def main():
     export_grants()
     export_orgs()
     export_assets()
+    export_datasets()
+    export_publications()
 
 def export_assets():
     with open("cic_assets_export.json", "w") as outfile:
@@ -116,6 +120,56 @@ def export_orgs():
 
         outfile.write("]")
         print("Completed orgs export to \'cic_orgs_export.json\'")
+
+
+def export_datasets():
+    with open("cic_datasets_export.json", "w") as outfile:
+        outfile.write("[")
+        any_written = False
+        # process all datasets, one page at a time
+        for page in range(1, 100000):
+            dats = cic_datasets.find_cic_datasets(page)
+            if dats is None or len(dats) == 0:
+                break
+            print(f"Page {page} -- {len(dats)} datasets")            
+            for d in dats:
+                # Remove extra 'approved' attributes
+                if 'approved' in d['attributes']:
+                    del d['attributes']['approved']
+
+                json_object = json.dumps(remove_empty_from_dict(d), indent=4)
+                if any_written:
+                    outfile.write(",")
+                outfile.write(json_object)
+                any_written = True
+
+        outfile.write("]")
+        print("Completed datasets export to \'cic_datasets_export.json\'")
+
+
+def export_publications():
+    with open("cic_publications_export.json", "w") as outfile:
+        outfile.write("[")
+        any_written = False
+        # process all publications, one page at a time
+        for page in range(1, 100000):
+            pubs = cic_publications.find_cic_publications(page)
+            if pubs is None or len(pubs) == 0:
+                break
+            print(f"Page {page} -- {len(pubs)} publications")            
+            for p in pubs:
+                # Remove extra 'approved' attributes
+                if 'approved' in p['attributes']:
+                    del p['attributes']['approved']
+
+                json_object = json.dumps(remove_empty_from_dict(p), indent=4)
+                if any_written:
+                    outfile.write(",")
+                outfile.write(json_object)
+                any_written = True
+
+        outfile.write("]")
+        print("Completed publications export to \'cic_publications_export.json\'")
 
         
 def export_people():
