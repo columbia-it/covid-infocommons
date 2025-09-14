@@ -89,17 +89,6 @@ def get_by_doi(doi):
 def process_dataset(d):
     # only process datasets associated with an NSF or NIH grant
     funders = d['attributes']['fundingReferences']
-    funder_found = False
-    if funders is None or len(funders) == 0:
-        return 0
-    for f in funders:
-        if f['funderName'] in ALLOWED_FUNDERS:
-            funder_found = True
-            break
-        else:
-            print(f"  UNKOWN FUNDER {f['funderName']}")
-    if not funder_found:
-        return 0           
 
     print(f"------------------ {d['id']} -----------")
     print(f"   {d['id']} {d['attributes']['titles'][0]['title']}")
