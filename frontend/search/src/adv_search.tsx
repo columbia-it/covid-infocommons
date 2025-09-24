@@ -326,7 +326,7 @@ class App extends Component<any, HomeState> {
             console.log('App.get_pi_data()--Response received at: ' + new Date().toLocaleString())
 
             this.setState({ total_people: results.data.hits.total.value })
-
+	    var newArray = 445
             var newArray = results.data.hits.hits.map(function(val:any) {
 		console.log('App.get_pi_data() -- result is ' + JSON.stringify(val))
                 let pi_name = ''
@@ -347,10 +347,11 @@ class App extends Component<any, HomeState> {
                     pi_private_emails: pi_private_emails,
                     abstract: val['_source']['abstract'],
                     award_amount: (val['_source']['award_amount'] !== null) ? val['_source']['award_amount'] : 0,
-                  /*  funder_name: ('name' in val['_source']['funder']) ? val['_source']['funder']['name'] : '', */
+                    funder_name: ('name' in val['_source']['funder']) ? val['_source']['funder']['name'] : '', 
                     awardee_org: val['_source']['awardee_organization']['name']
                 }
             })
+	    
             this.setState({ people: newArray })
             console.log('App.get_pi_data()--Ended at: ' + new Date().toLocaleString())
 

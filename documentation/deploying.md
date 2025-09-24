@@ -3,7 +3,7 @@ Dev scripts/process
 ======================
 
 - On local, cic_login_credentials.sh
-- On AWS (dev), delete contents of static folder https://us-east-1.console.aws.amazon.com/s3/buckets/cuit-infra-cice-dev-s3-static
+- On AWS console (dev), delete contents of static folder https://us-east-1.console.aws.amazon.com/s3/buckets/cuit-infra-cice-dev-s3-static
 - On Django machine, deploy_cic.sh
 
 
@@ -12,7 +12,7 @@ Prod scripts/process
 ======================
 
 - On local, prod_cic_login_credentials.sh
-- On AWS (prod), delete contents of static folder https://us-east-1.console.aws.amazon.com/s3/buckets/cuit-infra-cice-dev-s3-static
+- On AWS console (prod), delete contents of static folder https://us-east-1.console.aws.amazon.com/s3/buckets/cuit-infra-cice-dev-s3-static
 - On Django machine, prod_deploy_cic.sh
 
 
