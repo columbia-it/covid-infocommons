@@ -326,7 +326,6 @@ class App extends Component<any, HomeState> {
             console.log('App.get_pi_data()--Response received at: ' + new Date().toLocaleString())
 
             this.setState({ total_people: results.data.hits.total.value })
-	    var newArray = 445
             var newArray = results.data.hits.hits.map(function(val:any) {
 		console.log('App.get_pi_data() -- result is ' + JSON.stringify(val))
                 let pi_name = ''
@@ -453,7 +452,7 @@ class App extends Component<any, HomeState> {
                 <div className='flex-child'></div>
 		<div className='flex-child'>		
 		  <div className='adv-link-text'>
-	 	   <!-- <a href="/grants">See all researchers</a> -->
+	 	   <a href="/grants">See all researchers</a>
 		  </div>
              </div>
        </div>
@@ -473,8 +472,8 @@ class App extends Component<any, HomeState> {
                 <div className='flex-child'></div>
 		<div className='flex-child'>		
 		<div className='adv-link-text'>	    
-	 	  <!--  <a href="/grants">See all datasets</a> -->
-		  </div>
+	 	  <a href="/grants">See all datasets</a>
+		</div>
              </div>
        </div>
 
