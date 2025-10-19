@@ -109,6 +109,8 @@ def find_cic_people(page = 1):
 
 
 def find_cic_person(first, last):
+    if first is None or last is None:
+        return None
     first = first.strip()
     last = last.strip()
     logging.debug(f" -- Looking for existing person {first} {last}")

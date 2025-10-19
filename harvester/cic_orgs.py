@@ -117,6 +117,8 @@ def find_ror_org(name, country = 'United States'):
         print(f"ERROR {response} {response.text}")
         return None
     response_json = response.json()
+    if 'number_of_results' not in response_json:
+        return None
     logging.debug(f" -- found {response_json['number_of_results']} results")
     if response_json['number_of_results'] == 0:
         return None
