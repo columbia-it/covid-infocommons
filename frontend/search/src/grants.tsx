@@ -484,7 +484,7 @@ class App extends Component<any, AppState> {
         this.state.search_in_progress == false ? 
         <div className='results-row'>
 		Showing <span style={{fontWeight: 'bold', color: '#000000'}}>{ this.state.totalCount }</span> results for COVID-related grants.<br/><br/>
-		<b>Visit the <a href="/adv_search">Advanced Search page</a> to search over other types of content.</b>
+		<b>Visit the <a href="/adv_search">Advanced Search page</a> to find datasets and publications related to your keyword search.</b>
         </div> 
         : <div className='results-row'>Waiting for results...
         </div> 
