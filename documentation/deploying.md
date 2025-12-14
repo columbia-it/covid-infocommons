@@ -1,4 +1,13 @@
 
+PROCESS
+===================
+
+All of these things must be synced ON THE SAME DEV/PROD ACCOUNT for the deploy to work:
+- AWS credentials (from local machine, generated with the dev/prod version of cic_login_credentials.sh)
+- Deploy token (from Postman, added to Django machine as CIC_TOKEN)
+- Deploy script (on Django machine, either dev/prod of deploy_cic.sh
+
+
 Dev scripts/process
 ======================
 
