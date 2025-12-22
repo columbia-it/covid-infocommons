@@ -5,6 +5,7 @@ import cic_grants
 import cic_orgs
 import cic_people
 import cic_publications
+import dataset_duplicate_remover
 import html_entity_cleaner
 import json
 import logging
@@ -93,16 +94,20 @@ def process_dataset(d):
     print(f"------------------ {d['id']} -----------")
     print(f"   {d['id']} {d['attributes']['titles'][0]['title']}")
 
-    
+    response_code = ''    
     # don't overwrite an existing dataset
     existing_data = cic_datasets.find_cic_dataset(d['id'])
     print(f"   found pre-existing? {existing_data != None}")
-    response_code = ''
     if existing_data is None:
         # No pre-existing dataset, so we're creating one from scratch
         # Transform to CIC format and save
         print("   -- not found - creating")
         dataset_json = datacite_to_cic_format(d)
+        # double-check that it's not a duplicate
+        #dataset_json['doi'] = d['id']
+        #duplicate_data = dataset_duplicate_remover.process(dataset_json,d['id'],False)
+        #print(f"   found duplicate? {duplicate_data}")
+        #if duplicate_data is False:
         print(f"  NEW DATASET")
         response_code = cic_datasets.create_cic_dataset(dataset_json)
         print(f"    -- response {response_code}")

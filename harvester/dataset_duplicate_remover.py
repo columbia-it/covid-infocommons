@@ -23,9 +23,8 @@ CIC_DATASETS_SEARCH_API = f"{cic_config.CIC_BASE}/search/datasets"
 #
 # Returns True if the datset OR a duplicate is found in the system, and False if the dataset does not
 # yet exist in the system.
-def process(d, delete_dups):
-    print(d)
-    print(f"Processing {d['doi']} -- {d['id']}")
+def process(d, did, delete_dups):
+    print(f"Processing {d['doi']} -- {did}")
 
     # Find datasets with similar titles
     enc_title = url_encode(d['title'])
@@ -37,14 +36,13 @@ def process(d, delete_dups):
     if  'hits' not in response_json['hits']:
         return False
     possible_dups = response_json['hits']['hits']
-    #print(f"size = {len(possible_dups)} == {response_json['hits']['total']['value']}")
 
     match_found = False
     
     # For each, if the title is exactly the same, AND the authors are exactly the same
     # Delete it
     for pd in possible_dups:
-        if (pd['_source']['id'] == d['id']):
+        if (str(pd['_source']['id']) == str(did)):
             # we found the request dataset; don't consider it to be a dupe of itself
             match_found = True
         elif pd['_source']['title'] == d['title']:
@@ -55,8 +53,6 @@ def process(d, delete_dups):
             for i in range(0,len(pd['_source']['authors'])):
                 ap = pd['_source']['authors'][i]
                 ad = d['authors'][i]
-                #print(f" -p- {i} {ap['first_name']} {ap['last_name']}")
-                #print(f" -d- {i} {ad['first_name']} {ad['last_name']}")
                 if (ap['first_name'] != ad['first_name']) or (ap['last_name'] != ad['last_name']):
                     # If the names don't match, we want to move to the next dataset without saying match_found
                     match_found = False
@@ -64,9 +60,9 @@ def process(d, delete_dups):
             
             if match_found and delete_dups:
                 # TODO: if it's still a match, delete it
-                print(f"  -- TO DELETE {pd['_source']['id']} is a dupe of {d['id']}")
+                print(f"  -- TO DELETE {pd['_source']['id']} is a dupe of {did}")
+                cic_datasets.delete_cic_dataset(pd['_source']['id'])
 
-    # TODO: modify the importer so it doesn't create duplicates
     return match_found
 
 
@@ -76,11 +72,6 @@ def url_encode(s):
 
 
 def main():
-    d = cic_datasets.find_cic_dataset('10.3886/icpsr31622')
-    process(d, True)
-    #return
-
-    
     # process all datasets, one page at a time
     page = 1
     total = 0
@@ -89,11 +80,9 @@ def main():
     while len(dd) > 0:
         total += len(dd)
         for d in dd:
-            process(d['attributes'], True)
+            process(d['attributes'], d['id'], True)
         page += 1
 
-        return # <--- TODO remove to do all pages
-        
         dd = cic_datasets.find_cic_datasets(page)
         print(f"Received {len(dd)} datasets -- total {total}")
     print("Completed dataset processing")
@@ -101,3 +90,4 @@ def main():
 
 if __name__ == "__main__":
     main()
+    
