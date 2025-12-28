@@ -1,0 +1,16 @@
+# A unit file for systemd, to launch the Lingo4g application
+[Unit]
+Description=Lingo4g
+Documentation=https://github.com/columbia-it/covid-infocommons/tree/main/documentation
+After=remote-fs.target network.target
+
+[Service]
+User=cic2119
+WorkingDirectory=/home/cic2119/lingo
+Environment=LINGO_ENV=some_environment
+ExecStart=/usr/bin/nice -15 /home/cic2119/lingo/l4g server -p "datasets/dataset-cic" --port 8080
+ExecReload=/usr/bin/nice -15 /home/cic2119/lingo/l4g server -p "datasets/dataset-cic" --port 8080
+Restart=on-failure
+
+[Install]
+WantedBy=multi-user.target
