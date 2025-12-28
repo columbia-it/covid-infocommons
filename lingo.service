@@ -1,4 +1,3 @@
-# A unit file for systemd, to launch the Lingo4g application
 [Unit]
 Description=Lingo4g
 Documentation=https://github.com/columbia-it/covid-infocommons/tree/main/documentation
