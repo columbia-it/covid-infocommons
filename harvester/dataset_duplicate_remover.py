@@ -50,13 +50,16 @@ def process(d, did, delete_dups):
 
             # Since the titles match, assume it is a matc until we find out otherwise
             match_found = True
-            for i in range(0,len(pd['_source']['authors'])):
-                ap = pd['_source']['authors'][i]
-                ad = d['authors'][i]
-                if (ap['first_name'] != ad['first_name']) or (ap['last_name'] != ad['last_name']):
-                    # If the names don't match, we want to move to the next dataset without saying match_found
-                    match_found = False
-                    print("  -- NOT MATCH -- ")
+            if len(pd['_source']['authors']) == len(d['authors']):
+                for i in range(0,len(pd['_source']['authors'])):
+                    ap = pd['_source']['authors'][i]
+                    ad = d['authors'][i]
+                    if (ap['first_name'] != ad['first_name']) or (ap['last_name'] != ad['last_name']):
+                        # If the names don't match, we want to move to the next dataset without saying match_found
+                        match_found = False
+                        print("  -- NOT MATCH -- ")
+            else:
+                match_found = False
             
             if match_found and delete_dups:
                 # TODO: if it's still a match, delete it
